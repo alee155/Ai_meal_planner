@@ -4,6 +4,7 @@ import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/Auth/otp/widgets/otp_digit_field.dart';
 import 'package:ai_meal_planner/features/Auth/otp/widgets/otp_info_card.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_icon_back_button.dart';
@@ -136,8 +137,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
     if (!_isCodeComplete) {
       AppSnackbar.warning(
-        'Enter complete code',
-        'Please enter the full 4-digit verification code.',
+        context.l10n.enterCompleteCodeTitle,
+        context.l10n.enterCompleteCodeMessage,
       );
       return;
     }
@@ -151,8 +152,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
     setState(() => _isSubmitting = false);
     AppSnackbar.success(
-      'Code verified',
-      'OTP $_code verified in this demo screen.',
+      context.l10n.codeVerifiedTitle,
+      context.l10n.codeVerifiedMessage(_code),
     );
   }
 
@@ -160,8 +161,8 @@ class _OtpScreenState extends State<OtpScreen> {
     FocusScope.of(context).unfocus();
     _clearCode();
     AppSnackbar.info(
-      'Code resent',
-      'A new verification code has been sent to ${widget.destination}.',
+      context.l10n.codeResentTitle,
+      context.l10n.codeResentMessage(widget.destination),
     );
   }
 
@@ -197,7 +198,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          'Secure Verification',
+                          context.l10n.secureVerification,
                           style: AppTextStyles.label(
                             context,
                             fontWeight: FontWeight.w700,
@@ -207,7 +208,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ).animateAuthChip(delay: AppMotion.stagger(1)),
                       SizedBox(height: 14.h),
                       Text(
-                        'Enter your\nOTP code.',
+                        context.l10n.enterOtpCode,
                         style: AppTextStyles.display(context, height: 1.08),
                       ).animateAuthContent(
                         delay: AppMotion.stagger(2, initialMs: 120),
@@ -215,7 +216,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       SizedBox(height: 10.h),
                       Text(
-                        'Use the verification code we just sent to confirm access to your account.',
+                        context.l10n.otpIntroDescription,
                         style: AppTextStyles.body(
                           context,
                           fontSize: 15,
@@ -256,7 +257,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '4-digit verification code',
+                              context.l10n.verificationCodeTitle,
                               style: AppTextStyles.headline(
                                 context,
                                 fontSize: 22,
@@ -264,7 +265,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              'Enter the code below. You can also paste it into the first box.',
+                              context.l10n.otpPasteHint,
                               style: AppTextStyles.body(context, height: 1.5),
                             ),
                             SizedBox(height: 20.h),
@@ -285,8 +286,8 @@ class _OtpScreenState extends State<OtpScreen> {
                             Center(
                               child: Text(
                                 _isCodeComplete
-                                    ? 'Code looks good. You can verify now.'
-                                    : 'Code expires soon. Enter all 4 digits to continue.',
+                                    ? context.l10n.otpReadyStatus
+                                    : context.l10n.otpPendingStatus,
                                 style: AppTextStyles.caption(
                                   context,
                                   fontSize: 12,
@@ -298,7 +299,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             ),
                             SizedBox(height: 20.h),
                             AppFilledButton(
-                              label: 'Verify code',
+                              label: context.l10n.verifyCode,
                               onPressed: _verifyCode,
                               backgroundColor: AppColors.buttonPrimary,
                               foregroundColor: AppColors.textWhite,
@@ -311,7 +312,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Text(
-                                    "Didn't receive it?",
+                                    context.l10n.didntReceiveIt,
                                     style: AppTextStyles.body(
                                       context,
                                       fontSize: 14,
@@ -330,7 +331,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                           MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: Text(
-                                      'Resend code',
+                                      context.l10n.resendCode,
                                       style: AppTextStyles.button(
                                         context,
                                         fontSize: 14,

@@ -5,6 +5,7 @@ import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart
 import 'package:ai_meal_planner/features/HomeScreen/ui/home_screen.dart';
 import 'package:ai_meal_planner/features/SettingScreen/ui/settings_screen.dart';
 import 'package:ai_meal_planner/features/user_profile/ui/user_profile.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 
@@ -29,21 +30,21 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     ),
   ];
 
-  static const _items = [
-    BottomNavItemData('Home', FontAwesomeIcons.house),
-    BottomNavItemData('Plan', FontAwesomeIcons.utensils),
-    BottomNavItemData('Profile', FontAwesomeIcons.user),
-    BottomNavItemData('Settings', FontAwesomeIcons.gear),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final items = [
+      BottomNavItemData(context.l10n.navHome, FontAwesomeIcons.house),
+      BottomNavItemData(context.l10n.navPlan, FontAwesomeIcons.utensils),
+      BottomNavItemData(context.l10n.navProfile, FontAwesomeIcons.user),
+      BottomNavItemData(context.l10n.navSettings, FontAwesomeIcons.gear),
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.backgroundSecondaryOf(context),
       extendBody: true,
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavBar(
-        items: _items,
+        items: items,
         currentIndex: _currentIndex,
         onItemTap: (index) => setState(() {
           _currentIndex = index;

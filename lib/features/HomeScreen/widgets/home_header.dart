@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,6 +22,10 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizedGreeting = greeting == 'Good morning'
+        ? context.l10n.goodMorning
+        : greeting;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,7 +46,7 @@ class HomeHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(greeting, style: AppTextStyles.label(context)),
+              Text(localizedGreeting, style: AppTextStyles.label(context)),
               Text(
                 userName,
                 style: AppTextStyles.title(

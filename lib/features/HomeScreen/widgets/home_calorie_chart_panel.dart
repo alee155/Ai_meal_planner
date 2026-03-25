@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,6 +24,7 @@ class HomeCalorieChartPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final lowestValue = values.reduce(math.min).round();
     final peakValue = values.reduce(math.max).round();
 
@@ -52,13 +54,20 @@ class HomeCalorieChartPanel extends StatelessWidget {
                   children: [
                     Text(
                       selectedChartType == HomeCalorieChartType.spline
-                          ? 'Calorie Chart'
-                          : 'Calorie Chart',
+                          ? l10n.calorieSplineChart
+                          : l10n.calorieColumnChart,
                       style: AppTextStyles.headline(
                         context,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      selectedChartType == HomeCalorieChartType.spline
+                          ? l10n.weeklyTotalCalorieTrend
+                          : l10n.weeklyCalorieComparisonByDay,
+                      style: AppTextStyles.label(context),
                     ),
                   ],
                 ),
@@ -129,12 +138,12 @@ class HomeCalorieChartPanel extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Lowest: $lowestValue kcal',
+                l10n.lowestKcal(lowestValue),
                 style: AppTextStyles.caption(context, fontSize: 12),
               ),
               const Spacer(),
               Text(
-                'Peak: $peakValue kcal',
+                l10n.peakKcal(peakValue),
                 style: AppTextStyles.caption(
                   context,
                   fontSize: 12,
@@ -172,13 +181,13 @@ class _ChartTypeToggle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _ChartToggleChip(
-            label: 'Spline',
+            label: context.l10n.spline,
             isSelected: selectedChartType == HomeCalorieChartType.spline,
             onTap: () => onChartTypeChanged(HomeCalorieChartType.spline),
           ),
           SizedBox(width: 6.w),
           _ChartToggleChip(
-            label: 'Bars',
+            label: context.l10n.bars,
             isSelected: selectedChartType == HomeCalorieChartType.bars,
             onTap: () => onChartTypeChanged(HomeCalorieChartType.bars),
           ),

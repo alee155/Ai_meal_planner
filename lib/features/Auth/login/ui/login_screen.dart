@@ -3,6 +3,7 @@ import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_auth_card.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_guest_mode_action.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_hero_section.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/auth_background_decor.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isSubmitting = false);
     Get.offAllNamed(AppRoutes.bottomNav);
-    AppSnackbar.success('Welcome back', 'Your meal planner is ready.');
+    AppSnackbar.success(
+      context.l10n.welcomeBackTitle,
+      context.l10n.mealPlannerReadyMessage,
+    );
   }
 
   Future<void> _handleGoogleLogin() async {
@@ -63,8 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isSubmitting = false);
     Get.offAllNamed(AppRoutes.bottomNav);
     AppSnackbar.info(
-      'Google sign-in',
-      'Connect the real Google auth flow next.',
+      context.l10n.googleSignInTitle,
+      context.l10n.googleSignInMessage,
     );
   }
 

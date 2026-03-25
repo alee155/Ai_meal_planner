@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,6 +17,8 @@ class HomeCaloriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -57,7 +60,7 @@ class HomeCaloriesCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'TODAY',
+                      l10n.today,
                       style: TextStyle(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w800,
@@ -77,7 +80,7 @@ class HomeCaloriesCard extends StatelessWidget {
                   ),
                   SizedBox(height: 6.h),
                   Text(
-                    'Consumed today',
+                    l10n.consumedToday,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: Colors.white.withValues(alpha: 0.9),
@@ -88,14 +91,14 @@ class HomeCaloriesCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _CalorieStat(
-                          label: 'Goal',
+                          label: l10n.goal,
                           value: '$calorieGoal kcal',
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: _CalorieStat(
-                          label: 'Remaining',
+                          label: l10n.remaining,
                           value: '$remainingCalories kcal',
                         ),
                       ),

@@ -1,6 +1,7 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -19,7 +20,7 @@ class LoginHeroSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
           ),
           child: Text(
-            'AI Diet Planner',
+            context.l10n.aiDietPlanner,
             style: AppTextStyles.label(
               context,
               fontWeight: FontWeight.w700,
@@ -29,7 +30,7 @@ class LoginHeroSection extends StatelessWidget {
         ),
         10.h.verticalSpace,
         Text(
-          'Eat smarter.\nFeel stronger.',
+          context.l10n.eatSmarterFeelStronger,
           style: AppTextStyles.display(context, height: 1.1),
         ).animateAuthContent(
           delay: AppMotion.stagger(1, initialMs: 140),
@@ -37,7 +38,7 @@ class LoginHeroSection extends StatelessWidget {
         ),
         10.h.verticalSpace,
         Text(
-          'Sign in to unlock meal plans, daily nutrition guidance, and progress tracking built around your goals.',
+          context.l10n.loginHeroDescription,
           style: AppTextStyles.body(context, fontSize: 15, height: 1.6),
         ).animateAuthContent(
           delay: AppMotion.stagger(2, initialMs: 160),

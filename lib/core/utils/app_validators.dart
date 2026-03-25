@@ -3,35 +3,47 @@ import 'package:get/get.dart';
 class AppValidators {
   AppValidators._();
 
-  static String? requiredEmail(String? value) {
+  static String? requiredEmail(
+    String? value, {
+    String? requiredMessage,
+    String? invalidMessage,
+  }) {
     final email = value?.trim() ?? '';
     if (email.isEmpty) {
-      return 'Email is required';
+      return requiredMessage ?? 'Email is required';
     }
     if (!GetUtils.isEmail(email)) {
-      return 'Enter a valid email address';
+      return invalidMessage ?? 'Enter a valid email address';
     }
     return null;
   }
 
-  static String? requiredPassword(String? value) {
+  static String? requiredPassword(
+    String? value, {
+    String? requiredMessage,
+    String? minLengthMessage,
+  }) {
     final password = value?.trim() ?? '';
     if (password.isEmpty) {
-      return 'Password is required';
+      return requiredMessage ?? 'Password is required';
     }
     if (password.length < 6) {
-      return 'Password must be at least 6 characters';
+      return minLengthMessage ?? 'Password must be at least 6 characters';
     }
     return null;
   }
 
-  static String? requiredFullName(String? value) {
+  static String? requiredFullName(
+    String? value, {
+    String? requiredMessage,
+    String? invalidMessage,
+  }) {
     final name = value?.trim() ?? '';
     if (name.isEmpty) {
-      return 'Full name is required';
+      return requiredMessage ?? 'Full name is required';
     }
     if (name.length < 3) {
-      return 'Enter your full name';
+      return invalidMessage ?? 'Enter your full name';
     }
     return null;
   }
@@ -39,18 +51,29 @@ class AppValidators {
   static String? confirmPassword(
     String? value, {
     required String originalPassword,
+    String? requiredMessage,
+    String? mismatchMessage,
   }) {
     final confirmPassword = value?.trim() ?? '';
     if (confirmPassword.isEmpty) {
-      return 'Please confirm your password';
+      return requiredMessage ?? 'Please confirm your password';
     }
     if (confirmPassword != originalPassword.trim()) {
-      return 'Passwords do not match';
+      return mismatchMessage ?? 'Passwords do not match';
     }
     return null;
   }
 
-  static bool isValidPassword(String? value) {
-    return requiredPassword(value) == null;
+  static bool isValidPassword(
+    String? value, {
+    String? requiredMessage,
+    String? minLengthMessage,
+  }) {
+    return requiredPassword(
+          value,
+          requiredMessage: requiredMessage,
+          minLengthMessage: minLengthMessage,
+        ) ==
+        null;
   }
 }

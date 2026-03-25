@@ -1,6 +1,7 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/models/diet_plan_models.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -168,7 +169,7 @@ class DietPlanMealCard extends StatelessWidget {
             ),
             icon: Icon(Icons.insights_outlined, size: 18.sp),
             label: Text(
-              'View nutrition details',
+              context.l10n.viewNutritionDetails,
               style: AppTextStyles.button(
                 context,
                 fontSize: 13,

@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/app_icon_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,7 +25,7 @@ class DietPlanHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Diet Plan',
+                context.l10n.dietPlanTitle,
                 style: AppTextStyles.headline(
                   context,
                   fontWeight: FontWeight.w800,
@@ -32,7 +33,7 @@ class DietPlanHeader extends StatelessWidget {
               ),
               SizedBox(height: 2.h),
               Text(
-                'Personalized meals aligned with your calorie and macro goals.',
+                context.l10n.dietPlanHeaderDescription,
                 style: AppTextStyles.body(context, fontSize: 13, height: 1.45),
               ),
               SizedBox(height: 10.h),

@@ -1,0 +1,357 @@
+{
+  "@@locale": "en",
+  "appTitle": "AI Meal Planner",
+  "navHome": "Home",
+  "navPlan": "Plan",
+  "navProfile": "Profile",
+  "navSettings": "Settings",
+  "aiDietPlanner": "AI Diet Planner",
+  "eatSmarterFeelStronger": "Eat smarter.\nFeel stronger.",
+  "splashHeadline": "Smarter meal planning starts here.",
+  "splashDescription": "Setting up a clean nutrition space around your goals, habits, and daily routine.",
+  "splashLoading": "Preparing your personalized meal planner",
+  "loginHeroDescription": "Sign in to unlock meal plans, daily nutrition guidance, and progress tracking built around your goals.",
+  "continueGuestMode": "Continue in guest mode",
+  "welcomeBack": "Welcome back",
+  "loginRoutineDescription": "Log in to continue building your healthy routine.",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "enterEmailHint": "Enter your email",
+  "enterPasswordHint": "Enter your password",
+  "signIn": "Sign In",
+  "or": "or",
+  "signInWithGoogle": "Sign in with Google",
+  "dontHaveAccount": "Don't have an account?",
+  "createAccount": "Create account",
+  "createAccountTitle": "Create account",
+  "buildHealthyRoutine": "Build your\nhealthy routine.",
+  "signupHeroDescription": "Create an account to save meal plans, personalize nutrition goals, and keep your progress in one place.",
+  "signupDescription": "Start with a few details and let the app tailor your nutrition journey.",
+  "fullNameLabel": "Full Name",
+  "enterFullNameHint": "Enter your full name",
+  "createPasswordHint": "Create a password",
+  "confirmPasswordLabel": "Confirm Password",
+  "confirmPasswordHint": "Confirm your password",
+  "createAccountButton": "Create Account",
+  "signUpWithGoogle": "Sign up with Google",
+  "alreadyHaveAccount": "Already have an account?",
+  "secureVerification": "Secure Verification",
+  "enterOtpCode": "Enter your\nOTP code.",
+  "otpIntroDescription": "Use the verification code we just sent to confirm access to your account.",
+  "verificationCodeTitle": "4-digit verification code",
+  "otpPasteHint": "Enter the code below. You can also paste it into the first box.",
+  "otpReadyStatus": "Code looks good. You can verify now.",
+  "otpPendingStatus": "Code expires soon. Enter all 4 digits to continue.",
+  "verifyCode": "Verify code",
+  "didntReceiveIt": "Didn't receive it?",
+  "resendCode": "Resend code",
+  "enterCompleteCodeTitle": "Enter complete code",
+  "enterCompleteCodeMessage": "Please enter the full 4-digit verification code.",
+  "codeVerifiedTitle": "Code verified",
+  "codeVerifiedMessage": "OTP {code} verified in this demo screen.",
+  "@codeVerifiedMessage": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "codeResentTitle": "Code resent",
+  "codeResentMessage": "A new verification code has been sent to {destination}.",
+  "@codeResentMessage": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "otpSentTo": "We sent a code to",
+  "codeSentSuccessfully": "Code sent successfully",
+  "verificationCodeSentTo": "We sent your verification code to:",
+  "change": "Change",
+  "goodMorning": "Good morning",
+  "today": "TODAY",
+  "consumedToday": "Consumed today",
+  "goal": "Goal",
+  "remaining": "Remaining",
+  "calorieSplineChart": "Calorie Spline Chart",
+  "calorieColumnChart": "Calorie Column Chart",
+  "weeklyTotalCalorieTrend": "Weekly total calorie trend",
+  "weeklyCalorieComparisonByDay": "Weekly calorie comparison by day",
+  "spline": "Spline",
+  "bars": "Bars",
+  "lowestKcal": "Lowest: {value} kcal",
+  "@lowestKcal": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "peakKcal": "Peak: {value} kcal",
+  "@peakKcal": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "openDietPlan": "Open Diet Plan",
+  "mondayShort": "Mon",
+  "tuesdayShort": "Tue",
+  "wednesdayShort": "Wed",
+  "thursdayShort": "Thu",
+  "fridayShort": "Fri",
+  "saturdayShort": "Sat",
+  "sundayShort": "Sun",
+  "dietPlanTitle": "Diet Plan",
+  "dietPlanHeaderDescription": "Personalized meals aligned with your calorie and macro goals.",
+  "todayDateLabel": "Today • {month} {day}",
+  "@todayDateLabel": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyCalorieTarget": "Daily calorie target",
+  "aiBalanced": "AI Balanced",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "snack": "Snack",
+  "dinner": "Dinner",
+  "breakfastSummary": "High protein, rich in fiber, and balanced for a steady morning energy curve.",
+  "lunchSummary": "Complete protein and complex carbs to keep energy stable through the afternoon.",
+  "snackSummary": "A light recovery snack that supports satiety without pushing calories too high.",
+  "dinnerSummary": "Omega-3 fats and micronutrients to round out the day without a heavy finish.",
+  "viewNutritionDetails": "View nutrition details",
+  "nextStep": "Next step",
+  "dietPlanNextStepDescription": "Turn this plan into a shopping checklist or ask the AI to refresh your meals.",
+  "generateShoppingList": "Generate Shopping List",
+  "refreshPlan": "Refresh Plan",
+  "mealDetailsTitle": "{mealTitle} details",
+  "@mealDetailsTitle": {
+    "placeholders": {
+      "mealTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "mealDetailsMessage": "Nutrition breakdown, ingredients, and substitutions can be connected here.",
+  "shoppingListReadyTitle": "Shopping list ready",
+  "shoppingListReadyMessage": "Connect this action to your shopping-list flow next.",
+  "planRefreshRequestedTitle": "Plan refresh requested",
+  "planRefreshRequestedMessage": "Swap this placeholder with your AI meal-generation flow.",
+  "protein": "Protein",
+  "carbs": "Carbs",
+  "fats": "Fats",
+  "notifications": "Notifications",
+  "notificationsUnreadSummary": "{count} unread updates from your AI meal planner",
+  "@notificationsUnreadSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "markAllRead": "Mark all read",
+  "stayOnTopPlan": "Stay on top of your plan",
+  "notificationsIntroDescription": "Meal reminders, calorie insights, hydration alerts, and AI updates all show here.",
+  "breakfastReminder": "Breakfast reminder",
+  "breakfastReminderMessage": "Your high-protein breakfast window starts in 20 minutes.",
+  "caloriesOnTrack": "Calories on track",
+  "caloriesOnTrackMessage": "You stayed within your calorie target for 3 days in a row.",
+  "hydrationReminder": "Hydration reminder",
+  "hydrationReminderMessage": "Drink one more glass of water to stay on pace for today.",
+  "aiPlanUpdated": "AI plan updated",
+  "aiPlanUpdatedMessage": "Your lunch recommendation was adjusted for better protein balance.",
+  "weeklyInsightReady": "Weekly insight ready",
+  "weeklyInsightReadyMessage": "Your weekly nutrition trend is available to review.",
+  "subscriptionRenewed": "Subscription renewed",
+  "subscriptionRenewedMessage": "Your AI Diet Planner premium plan is active for another month.",
+  "todayTimeLabel": "Today • {time}",
+  "@todayTimeLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "yesterdayTimeLabel": "Yesterday • {time}",
+  "@yesterdayTimeLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "monthDayTimeLabel": "{monthDay} • {time}",
+  "@monthDayTimeLabel": {
+    "placeholders": {
+      "monthDay": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settings": "Settings",
+  "settingsDescription": "Manage your account, privacy, and subscription",
+  "language": "Language",
+  "languageSubtitle": "Switch the app language between English and Urdu",
+  "chooseLanguage": "Choose language",
+  "english": "English",
+  "urdu": "Urdu",
+  "languageChangedTitle": "Language updated",
+  "languageChangedMessage": "The app language has been changed.",
+  "accountSection": "Account",
+  "subscriptionSection": "Subscription Plan",
+  "availableSubscriptionSection": "Available Subscription",
+  "notificationsSection": "Notifications",
+  "appearanceSection": "Appearance",
+  "privacySecuritySection": "Privacy & Security",
+  "supportSection": "Support",
+  "personalDetails": "Personal details",
+  "personalDetailsSubtitle": "Name, email, and profile preferences",
+  "changePassword": "Change password",
+  "changePasswordSubtitle": "Update your account password securely",
+  "connectedDevices": "Connected devices",
+  "connectedDevicesSubtitle": "Manage sessions across your devices",
+  "activeDevicesBadge": "2 active",
+  "mealReminders": "Meal reminders",
+  "mealRemindersSubtitle": "Breakfast, lunch, dinner, and snack alerts",
+  "hydrationReminders": "Hydration reminders",
+  "hydrationRemindersSubtitle": "Keep daily water goals on track",
+  "weeklyInsights": "Weekly insights",
+  "weeklyInsightsSubtitle": "Get progress reports every Sunday",
+  "darkMode": "Dark mode",
+  "darkModeSubtitle": "Switch between light and dark theme for the app",
+  "biometricLock": "Biometric lock",
+  "biometricLockSubtitle": "Require Face ID or fingerprint to open app",
+  "marketingEmails": "Marketing emails",
+  "marketingEmailsSubtitle": "Product updates, offers, and app news",
+  "privacyPolicy": "Privacy policy",
+  "privacyPolicySubtitle": "How your nutrition data is used and protected",
+  "helpCenter": "Help center",
+  "helpCenterSubtitle": "FAQs, troubleshooting, and guidance",
+  "contactSupport": "Contact support",
+  "contactSupportSubtitle": "Reach the team for billing or account help",
+  "appVersion": "App version",
+  "appVersionSubtitle": "AI Diet Planner 1.0.0",
+  "logOut": "Log out",
+  "deleteAccount": "Delete account",
+  "premiumPlan": "Premium Plan",
+  "premiumPlanSubtitle": "Unlock expert guidance and advanced AI planning",
+  "viewPerks": "View perks",
+  "viewPlan": "View plan",
+  "freePlan": "Free Plan",
+  "profileSubscriptionAiAccess": "AI Access",
+  "profileSubscriptionDietitian": "Dietitian",
+  "profileSubscriptionSupport": "Support",
+  "subscriptionUnlimited": "Unlimited",
+  "subscriptionIncluded": "Included",
+  "subscriptionPriority": "Priority",
+  "availableSubscriptionTitle": "Available Subscription",
+  "availableSubscriptionDescription": "Upgrade to Premium for expert support, stronger AI planning, and deeper health insights.",
+  "premium": "PREMIUM",
+  "premiumActive": "PREMIUM ACTIVE",
+  "monthlyBilling": "Monthly billing",
+  "premiumDescription": "Unlock expert guidance, deeper AI personalization, and long-term planning tools built for measurable progress.",
+  "highlightUnlimitedAiChat": "Unlimited AI chat",
+  "highlightDietitianConsults": "Dietitian consults",
+  "highlightPrioritySupport": "Priority support",
+  "activatePremium": "Activate Premium",
+  "maybeLater": "Maybe later",
+  "premiumBenefits": "Premium benefits",
+  "premiumBenefitsDescription": "These features are available only to Premium users.",
+  "professionalDietitianConsultations": "Professional Dietitian Consultations",
+  "professionalDietitianConsultationsDescription": "Direct access to certified nutrition experts.",
+  "advancedAiOptimization": "Advanced AI Optimization",
+  "advancedAiOptimizationDescription": "AI-generated meal plans with enhanced personalization and efficiency for faster results.",
+  "personalizedLongTermPlans": "Personalized Long-Term Plans",
+  "personalizedLongTermPlansDescription": "Customized weekly or monthly diet plans tailored to user health goals.",
+  "unlimitedAiChatbotAccess": "Unlimited AI Chatbot Access",
+  "unlimitedAiChatbotAccessDescription": "Full access to AI guidance without the limitations guest or free users have.",
+  "prioritySupport": "Priority Support",
+  "prioritySupportDescription": "Faster responses and support for app-related issues.",
+  "enhancedAnalyticsInsights": "Enhanced Analytics & Insights",
+  "enhancedAnalyticsInsightsDescription": "Advanced progress tracking, trend analysis, and richer nutrition insights.",
+  "managePlan": "Manage plan",
+  "openSettings": "Open settings",
+  "viewBenefits": "View benefits",
+  "nextBillingDate": "Next billing date: {date}",
+  "@nextBillingDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "premiumAlreadyActiveTitle": "Premium already active",
+  "premiumAlreadyActiveMessage": "Your premium plan is already enabled on this account.",
+  "premiumActivatedTitle": "Premium activated",
+  "premiumActivatedMessage": "Your premium subscription is now active across the app.",
+  "manageSubscriptionTitle": "Manage subscription",
+  "manageSubscriptionMessage": "Next billing date: {date}",
+  "@manageSubscriptionMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "setUpYourProfile": "Set Up Your Profile",
+  "profileIntroDescription": "Help us personalize your nutrition plan",
+  "basicInformation": "Basic Information",
+  "weight": "Weight",
+  "height": "Height",
+  "age": "Age",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "healthMetrics": "Health Metrics",
+  "bmiAutoCalculated": "BMI (Auto-calculated)",
+  "normal": "Normal",
+  "underweight": "Underweight",
+  "overweight": "Overweight",
+  "obese": "Obese",
+  "notEnoughData": "Not enough data",
+  "activityLevel": "Activity Level",
+  "selectActivityLevel": "Select activity level",
+  "lightlyActive": "Lightly Active",
+  "moderatelyActive": "Moderately Active",
+  "veryActive": "Very Active",
+  "yourFitnessGoals": "Your Fitness Goals",
+  "loseWeight": "Lose Weight",
+  "maintainWeight": "Maintain Weight",
+  "gainMuscle": "Gain Muscle",
+  "emailRequired": "Email is required",
+  "validEmailRequired": "Enter a valid email address",
+  "passwordRequired": "Password is required",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "fullNameRequired": "Full name is required",
+  "enterFullName": "Enter your full name",
+  "confirmYourPassword": "Please confirm your password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "loggedOutTitle": "Logged out",
+  "loggedOutMessage": "See you again soon.",
+  "welcomeBackTitle": "Welcome back",
+  "mealPlannerReadyMessage": "Your meal planner is ready.",
+  "googleSignInTitle": "Google sign-in",
+  "googleSignInMessage": "Connect the real Google auth flow next.",
+  "accountCreatedTitle": "Account created",
+  "accountCreatedMessage": "Welcome to your AI diet planner journey.",
+  "googleSignUpTitle": "Google sign-up",
+  "googleSignUpMessage": "Connect the real Google onboarding flow next.",
+  "helpCenterMessage": "This area is ready for FAQ content or customer support links.",
+  "contactSupportMessage": "Email: support@aimealplanner.app",
+  "privacyPolicyMessage": "This can later open a webview or markdown page with your policy.",
+  "personalDetailsMessage": "Connect this tile to your profile edit flow when you are ready.",
+  "connectedDevicesMessage": "Phone and tablet are currently signed in to this account.",
+  "premiumBenefitsMessage": "Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included."
+}

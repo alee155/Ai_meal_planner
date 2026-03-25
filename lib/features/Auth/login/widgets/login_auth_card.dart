@@ -2,6 +2,7 @@ import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
@@ -34,6 +35,8 @@ class LoginAuthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Container(
       padding: EdgeInsets.all(22.w),
       decoration: BoxDecoration(
@@ -54,33 +57,37 @@ class LoginAuthCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome back',
+              l10n.welcomeBack,
               style: AppTextStyles.headline(context, fontSize: 22),
             ),
             SizedBox(height: 3.h),
             Text(
-              'Log in to continue building your healthy routine.',
+              l10n.loginRoutineDescription,
               style: AppTextStyles.body(context),
             ),
             15.h.verticalSpace,
-            const _LoginSectionLabel(label: 'Email'),
+            _LoginSectionLabel(label: l10n.emailLabel),
             SizedBox(height: 3.h),
             AppTextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
-              hintText: 'Enter your email',
+              hintText: l10n.enterEmailHint,
               prefixIcon: Icons.mail_outline_rounded,
-              validator: AppValidators.requiredEmail,
+              validator: (value) => AppValidators.requiredEmail(
+                value,
+                requiredMessage: l10n.emailRequired,
+                invalidMessage: l10n.validEmailRequired,
+              ),
             ),
             10.h.verticalSpace,
-            const _LoginSectionLabel(label: 'Password'),
+            _LoginSectionLabel(label: l10n.passwordLabel),
             SizedBox(height: 3.h),
             AppTextFormField(
               controller: passwordController,
               obscureText: obscurePassword,
               autofillHints: const [AutofillHints.password],
-              hintText: 'Enter your password',
+              hintText: l10n.enterPasswordHint,
               prefixIcon: Icons.lock_outline_rounded,
               suffixIcon: IconButton(
                 onPressed: onTogglePasswordVisibility,
@@ -91,11 +98,15 @@ class LoginAuthCard extends StatelessWidget {
                   color: AppColors.textSecondaryOf(context),
                 ),
               ),
-              validator: AppValidators.requiredPassword,
+              validator: (value) => AppValidators.requiredPassword(
+                value,
+                requiredMessage: l10n.passwordRequired,
+                minLengthMessage: l10n.passwordMinLength,
+              ),
             ),
             20.h.verticalSpace,
             AppFilledButton(
-              label: 'Sign In',
+              label: l10n.signIn,
               onPressed: onEmailLogin,
               backgroundColor: AppColors.buttonPrimary,
               foregroundColor: AppColors.textWhite,
@@ -109,7 +120,7 @@ class LoginAuthCard extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Text(
-                    'or',
+                    l10n.or,
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: AppColors.textHintOf(context),
@@ -146,7 +157,7 @@ class LoginAuthCard extends StatelessWidget {
                   ),
                   SizedBox(width: 10.w),
                   Text(
-                    'Sign in with Google',
+                    l10n.signInWithGoogle,
                     style: TextStyle(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -161,7 +172,7 @@ class LoginAuthCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account?",
+                    l10n.dontHaveAccount,
                     style: AppTextStyles.body(
                       context,
                       fontSize: 14,
@@ -176,7 +187,7 @@ class LoginAuthCard extends StatelessWidget {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      'Create account',
+                      l10n.createAccount,
                       style: AppTextStyles.button(
                         context,
                         fontSize: 14,

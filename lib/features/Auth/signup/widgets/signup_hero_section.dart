@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,12 +12,12 @@ class SignupHeroSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Build your\nhealthy routine.',
+          context.l10n.buildHealthyRoutine,
           style: AppTextStyles.display(context, height: 1.08),
         ),
         10.h.verticalSpace,
         Text(
-          'Create an account to save meal plans, personalize nutrition goals, and keep your progress in one place.',
+          context.l10n.signupHeroDescription,
           style: AppTextStyles.body(context, fontSize: 15, height: 1.6),
         ),
       ],

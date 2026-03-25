@@ -1,6 +1,7 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
@@ -41,6 +42,8 @@ class SignupAuthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Container(
       padding: EdgeInsets.all(22.w),
       decoration: BoxDecoration(
@@ -61,44 +64,52 @@ class SignupAuthCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Create account',
+              l10n.createAccountTitle,
               style: AppTextStyles.headline(context, fontSize: 22),
             ),
             3.h.verticalSpace,
             Text(
-              'Start with a few details and let the app tailor your nutrition journey.',
+              l10n.signupDescription,
               style: AppTextStyles.body(context, height: 1.5),
             ),
             10.h.verticalSpace,
-            const _SignupSectionLabel(label: 'Full Name'),
+            _SignupSectionLabel(label: l10n.fullNameLabel),
             3.h.verticalSpace,
             AppTextFormField(
               controller: nameController,
               textCapitalization: TextCapitalization.words,
               autofillHints: const [AutofillHints.name],
-              hintText: 'Enter your full name',
+              hintText: l10n.enterFullNameHint,
               prefixIcon: Icons.person_outline_rounded,
-              validator: AppValidators.requiredFullName,
+              validator: (value) => AppValidators.requiredFullName(
+                value,
+                requiredMessage: l10n.fullNameRequired,
+                invalidMessage: l10n.enterFullName,
+              ),
             ),
             10.h.verticalSpace,
-            const _SignupSectionLabel(label: 'Email'),
+            _SignupSectionLabel(label: l10n.emailLabel),
             3.h.verticalSpace,
             AppTextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
-              hintText: 'Enter your email',
+              hintText: l10n.enterEmailHint,
               prefixIcon: Icons.mail_outline_rounded,
-              validator: AppValidators.requiredEmail,
+              validator: (value) => AppValidators.requiredEmail(
+                value,
+                requiredMessage: l10n.emailRequired,
+                invalidMessage: l10n.validEmailRequired,
+              ),
             ),
             10.h.verticalSpace,
-            const _SignupSectionLabel(label: 'Password'),
+            _SignupSectionLabel(label: l10n.passwordLabel),
             3.h.verticalSpace,
             AppTextFormField(
               controller: passwordController,
               obscureText: obscurePassword,
               autofillHints: const [AutofillHints.newPassword],
-              hintText: 'Create a password',
+              hintText: l10n.createPasswordHint,
               prefixIcon: Icons.lock_outline_rounded,
               suffixIcon: IconButton(
                 onPressed: onTogglePasswordVisibility,
@@ -109,16 +120,20 @@ class SignupAuthCard extends StatelessWidget {
                   color: AppColors.textSecondaryOf(context),
                 ),
               ),
-              validator: AppValidators.requiredPassword,
+              validator: (value) => AppValidators.requiredPassword(
+                value,
+                requiredMessage: l10n.passwordRequired,
+                minLengthMessage: l10n.passwordMinLength,
+              ),
             ),
             10.h.verticalSpace,
-            const _SignupSectionLabel(label: 'Confirm Password'),
+            _SignupSectionLabel(label: l10n.confirmPasswordLabel),
             3.h.verticalSpace,
             AppTextFormField(
               controller: confirmPasswordController,
               obscureText: obscureConfirmPassword,
               autofillHints: const [AutofillHints.newPassword],
-              hintText: 'Confirm your password',
+              hintText: l10n.confirmPasswordHint,
               prefixIcon: Icons.verified_user_outlined,
               suffixIcon: IconButton(
                 onPressed: onToggleConfirmPasswordVisibility,
@@ -132,11 +147,13 @@ class SignupAuthCard extends StatelessWidget {
               validator: (value) => AppValidators.confirmPassword(
                 value,
                 originalPassword: passwordController.text,
+                requiredMessage: l10n.confirmYourPassword,
+                mismatchMessage: l10n.passwordsDoNotMatch,
               ),
             ),
             15.h.verticalSpace,
             AppFilledButton(
-              label: 'Create Account',
+              label: l10n.createAccountButton,
               onPressed: onSignup,
               backgroundColor: AppColors.buttonPrimary,
               foregroundColor: AppColors.textWhite,
@@ -150,7 +167,7 @@ class SignupAuthCard extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12.w),
                   child: Text(
-                    'or',
+                    l10n.or,
                     style: TextStyle(
                       fontSize: 13.sp,
                       color: AppColors.textHintOf(context),
@@ -187,7 +204,7 @@ class SignupAuthCard extends StatelessWidget {
                   ),
                   SizedBox(width: 10.w),
                   Text(
-                    'Sign up with Google',
+                    l10n.signUpWithGoogle,
                     style: TextStyle(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -201,13 +218,13 @@ class SignupAuthCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Already have an account?',
+                  l10n.alreadyHaveAccount,
                   style: AppTextStyles.body(context, fontSize: 14),
                 ),
                 TextButton(
                   onPressed: isSubmitting ? null : onSignIn,
                   child: Text(
-                    'Sign In',
+                    l10n.signIn,
                     style: AppTextStyles.button(
                       context,
                       fontSize: 14,

@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -46,7 +47,7 @@ class OtpInfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Code sent successfully',
+                  context.l10n.codeSentSuccessfully,
                   style: AppTextStyles.title(
                     context,
                     fontWeight: FontWeight.w700,
@@ -54,7 +55,7 @@ class OtpInfoCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'We sent your verification code to:',
+                  context.l10n.verificationCodeSentTo,
                   style: AppTextStyles.body(context, fontSize: 13, height: 1.5),
                 ),
                 SizedBox(height: 4.h),
@@ -74,7 +75,7 @@ class OtpInfoCard extends StatelessWidget {
             TextButton(
               onPressed: onChangeTap,
               child: Text(
-                'Change',
+                context.l10n.change,
                 style: AppTextStyles.button(
                   context,
                   fontSize: 13,

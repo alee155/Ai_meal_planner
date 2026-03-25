@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class DietPlanActionPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Next step',
+            context.l10n.nextStep,
             style: AppTextStyles.title(
               context,
               fontSize: 16,
@@ -38,12 +39,12 @@ class DietPlanActionPanel extends StatelessWidget {
           ),
           SizedBox(height: 4.h),
           Text(
-            'Turn this plan into a shopping checklist or ask the AI to refresh your meals.',
+            context.l10n.dietPlanNextStepDescription,
             style: AppTextStyles.body(context, fontSize: 13, height: 1.45),
           ),
           SizedBox(height: 16.h),
           AppFilledButton(
-            label: 'Generate Shopping List',
+            label: context.l10n.generateShoppingList,
             onPressed: onGenerateShoppingList,
             backgroundColor: AppColors.primaryGreenDark,
             foregroundColor: AppColors.textWhite,
@@ -53,7 +54,7 @@ class DietPlanActionPanel extends StatelessWidget {
           ),
           SizedBox(height: 10.h),
           AppOutlinedButton(
-            label: 'Refresh Plan',
+            label: context.l10n.refreshPlan,
             onPressed: onRefreshPlan,
             foregroundColor: AppColors.primaryGreenDark,
             borderColor: AppColors.primaryGreenDark.withValues(alpha: 0.28),

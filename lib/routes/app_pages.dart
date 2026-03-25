@@ -7,6 +7,8 @@ import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart
 import 'package:ai_meal_planner/features/HomeScreen/ui/home_screen.dart';
 import 'package:ai_meal_planner/features/NotificationsScreen/ui/notification_screen.dart';
 import 'package:ai_meal_planner/features/SettingScreen/ui/settings_screen.dart';
+import 'package:ai_meal_planner/features/SplashScreen/ui/splash_screen.dart';
+import 'package:ai_meal_planner/features/SubscriptionScreen/ui/subscription_screen.dart';
 import 'package:ai_meal_planner/features/user_profile/ui/user_profile.dart';
 import 'package:get/get.dart';
 
@@ -16,6 +18,7 @@ class AppPages {
   const AppPages._();
 
   static final routes = <GetPage<dynamic>>[
+    GetPage(name: AppRoutes.splash, page: () => const SplashScreen()),
     GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
     GetPage(name: AppRoutes.signup, page: () => const SignupScreen()),
     GetPage(name: AppRoutes.otp, page: () => const OtpScreen()),
@@ -24,6 +27,10 @@ class AppPages {
     GetPage(name: AppRoutes.dietPlan, page: () => const DietPlanScreen()),
     GetPage(name: AppRoutes.profile, page: () => const UserProfileScreen()),
     GetPage(name: AppRoutes.settings, page: () => const SettingsScreen()),
+    GetPage(
+      name: AppRoutes.subscription,
+      page: () => const SubscriptionScreen(),
+    ),
     GetPage(
       name: AppRoutes.notifications,
       page: () => const NotificationScreen(),

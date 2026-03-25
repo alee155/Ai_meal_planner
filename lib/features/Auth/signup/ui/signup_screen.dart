@@ -4,6 +4,7 @@ import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_auth_card.da
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_guest_mode_action.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_hero_section.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_top_bar.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/auth_background_decor.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -54,8 +55,8 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _isSubmitting = false);
     Get.offAllNamed(AppRoutes.bottomNav);
     AppSnackbar.success(
-      'Account created',
-      'Welcome to your AI diet planner journey.',
+      context.l10n.accountCreatedTitle,
+      context.l10n.accountCreatedMessage,
     );
   }
 
@@ -72,8 +73,8 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _isSubmitting = false);
     Get.offAllNamed(AppRoutes.bottomNav);
     AppSnackbar.info(
-      'Google sign-up',
-      'Connect the real Google onboarding flow next.',
+      context.l10n.googleSignUpTitle,
+      context.l10n.googleSignUpMessage,
     );
   }
 

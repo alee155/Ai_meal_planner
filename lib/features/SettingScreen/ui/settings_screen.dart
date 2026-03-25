@@ -1,8 +1,12 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/localization/locale_controller.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
+import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
+import 'package:ai_meal_planner/features/SubscriptionScreen/widgets/subscription_status_card.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_icon_back_button.dart';
@@ -35,6 +39,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localeController = LocaleController.ensureRegistered();
+    final subscriptionController = SubscriptionController.ensureRegistered();
     final screenBackground = AppColors.backgroundSecondaryOf(context);
     final surfaceColor = AppColors.surfaceOf(context);
     final textPrimary = AppColors.textPrimaryOf(context);
@@ -51,10 +57,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 enabled: widget.playEntranceAnimation,
               ),
               SizedBox(height: 20.h),
-              _buildProfileCard().animateSettingsCard(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(1, initialMs: 120),
-                scaleBegin: const Offset(0.985, 0.985),
+              Obx(
+                () =>
+                    _buildProfileCard(
+                      hasPremium: subscriptionController.hasPremium,
+                    ).animateSettingsCard(
+                      enabled: widget.playEntranceAnimation,
+                      delay: AppMotion.stagger(1, initialMs: 120),
+                      scaleBegin: const Offset(0.985, 0.985),
+                    ),
               ),
               SizedBox(height: 18.h),
               Column(
@@ -98,15 +109,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 delay: AppMotion.stagger(2, initialMs: 140),
               ),
               SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Subscription'),
-                  _buildSubscriptionCard(),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(3, initialMs: 140),
+              Obx(
+                () =>
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(
+                          subscriptionController.hasPremium
+                              ? 'Subscription Plan'
+                              : 'Available Subscription',
+                        ),
+                        subscriptionController.hasPremium
+                            ? SubscriptionStatusCard(
+                                subscription: subscriptionController
+                                    .activeSubscription
+                                    .value!,
+                                primaryLabel: 'Manage plan',
+                                onPrimaryTap: () =>
+                                    Get.toNamed(AppRoutes.subscription),
+                                secondaryLabel: 'View benefits',
+                                onSecondaryTap: () =>
+                                    Get.toNamed(AppRoutes.subscription),
+                              )
+                            : _buildAvailableSubscriptionCard(),
+                      ],
+                    ).animateSettingsSection(
+                      enabled: widget.playEntranceAnimation,
+                      delay: AppMotion.stagger(3, initialMs: 140),
+                    ),
               ),
               SizedBox(height: 18.h),
               Column(
@@ -156,6 +186,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildSectionTitle('Appearance'),
                   _buildSettingsGroup(
                     children: [
+                      Obx(
+                        () => _SettingsTile(
+                          icon: Icons.translate_rounded,
+                          title: context.l10n.language,
+                          subtitle: context.l10n.languageSubtitle,
+                          trailing: _buildBadge(
+                            localeController.isUrdu
+                                ? context.l10n.urdu
+                                : context.l10n.english,
+                          ),
+                          onTap: () => _showLanguageSheet(localeController),
+                        ),
+                      ),
                       GetX<ThemeController>(
                         builder: (controller) => _SettingsSwitchTile(
                           icon: Icons.dark_mode_outlined,
@@ -323,7 +366,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildProfileCard() {
+  Widget _buildProfileCard({required bool hasPremium}) {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
@@ -358,7 +401,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Image.network(
                 'https://i.pravatar.cc/150?img=3',
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (context, error, stackTrace) => Container(
                   color: Colors.white.withValues(alpha: 0.2),
                   alignment: Alignment.center,
                   child: Text(
@@ -422,7 +465,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   spacing: 8.w,
                   runSpacing: 8.h,
                   children: [
-                    _buildProfileChip('Pro Plan', Icons.workspace_premium),
+                    _buildProfileChip(
+                      hasPremium ? 'Premium Plan' : 'Free Plan',
+                      hasPremium
+                          ? Icons.workspace_premium
+                          : Icons.shield_outlined,
+                    ),
                     _buildProfileChip('Fat Loss', Icons.local_fire_department),
                   ],
                 ),
@@ -491,13 +539,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSubscriptionCard() {
+  Widget _buildAvailableSubscriptionCard() {
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
         color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(22.r),
         border: Border.all(color: AppColors.borderOf(context)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowOf(context).withValues(alpha: 0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,7 +585,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     Text(
-                      'Next billing date: April 18',
+                      'Unlock expert guidance and advanced AI planning',
                       style: TextStyle(
                         fontSize: 13.sp,
                         color: AppColors.textSecondaryOf(context),
@@ -545,11 +600,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SizedBox(height: 16.h),
           Row(
             children: [
-              Expanded(child: _buildPlanStat('Meal plans', 'Unlimited')),
+              Expanded(child: _buildPlanStat('AI Chat', 'Unlimited')),
               SizedBox(width: 10.w),
-              Expanded(child: _buildPlanStat('Coach insights', 'Weekly')),
+              Expanded(child: _buildPlanStat('Experts', 'Included')),
               SizedBox(width: 10.w),
-              Expanded(child: _buildPlanStat('Renewal', 'Auto')),
+              Expanded(child: _buildPlanStat('Insights', 'Advanced')),
             ],
           ),
           SizedBox(height: 16.h),
@@ -558,11 +613,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Expanded(
                 child: AppOutlinedButton(
                   onPressed: () => _showInfoSheet(
-                    title: 'Manage subscription',
+                    title: 'Premium benefits',
                     message:
-                        'This action is ready to connect with Stripe, RevenueCat, or App Store billing.',
+                        'Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included.',
                   ),
-                  label: 'Manage plan',
+                  label: 'View perks',
                   foregroundColor: AppColors.textPrimaryOf(context),
                   borderColor: AppColors.borderOf(context),
                   borderRadius: 16,
@@ -572,12 +627,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SizedBox(width: 10.w),
               Expanded(
                 child: AppFilledButton(
-                  onPressed: () => _showInfoSheet(
-                    title: 'Upgrade options',
-                    message:
-                        'You can later use this button for annual plans, trials, or promotional offers.',
-                  ),
-                  label: 'View options',
+                  onPressed: () => Get.toNamed(AppRoutes.subscription),
+                  label: 'View plan',
                   backgroundColor: AppColors.primaryGreenDark,
                   foregroundColor: AppColors.textWhite,
                   borderRadius: 16,
@@ -694,6 +745,92 @@ class _SettingsScreenState extends State<SettingsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
     );
+  }
+
+  void _showLanguageSheet(LocaleController localeController) {
+    Get.bottomSheet(
+      _SettingsBottomSheet(
+        title: context.l10n.chooseLanguage,
+        message: context.l10n.languageSubtitle,
+        content: Column(
+          children: [
+            _buildLanguageOption(
+              label: context.l10n.english,
+              isSelected: !localeController.isUrdu,
+              onTap: () =>
+                  _updateLanguage(localeController, const Locale('en')),
+            ),
+            SizedBox(height: 10.h),
+            _buildLanguageOption(
+              label: context.l10n.urdu,
+              isSelected: localeController.isUrdu,
+              onTap: () =>
+                  _updateLanguage(localeController, const Locale('ur')),
+            ),
+          ],
+        ),
+        primaryLabel: context.l10n.change,
+        onPrimaryTap: () => Get.back(),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.chipBackgroundOf(context)
+              : AppColors.surfaceOf(context),
+          borderRadius: BorderRadius.circular(18.r),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primaryGreenDark.withValues(alpha: 0.24)
+                : AppColors.borderOf(context),
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimaryOf(context),
+                ),
+              ),
+            ),
+            Icon(
+              isSelected
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              color: isSelected
+                  ? AppColors.primaryGreenDark
+                  : AppColors.textSecondaryOf(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _updateLanguage(LocaleController localeController, Locale locale) {
+    localeController.updateLanguage(locale);
+    AppSnackbar.success(
+      context.l10n.languageChangedTitle,
+      context.l10n.languageChangedMessage,
+    );
+    Get.back();
   }
 
   void _showChangePasswordSheet() {

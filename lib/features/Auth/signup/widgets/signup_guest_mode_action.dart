@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
 class SignupGuestModeAction extends StatelessWidget {
@@ -18,7 +19,7 @@ class SignupGuestModeAction extends StatelessWidget {
       child: TextButton(
         onPressed: isSubmitting ? null : onPressed,
         child: Text(
-          'Continue in guest mode',
+          context.l10n.continueGuestMode,
           style: AppTextStyles.button(
             context,
             fontSize: 14,
