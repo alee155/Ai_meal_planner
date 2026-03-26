@@ -8,6 +8,7 @@ import 'package:ai_meal_planner/features/user_profile/widgets/health_metrics_car
 import 'package:ai_meal_planner/features/user_profile/widgets/profile_overview_card.dart';
 import 'package:ai_meal_planner/l10n/app_localizations.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
+import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -108,6 +109,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ],
           ).animateProfileHeader(enabled: widget.playEntranceAnimation),
         ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 14.w),
+            child: InkWell(
+              onTap: () => Get.toNamed(AppRoutes.settings),
+              borderRadius: BorderRadius.circular(18.r),
+              child: Container(
+                width: 46.w,
+                height: 46.w,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceOf(context),
+                  borderRadius: BorderRadius.circular(18.r),
+                  border: Border.all(color: AppColors.borderOf(context)),
+                ),
+                child: Icon(
+                  Icons.settings_outlined,
+                  color: AppColors.textPrimaryOf(context),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

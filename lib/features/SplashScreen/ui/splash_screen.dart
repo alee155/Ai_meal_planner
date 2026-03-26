@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigationTimer = Timer(
-      const Duration(milliseconds: 1850),
+      const Duration(milliseconds: 3000),
       _navigateToInitialRoute,
     );
   }

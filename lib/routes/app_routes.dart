@@ -8,6 +8,7 @@ class AppRoutes {
   static const bottomNav = '/bottom-nav';
   static const home = '/home';
   static const dietPlan = '/diet-plan';
+  static const aiChat = '/ai-chat';
   static const profile = '/profile';
   static const settings = '/settings';
   static const notifications = '/notifications';

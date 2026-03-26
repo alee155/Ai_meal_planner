@@ -1,6 +1,7 @@
 import 'package:ai_meal_planner/features/Auth/login/ui/login_screen.dart';
 import 'package:ai_meal_planner/features/Auth/otp/ui/otp_screen.dart';
 import 'package:ai_meal_planner/features/Auth/signup/ui/signup_screen.dart';
+import 'package:ai_meal_planner/features/AIChatScreen/ui/ai_chat_screen.dart';
 import 'package:ai_meal_planner/features/BottomNavScreen/ui/bottom_nav_screen.dart';
 import 'package:ai_meal_planner/features/DeleteAccountScreen/ui/delete_account_screen.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart';
@@ -25,6 +26,7 @@ class AppPages {
     GetPage(name: AppRoutes.bottomNav, page: () => const BottomNavScreen()),
     GetPage(name: AppRoutes.home, page: () => const HomeScreen()),
     GetPage(name: AppRoutes.dietPlan, page: () => const DietPlanScreen()),
+    GetPage(name: AppRoutes.aiChat, page: () => const AiChatScreen()),
     GetPage(name: AppRoutes.profile, page: () => const UserProfileScreen()),
     GetPage(name: AppRoutes.settings, page: () => const SettingsScreen()),
     GetPage(

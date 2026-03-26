@@ -1,9 +1,9 @@
+import 'package:ai_meal_planner/features/AIChatScreen/ui/ai_chat_screen.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/BottomNavScreen/widget/bottom_nav_bar.dart';
 import 'package:ai_meal_planner/features/BottomNavScreen/widget/bottom_nav_item_data.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart';
 import 'package:ai_meal_planner/features/HomeScreen/ui/home_screen.dart';
-import 'package:ai_meal_planner/features/SettingScreen/ui/settings_screen.dart';
 import 'package:ai_meal_planner/features/user_profile/ui/user_profile.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,11 +23,8 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
   List<Widget> get _screens => [
     HomeScreen(playEntranceAnimation: _animatedTabs.contains(0)),
     DietPlanScreen(playEntranceAnimation: _animatedTabs.contains(1)),
-    UserProfileScreen(playEntranceAnimation: _animatedTabs.contains(2)),
-    SettingsScreen(
-      showBackButton: false,
-      playEntranceAnimation: _animatedTabs.contains(3),
-    ),
+    AiChatScreen(playEntranceAnimation: _animatedTabs.contains(2)),
+    UserProfileScreen(playEntranceAnimation: _animatedTabs.contains(3)),
   ];
 
   @override
@@ -35,8 +32,8 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     final items = [
       BottomNavItemData(context.l10n.navHome, FontAwesomeIcons.house),
       BottomNavItemData(context.l10n.navPlan, FontAwesomeIcons.utensils),
+      BottomNavItemData('AI Chat', FontAwesomeIcons.commentDots),
       BottomNavItemData(context.l10n.navProfile, FontAwesomeIcons.user),
-      BottomNavItemData(context.l10n.navSettings, FontAwesomeIcons.gear),
     ];
 
     return Scaffold(
