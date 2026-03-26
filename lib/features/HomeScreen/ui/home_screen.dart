@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.backgroundSecondaryOf(context),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20.w, 0.h, 20.w, 0.h),
+          padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 18.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
