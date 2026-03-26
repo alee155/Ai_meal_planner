@@ -10,8 +10,6 @@ class HomeHeader extends StatelessWidget {
     required this.onNotificationsTap,
     this.greeting = 'Good morning',
     this.userName = 'Ali Abbas',
-    required this.planLabel,
-    required this.isPremium,
     this.badgeCount = 2,
     this.avatarImageUrl = 'https://picsum.photos/200',
   });
@@ -19,8 +17,6 @@ class HomeHeader extends StatelessWidget {
   final VoidCallback onNotificationsTap;
   final String greeting;
   final String userName;
-  final String planLabel;
-  final bool isPremium;
   final int? badgeCount;
   final String avatarImageUrl;
 
@@ -34,8 +30,8 @@ class HomeHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 38.w,
-          height: 38.w,
+          width: 42.w,
+          height: 42.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.buttonDisabled,
@@ -50,19 +46,12 @@ class HomeHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      localizedGreeting,
-                      style: AppTextStyles.label(context),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  _PlanStatusChip(label: planLabel, isPremium: isPremium),
-                ],
+              Text(
+                localizedGreeting,
+                style: AppTextStyles.label(context),
+                overflow: TextOverflow.ellipsis,
               ),
+              SizedBox(height: 2.h),
               Text(
                 userName,
                 style: AppTextStyles.title(
@@ -80,56 +69,6 @@ class HomeHeader extends StatelessWidget {
           badgeCount: badgeCount,
         ),
       ],
-    );
-  }
-}
-
-class _PlanStatusChip extends StatelessWidget {
-  const _PlanStatusChip({required this.label, required this.isPremium});
-
-  final String label;
-  final bool isPremium;
-
-  @override
-  Widget build(BuildContext context) {
-    final backgroundColor = isPremium
-        ? AppColors.primarylightGreen
-        : AppColors.cardBackgroundOf(context);
-    final foregroundColor = isPremium
-        ? AppColors.primaryGreenDark
-        : AppColors.textSecondaryOf(context);
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: isPremium
-              ? AppColors.primaryGreen.withValues(alpha: 0.16)
-              : AppColors.borderOf(context),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isPremium ? Icons.workspace_premium_rounded : Icons.shield_outlined,
-            size: 11.sp,
-            color: foregroundColor,
-          ),
-          SizedBox(width: 4.w),
-          Text(
-            label,
-            style: AppTextStyles.caption(
-              context,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: foregroundColor,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -9,11 +9,15 @@ class HomeCaloriesCard extends StatelessWidget {
     required this.consumedCalories,
     required this.calorieGoal,
     required this.remainingCalories,
+    required this.planLabel,
+    required this.isPremium,
   });
 
   final int consumedCalories;
   final int calorieGoal;
   final int remainingCalories;
+  final String planLabel;
+  final bool isPremium;
 
   @override
   Widget build(BuildContext context) {
@@ -47,27 +51,33 @@ class HomeCaloriesCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.14),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.14),
+                          ),
+                        ),
+                        child: Text(
+                          l10n.today,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.1,
+                            color: Colors.white.withValues(alpha: 0.92),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      l10n.today,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.1,
-                        color: Colors.white.withValues(alpha: 0.92),
-                      ),
-                    ),
+                      const Spacer(),
+                      _PlanChip(label: planLabel, isPremium: isPremium),
+                    ],
                   ),
                   SizedBox(height: 16.h),
                   Text(
@@ -109,6 +119,46 @@ class HomeCaloriesCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PlanChip extends StatelessWidget {
+  const _PlanChip({required this.label, required this.isPremium});
+
+  final String label;
+  final bool isPremium;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: isPremium
+            ? Colors.white.withValues(alpha: 0.22)
+            : Colors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPremium ? Icons.workspace_premium_rounded : Icons.shield_outlined,
+            size: 12.sp,
+            color: Colors.white,
+          ),
+          SizedBox(width: 5.w),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10.sp,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

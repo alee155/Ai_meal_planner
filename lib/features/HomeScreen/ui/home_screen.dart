@@ -60,17 +60,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 () => HomeHeader(
                   onNotificationsTap: () =>
                       Get.toNamed(AppRoutes.notifications),
+                ),
+              ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
+              SizedBox(height: 18.h),
+              Obx(
+                () => HomeCaloriesCard(
+                  consumedCalories: consumedCalories,
+                  calorieGoal: calorieGoal,
+                  remainingCalories: remainingCalories,
                   planLabel: subscriptionController.hasPremium
                       ? context.l10n.premium
                       : context.l10n.freePlan,
                   isPremium: subscriptionController.hasPremium,
                 ),
-              ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
-              SizedBox(height: 18.h),
-              HomeCaloriesCard(
-                consumedCalories: consumedCalories,
-                calorieGoal: calorieGoal,
-                remainingCalories: remainingCalories,
               ).animateDashboardCard(
                 enabled: widget.playEntranceAnimation,
                 delay: AppMotion.stagger(1, initialMs: 140),
