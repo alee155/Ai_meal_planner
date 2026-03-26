@@ -4,9 +4,10 @@ import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_auth_card.da
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_guest_mode_action.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_hero_section.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_top_bar.dart';
+import 'package:ai_meal_planner/features/user_profile/controller/user_profile_controller.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
-import 'package:ai_meal_planner/shared/widgets/auth_background_decor.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
+import 'package:ai_meal_planner/shared/widgets/auth_background_decor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _handleSignup() async {
+    final l10n = context.l10n;
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -52,15 +54,20 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = false);
-    Get.offAllNamed(AppRoutes.bottomNav);
-    AppSnackbar.success(
-      context.l10n.accountCreatedTitle,
-      context.l10n.accountCreatedMessage,
+    final profileController = UserProfileController.ensureRegistered();
+    await profileController.init();
+    profileController.seedAccountDetails(
+      fullName: _nameController.text,
+      email: _emailController.text,
     );
+
+    setState(() => _isSubmitting = false);
+    Get.offAllNamed(AppRoutes.profileSetup);
+    AppSnackbar.success(l10n.accountCreatedTitle, l10n.accountCreatedMessage);
   }
 
   Future<void> _handleGoogleSignup() async {
+    final l10n = context.l10n;
     FocusScope.of(context).unfocus();
 
     setState(() => _isSubmitting = true);
@@ -70,12 +77,12 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
+    final profileController = UserProfileController.ensureRegistered();
+    await profileController.init();
+
     setState(() => _isSubmitting = false);
-    Get.offAllNamed(AppRoutes.bottomNav);
-    AppSnackbar.info(
-      context.l10n.googleSignUpTitle,
-      context.l10n.googleSignUpMessage,
-    );
+    Get.offAllNamed(AppRoutes.profileSetup);
+    AppSnackbar.info(l10n.googleSignUpTitle, l10n.googleSignUpMessage);
   }
 
   void _continueAsGuest() {

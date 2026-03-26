@@ -1,22 +1,32 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/widgets/subscription_status_card.dart';
+import 'package:ai_meal_planner/features/user_profile/controller/user_profile_controller.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/basic_info_card.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/fitness_goals_card.dart';
+import 'package:ai_meal_planner/features/user_profile/widgets/food_preferences_card.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/health_metrics_card.dart';
+import 'package:ai_meal_planner/features/user_profile/widgets/profile_completion_prompt_card.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/profile_overview_card.dart';
 import 'package:ai_meal_planner/l10n/app_localizations.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
+import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key, this.playEntranceAnimation = true});
+  const UserProfileScreen({
+    super.key,
+    this.playEntranceAnimation = true,
+    this.isOnboarding = false,
+  });
 
   final bool playEntranceAnimation;
+  final bool isOnboarding;
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
@@ -28,26 +38,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   late final TextEditingController _heightFeetController;
   late final TextEditingController _heightInchesController;
   late final TextEditingController _ageController;
+  late final TextEditingController _dislikedFoodsController;
+  late final UserProfileController _profileController;
 
   late String _selectedGenderKey;
   late String _selectedWeightUnit;
   late String _selectedHeightUnit;
   String? _selectedActivityKey;
   late String _selectedGoalKey;
+  late String _selectedDietPreferenceKey;
+  Set<String> _selectedAllergyKeys = <String>{};
+
+  bool _isInitializing = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    _weightController = TextEditingController(text: '70');
-    _heightController = TextEditingController(text: '170');
-    _heightFeetController = TextEditingController(text: '5');
-    _heightInchesController = TextEditingController(text: '7');
-    _ageController = TextEditingController(text: '28');
-    _selectedGenderKey = 'male';
-    _selectedWeightUnit = 'kg';
-    _selectedHeightUnit = 'cm';
-    _selectedActivityKey = 'moderatelyActive';
-    _selectedGoalKey = 'loseWeight';
+    _weightController = TextEditingController();
+    _heightController = TextEditingController();
+    _heightFeetController = TextEditingController();
+    _heightInchesController = TextEditingController();
+    _ageController = TextEditingController();
+    _dislikedFoodsController = TextEditingController();
+    _profileController = UserProfileController.ensureRegistered();
+    _applyProfileData(const UserProfileData());
+    _initializeProfile();
   }
 
   @override
@@ -57,22 +73,56 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     _heightFeetController.dispose();
     _heightInchesController.dispose();
     _ageController.dispose();
+    _dislikedFoodsController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializeProfile() async {
+    await _profileController.init();
+    _applyProfileData(_profileController.profile.value);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isInitializing = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return Scaffold(
+        backgroundColor: AppColors.backgroundMainOf(context),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final l10n = context.l10n;
     final subscriptionController = SubscriptionController.ensureRegistered();
 
     final genderOptions = _genderOptions(l10n);
     final activityOptions = _activityOptions(l10n);
     final goalOptions = _goalOptions(l10n);
+    final dietPreferenceOptions = _dietPreferenceOptions(l10n);
+    final allergyOptions = _allergyOptions(l10n);
 
     final bmiValue = _calculateBmi();
     final hasBmiData = bmiValue != null;
     final bmiDisplayValue = hasBmiData ? bmiValue.toStringAsFixed(1) : '--';
     final bmiCategory = _bmiCategory(context, bmiValue);
+    final storedProfile = _profileController.profile.value;
+    final headerTitle = widget.isOnboarding
+        ? l10n.setUpYourProfile
+        : l10n.navProfile;
+    final headerSubtitle = widget.isOnboarding
+        ? l10n.finishProfileSetupMessage
+        : l10n.profileIntroDescription;
+    final overviewTitle = storedProfile.fullName.trim().isEmpty
+        ? l10n.setUpYourProfile
+        : storedProfile.fullName.trim();
+    final overviewSubtitle = storedProfile.email.trim().isEmpty
+        ? headerSubtitle
+        : storedProfile.email.trim();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundMainOf(context),
@@ -92,7 +142,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.setUpYourProfile,
+                headerTitle,
                 style: TextStyle(
                   fontSize: 19.sp,
                   fontWeight: FontWeight.bold,
@@ -100,7 +150,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 ),
               ),
               Text(
-                l10n.profileIntroDescription,
+                headerSubtitle,
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: AppColors.textSecondaryOf(context),
@@ -109,35 +159,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ],
           ).animateProfileHeader(enabled: widget.playEntranceAnimation),
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 14.w),
-            child: InkWell(
-              onTap: () => Get.toNamed(AppRoutes.settings),
-              borderRadius: BorderRadius.circular(18.r),
-              child: Container(
-                width: 46.w,
-                height: 46.w,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceOf(context),
-                  borderRadius: BorderRadius.circular(18.r),
-                  border: Border.all(color: AppColors.borderOf(context)),
+        actions: widget.isOnboarding
+            ? null
+            : [
+                Padding(
+                  padding: EdgeInsets.only(right: 14.w),
+                  child: InkWell(
+                    onTap: () => Get.toNamed(AppRoutes.settings),
+                    borderRadius: BorderRadius.circular(18.r),
+                    child: Container(
+                      width: 46.w,
+                      height: 46.w,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceOf(context),
+                        borderRadius: BorderRadius.circular(18.r),
+                        border: Border.all(color: AppColors.borderOf(context)),
+                      ),
+                      child: Icon(
+                        Icons.settings_outlined,
+                        color: AppColors.textPrimaryOf(context),
+                      ),
+                    ),
+                  ),
                 ),
-                child: Icon(
-                  Icons.settings_outlined,
-                  color: AppColors.textPrimaryOf(context),
-                ),
-              ),
-            ),
-          ),
-        ],
+              ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             ProfileOverviewCard(
-              title: l10n.setUpYourProfile,
-              subtitle: l10n.profileIntroDescription,
+              title: overviewTitle,
+              subtitle: overviewSubtitle,
               planLabel: subscriptionController.hasPremium
                   ? l10n.premiumPlan
                   : l10n.freePlan,
@@ -156,23 +208,36 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(1, initialMs: 120),
             ),
-            Obx(() {
-              final activeSubscription =
-                  subscriptionController.activeSubscription.value;
-
-              if (activeSubscription == null) {
-                return const SizedBox.shrink();
-              }
-
-              return Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0),
-                child: SubscriptionStatusCard(subscription: activeSubscription),
+            if (!widget.isOnboarding && !storedProfile.onboardingComplete)
+              ProfileCompletionPromptCard(
+                title: l10n.completeYourProfileTitle,
+                message: l10n.completeYourProfileMessage,
+                buttonLabel: l10n.resumeSetup,
+                onPressed: () => Get.toNamed(AppRoutes.profileSetup),
               ).animateProfileSection(
                 enabled: widget.playEntranceAnimation,
                 delay: AppMotion.stagger(2, initialMs: 140),
-              );
-            }),
-            30.h.verticalSpace,
+              ),
+            if (!widget.isOnboarding)
+              Obx(() {
+                final activeSubscription =
+                    subscriptionController.activeSubscription.value;
+
+                if (activeSubscription == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Padding(
+                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0),
+                  child: SubscriptionStatusCard(
+                    subscription: activeSubscription,
+                  ),
+                ).animateProfileSection(
+                  enabled: widget.playEntranceAnimation,
+                  delay: AppMotion.stagger(3, initialMs: 140),
+                );
+              }),
+            SizedBox(height: widget.isOnboarding ? 20.h : 30.h),
             BasicInfoCard(
               title: l10n.basicInformation,
               weightLabel: l10n.weight,
@@ -246,11 +311,145 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(5, initialMs: 140),
             ),
+            FoodPreferencesCard(
+              title: l10n.foodPreferences,
+              subtitle: l10n.foodPreferencesSubtitle,
+              dietPreferenceLabel: l10n.dietPreference,
+              selectDietPreferenceLabel: l10n.selectDietPreference,
+              selectedDietPreferenceKey: _selectedDietPreferenceKey,
+              dietPreferenceOptions: dietPreferenceOptions,
+              onDietPreferenceChanged: (value) {
+                if (value == null) {
+                  return;
+                }
+
+                setState(() => _selectedDietPreferenceKey = value);
+              },
+              allergiesLabel: l10n.allergiesAndAvoidances,
+              allergiesHint: l10n.allergiesSelectionHint,
+              allergyOptions: allergyOptions,
+              selectedAllergyKeys: _selectedAllergyKeys,
+              onAllergyToggled: _toggleAllergy,
+              dislikedFoodsLabel: l10n.dislikedFoods,
+              dislikedFoodsHint: l10n.dislikedFoodsHint,
+              dislikedFoodsController: _dislikedFoodsController,
+              safetyNote: l10n.allergySafetyNote,
+              onDislikedFoodsChanged: (_) => setState(() {}),
+            ).animateProfileSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(6, initialMs: 140),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 18.h, 20.w, 0),
+              child: AppFilledButton(
+                label: widget.isOnboarding
+                    ? l10n.completeSetup
+                    : l10n.saveProfile,
+                onPressed: _isSaving ? null : _saveProfile,
+                backgroundColor: AppColors.buttonPrimary,
+                foregroundColor: AppColors.textWhite,
+                isLoading: _isSaving,
+                fontSize: 16,
+              ),
+            ).animateProfileSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(7, initialMs: 160),
+            ),
             150.h.verticalSpace,
           ],
         ),
       ),
     );
+  }
+
+  void _applyProfileData(UserProfileData data) {
+    _weightController.text = data.weight;
+    _heightController.text = data.height;
+    _heightFeetController.text = data.heightFeet;
+    _heightInchesController.text = data.heightInches;
+    _ageController.text = data.age;
+    _dislikedFoodsController.text = data.dislikedFoods;
+
+    _selectedGenderKey = data.genderKey;
+    _selectedWeightUnit = data.weightUnit;
+    _selectedHeightUnit = data.heightUnit;
+    _selectedActivityKey = data.activityKey;
+    _selectedGoalKey = data.goalKey;
+    _selectedDietPreferenceKey = data.dietPreferenceKey;
+    _selectedAllergyKeys = data.allergies.toSet();
+  }
+
+  Future<void> _saveProfile() async {
+    FocusScope.of(context).unfocus();
+    final l10n = context.l10n;
+
+    if (!_hasRequiredFields()) {
+      AppSnackbar.warning(
+        l10n.completeRequiredFieldsTitle,
+        l10n.completeRequiredFieldsMessage,
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    final data = _profileController.profile.value.copyWith(
+      weight: _weightController.text.trim(),
+      height: _heightController.text.trim(),
+      heightFeet: _heightFeetController.text.trim(),
+      heightInches: _heightInchesController.text.trim(),
+      age: _ageController.text.trim(),
+      genderKey: _selectedGenderKey,
+      weightUnit: _selectedWeightUnit,
+      heightUnit: _selectedHeightUnit,
+      activityKey: _selectedActivityKey,
+      clearActivityKey: _selectedActivityKey == null,
+      goalKey: _selectedGoalKey,
+      dietPreferenceKey: _selectedDietPreferenceKey,
+      allergies: _selectedAllergyKeys.toList()..sort(),
+      dislikedFoods: _dislikedFoodsController.text.trim(),
+      onboardingComplete: true,
+    );
+
+    await _profileController.saveProfile(data);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isSaving = false);
+
+    if (widget.isOnboarding) {
+      Get.offAllNamed(AppRoutes.bottomNav);
+    }
+
+    AppSnackbar.success(
+      l10n.profileUpdatedTitle,
+      widget.isOnboarding
+          ? l10n.mealPlannerReadyMessage
+          : l10n.profileUpdatedMessage,
+    );
+  }
+
+  bool _hasRequiredFields() {
+    final age = int.tryParse(_ageController.text);
+
+    return age != null &&
+        age > 0 &&
+        _weightInKilograms() != null &&
+        _heightInCentimeters() != null &&
+        _selectedActivityKey != null &&
+        _selectedGoalKey.isNotEmpty;
+  }
+
+  void _toggleAllergy(String allergyKey) {
+    setState(() {
+      if (_selectedAllergyKeys.contains(allergyKey)) {
+        _selectedAllergyKeys.remove(allergyKey);
+      } else {
+        _selectedAllergyKeys.add(allergyKey);
+      }
+    });
   }
 
   void _handleWeightUnitChanged(String value) {
@@ -394,6 +593,31 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       'loseWeight': l10n.loseWeight,
       'maintainWeight': l10n.maintainWeight,
       'gainMuscle': l10n.gainMuscle,
+    };
+  }
+
+  Map<String, String> _dietPreferenceOptions(AppLocalizations l10n) {
+    return <String, String>{
+      'balancedDiet': l10n.balancedDiet,
+      'vegetarian': l10n.vegetarian,
+      'vegan': l10n.vegan,
+      'halal': l10n.halal,
+      'keto': l10n.keto,
+      'highProteinDiet': l10n.highProteinDiet,
+    };
+  }
+
+  Map<String, String> _allergyOptions(AppLocalizations l10n) {
+    return <String, String>{
+      'peanuts': l10n.peanuts,
+      'treeNuts': l10n.treeNuts,
+      'dairy': l10n.dairy,
+      'eggs': l10n.eggs,
+      'shellfish': l10n.shellfish,
+      'fish': l10n.fish,
+      'soy': l10n.soy,
+      'wheat': l10n.wheat,
+      'sesame': l10n.sesame,
     };
   }
 }

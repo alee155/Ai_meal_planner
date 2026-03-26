@@ -12,12 +12,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-class DietPlanScreen extends StatelessWidget {
+class DietPlanScreen extends StatefulWidget {
   const DietPlanScreen({super.key, this.playEntranceAnimation = true});
 
   final bool playEntranceAnimation;
 
   static const int _dailyTarget = 1700;
+
+  @override
+  State<DietPlanScreen> createState() => _DietPlanScreenState();
+}
+
+class _DietPlanScreenState extends State<DietPlanScreen> {
+  final Map<DietMealType, DietMealProgress> _mealProgress = {};
 
   @override
   Widget build(BuildContext context) {
@@ -43,49 +50,11 @@ class DietPlanScreen extends StatelessWidget {
         color: AppColors.primaryGreenLight,
       ),
     ];
-    final meals = [
-      DietPlanMeal(
-        title: l10n.breakfast,
-        calories: 420,
-        timeWindow: '7:00 - 9:00 AM',
-        items: [
-          'Oatmeal with berries - 1 cup',
-          'Greek yogurt - 150g',
-          'Almonds - 15 pieces',
-        ],
-        summary: l10n.breakfastSummary,
-      ),
-      DietPlanMeal(
-        title: l10n.lunch,
-        calories: 580,
-        timeWindow: '12:00 - 2:00 PM',
-        items: [
-          'Grilled chicken breast - 150g',
-          'Quinoa salad - 200g',
-          'Steamed broccoli - 100g',
-          'Olive oil - 1 tbsp',
-        ],
-        summary: l10n.lunchSummary,
-      ),
-      DietPlanMeal(
-        title: l10n.snack,
-        calories: 180,
-        timeWindow: '4:00 - 5:00 PM',
-        items: ['Apple - 1 medium', 'Protein shake - 250ml'],
-        summary: l10n.snackSummary,
-      ),
-      DietPlanMeal(
-        title: l10n.dinner,
-        calories: 520,
-        timeWindow: '7:00 - 9:00 PM',
-        items: [
-          'Baked salmon - 180g',
-          'Sweet potato - 150g',
-          'Mixed vegetables - 150g',
-        ],
-        summary: l10n.dinnerSummary,
-      ),
-    ];
+    final meals = _buildMeals(context);
+    final completedMeals = meals.where((meal) => meal.isCompleted).length;
+    final consumedCalories = meals
+        .where((meal) => meal.isCompleted)
+        .fold<int>(0, (total, meal) => total + meal.calories);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundSecondaryOf(context),
@@ -98,17 +67,20 @@ class DietPlanScreen extends StatelessWidget {
               DietPlanHeader(
                 dateLabel: dateLabel,
                 onBackTap: () => _handleBack(context),
-              ).animatePlanHeader(enabled: playEntranceAnimation),
+              ).animatePlanHeader(enabled: widget.playEntranceAnimation),
               SizedBox(height: 18.h),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       DietPlanSummaryCard(
-                        dailyTarget: _dailyTarget,
+                        dailyTarget: DietPlanScreen._dailyTarget,
                         macros: macros,
+                        completedMeals: completedMeals,
+                        totalMeals: meals.length,
+                        consumedCalories: consumedCalories,
                       ).animatePlanSummary(
-                        enabled: playEntranceAnimation,
+                        enabled: widget.playEntranceAnimation,
                         delay: AppMotion.stagger(1, initialMs: 120),
                       ),
                       SizedBox(height: 14.h),
@@ -123,8 +95,10 @@ class DietPlanScreen extends StatelessWidget {
                                 meal: meal,
                                 onDetailsTap: () =>
                                     _showMealDetails(context, meal.title),
+                                onCompleteTap: () => _markMealCompleted(meal),
+                                onSkipTap: () => _skipMeal(meal),
                               ).animatePlanMeal(
-                                enabled: playEntranceAnimation,
+                                enabled: widget.playEntranceAnimation,
                                 delay: AppMotion.stagger(
                                   index + 2,
                                   initialMs: 140,
@@ -138,7 +112,7 @@ class DietPlanScreen extends StatelessWidget {
                             _generateShoppingList(context),
                         onRefreshPlan: () => _refreshPlan(context),
                       ).animatePlanAction(
-                        enabled: playEntranceAnimation,
+                        enabled: widget.playEntranceAnimation,
                         delay: AppMotion.stagger(
                           meals.length + 2,
                           initialMs: 160,
@@ -155,6 +129,70 @@ class DietPlanScreen extends StatelessWidget {
     );
   }
 
+  List<DietPlanMeal> _buildMeals(BuildContext context) {
+    final l10n = context.l10n;
+
+    final meals = [
+      DietPlanMeal(
+        type: DietMealType.breakfast,
+        title: l10n.breakfast,
+        calories: 420,
+        timeWindow: '7:00 - 9:00 AM',
+        items: [
+          'Oatmeal with berries - 1 cup',
+          'Greek yogurt - 150g',
+          'Almonds - 15 pieces',
+        ],
+        summary: l10n.breakfastSummary,
+      ),
+      DietPlanMeal(
+        type: DietMealType.lunch,
+        title: l10n.lunch,
+        calories: 580,
+        timeWindow: '12:00 - 2:00 PM',
+        items: [
+          'Grilled chicken breast - 150g',
+          'Quinoa salad - 200g',
+          'Steamed broccoli - 100g',
+          'Olive oil - 1 tbsp',
+        ],
+        summary: l10n.lunchSummary,
+      ),
+      DietPlanMeal(
+        type: DietMealType.snack,
+        title: l10n.snack,
+        calories: 180,
+        timeWindow: '4:00 - 5:00 PM',
+        items: ['Apple - 1 medium', 'Protein shake - 250ml'],
+        summary: l10n.snackSummary,
+      ),
+      DietPlanMeal(
+        type: DietMealType.dinner,
+        title: l10n.dinner,
+        calories: 520,
+        timeWindow: '7:00 - 9:00 PM',
+        items: [
+          'Baked salmon - 180g',
+          'Sweet potato - 150g',
+          'Mixed vegetables - 150g',
+        ],
+        summary: l10n.dinnerSummary,
+      ),
+    ];
+
+    return meals.map(_applyMealProgress).toList();
+  }
+
+  DietPlanMeal _applyMealProgress(DietPlanMeal meal) {
+    final progress = _mealProgress[meal.type] ?? const DietMealProgress();
+
+    return meal.copyWith(
+      status: progress.status,
+      completedAt: progress.completedAt,
+      clearCompletedAt: progress.completedAt == null,
+    );
+  }
+
   void _handleBack(BuildContext context) {
     if (Navigator.of(context).canPop()) {
       Get.back();
@@ -162,6 +200,29 @@ class DietPlanScreen extends StatelessWidget {
     }
 
     Get.offAllNamed(AppRoutes.bottomNav);
+  }
+
+  void _markMealCompleted(DietPlanMeal meal) {
+    final next = DietMealProgress(
+      status: DietMealStatus.completed,
+      completedAt: DateTime.now(),
+    );
+
+    setState(() => _mealProgress[meal.type] = next);
+    AppSnackbar.success(
+      meal.title,
+      context.l10n.mealCompletedMessage(meal.title),
+    );
+  }
+
+  void _skipMeal(DietPlanMeal meal) {
+    const next = DietMealProgress(status: DietMealStatus.skipped);
+
+    setState(() => _mealProgress[meal.type] = next);
+    AppSnackbar.warning(
+      meal.title,
+      context.l10n.mealSkippedMessage(meal.title),
+    );
   }
 
   void _showMealDetails(BuildContext context, String mealTitle) {

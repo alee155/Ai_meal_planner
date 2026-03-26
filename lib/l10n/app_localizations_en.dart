@@ -272,6 +272,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiBalanced => 'AI Balanced';
 
   @override
+  String get todaysProgress => 'Today\'s progress';
+
+  @override
+  String completedMealsCount(int completed, int total) {
+    return '$completed of $total meals completed';
+  }
+
+  @override
+  String consumedCaloriesLabel(int consumed) {
+    return '$consumed kcal consumed';
+  }
+
+  @override
   String get breakfast => 'Breakfast';
 
   @override
@@ -300,6 +313,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Omega-3 fats and micronutrients to round out the day without a heavy finish.';
 
   @override
+  String get mealStatusPending => 'Planned';
+
+  @override
+  String get mealStatusCompleted => 'Completed';
+
+  @override
+  String get mealStatusSkipped => 'Skipped';
+
+  @override
+  String get markMealDone => 'Mark as done';
+
+  @override
+  String get skipMeal => 'Skip';
+
+  @override
+  String get undoAction => 'Undo';
+
+  @override
+  String completedAtLabel(String time) {
+    return 'Completed at $time';
+  }
+
+  @override
   String get viewNutritionDetails => 'View nutrition details';
 
   @override
@@ -323,6 +359,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mealDetailsMessage =>
       'Nutrition breakdown, ingredients, and substitutions can be connected here.';
+
+  @override
+  String mealCompletedMessage(String mealTitle) {
+    return '$mealTitle marked as completed.';
+  }
+
+  @override
+  String mealSkippedMessage(String mealTitle) {
+    return '$mealTitle marked as skipped.';
+  }
 
   @override
   String get shoppingListReadyTitle => 'Shopping list ready';
@@ -723,6 +769,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setUpYourProfile => 'Set Up Your Profile';
 
   @override
+  String get completeSetup => 'Complete setup';
+
+  @override
+  String get skipForNow => 'Skip for now';
+
+  @override
+  String get nextButton => 'Next';
+
+  @override
+  String get backButton => 'Back';
+
+  @override
+  String get saveProfile => 'Save profile';
+
+  @override
+  String get profileUpdatedTitle => 'Profile updated';
+
+  @override
+  String get profileUpdatedMessage => 'Your nutrition preferences are saved.';
+
+  @override
+  String get finishProfileSetupMessage =>
+      'Complete your profile so AI meals match your body, goals, and food restrictions.';
+
+  @override
+  String profileSetupStepLabel(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get setupSkippedTitle => 'Setup skipped';
+
+  @override
+  String get setupSkippedMessage =>
+      'You can complete your profile later from the Profile tab.';
+
+  @override
+  String get completeRequiredFieldsTitle => 'Complete required details';
+
+  @override
+  String get completeRequiredFieldsMessage =>
+      'Add your age, weight, height, activity level, and goal before continuing.';
+
+  @override
+  String get completeYourProfileTitle => 'Complete your profile';
+
+  @override
+  String get completeYourProfileMessage =>
+      'Add your body stats, goals, and food restrictions so AI meal planning is safer and more accurate.';
+
+  @override
+  String get resumeSetup => 'Complete now';
+
+  @override
   String get profileIntroDescription =>
       'Help us personalize your nutrition plan';
 
@@ -797,6 +897,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gainMuscle => 'Gain Muscle';
+
+  @override
+  String get foodPreferences => 'Food Preferences';
+
+  @override
+  String get foodPreferencesSubtitle =>
+      'These selections help AI avoid unsafe ingredients and tailor your meals.';
+
+  @override
+  String get dietPreference => 'Diet Preference';
+
+  @override
+  String get selectDietPreference => 'Select diet preference';
+
+  @override
+  String get balancedDiet => 'Balanced';
+
+  @override
+  String get vegetarian => 'Vegetarian';
+
+  @override
+  String get vegan => 'Vegan';
+
+  @override
+  String get halal => 'Halal';
+
+  @override
+  String get keto => 'Keto';
+
+  @override
+  String get highProteinDiet => 'High Protein';
+
+  @override
+  String get allergiesAndAvoidances => 'Allergies & Avoidances';
+
+  @override
+  String get allergiesSelectionHint =>
+      'Choose anything the AI must never include.';
+
+  @override
+  String get peanuts => 'Peanuts';
+
+  @override
+  String get treeNuts => 'Tree Nuts';
+
+  @override
+  String get dairy => 'Dairy';
+
+  @override
+  String get eggs => 'Eggs';
+
+  @override
+  String get shellfish => 'Shellfish';
+
+  @override
+  String get fish => 'Fish';
+
+  @override
+  String get soy => 'Soy';
+
+  @override
+  String get wheat => 'Wheat';
+
+  @override
+  String get sesame => 'Sesame';
+
+  @override
+  String get dislikedFoods => 'Disliked Foods';
+
+  @override
+  String get dislikedFoodsHint => 'Ex: mushrooms, olives, liver';
+
+  @override
+  String get allergySafetyNote =>
+      'Selected allergens should be excluded from AI meal suggestions.';
 
   @override
   String get emailRequired => 'Email is required';

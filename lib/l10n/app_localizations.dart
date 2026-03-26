@@ -584,6 +584,24 @@ abstract class AppLocalizations {
   /// **'AI Balanced'**
   String get aiBalanced;
 
+  /// No description provided for @todaysProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s progress'**
+  String get todaysProgress;
+
+  /// No description provided for @completedMealsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} meals completed'**
+  String completedMealsCount(int completed, int total);
+
+  /// No description provided for @consumedCaloriesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{consumed} kcal consumed'**
+  String consumedCaloriesLabel(int consumed);
+
   /// No description provided for @breakfast.
   ///
   /// In en, this message translates to:
@@ -632,6 +650,48 @@ abstract class AppLocalizations {
   /// **'Omega-3 fats and micronutrients to round out the day without a heavy finish.'**
   String get dinnerSummary;
 
+  /// No description provided for @mealStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get mealStatusPending;
+
+  /// No description provided for @mealStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get mealStatusCompleted;
+
+  /// No description provided for @mealStatusSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get mealStatusSkipped;
+
+  /// No description provided for @markMealDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get markMealDone;
+
+  /// No description provided for @skipMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipMeal;
+
+  /// No description provided for @undoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undoAction;
+
+  /// No description provided for @completedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed at {time}'**
+  String completedAtLabel(String time);
+
   /// No description provided for @viewNutritionDetails.
   ///
   /// In en, this message translates to:
@@ -673,6 +733,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nutrition breakdown, ingredients, and substitutions can be connected here.'**
   String get mealDetailsMessage;
+
+  /// No description provided for @mealCompletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{mealTitle} marked as completed.'**
+  String mealCompletedMessage(String mealTitle);
+
+  /// No description provided for @mealSkippedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{mealTitle} marked as skipped.'**
+  String mealSkippedMessage(String mealTitle);
 
   /// No description provided for @shoppingListReadyTitle.
   ///
@@ -1388,6 +1460,102 @@ abstract class AppLocalizations {
   /// **'Set Up Your Profile'**
   String get setUpYourProfile;
 
+  /// No description provided for @completeSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete setup'**
+  String get completeSetup;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get skipForNow;
+
+  /// No description provided for @nextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextButton;
+
+  /// No description provided for @backButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get backButton;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Save profile'**
+  String get saveProfile;
+
+  /// No description provided for @profileUpdatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdatedTitle;
+
+  /// No description provided for @profileUpdatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your nutrition preferences are saved.'**
+  String get profileUpdatedMessage;
+
+  /// No description provided for @finishProfileSetupMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile so AI meals match your body, goals, and food restrictions.'**
+  String get finishProfileSetupMessage;
+
+  /// No description provided for @profileSetupStepLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String profileSetupStepLabel(int current, int total);
+
+  /// No description provided for @setupSkippedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup skipped'**
+  String get setupSkippedTitle;
+
+  /// No description provided for @setupSkippedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You can complete your profile later from the Profile tab.'**
+  String get setupSkippedMessage;
+
+  /// No description provided for @completeRequiredFieldsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete required details'**
+  String get completeRequiredFieldsTitle;
+
+  /// No description provided for @completeRequiredFieldsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your age, weight, height, activity level, and goal before continuing.'**
+  String get completeRequiredFieldsMessage;
+
+  /// No description provided for @completeYourProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get completeYourProfileTitle;
+
+  /// No description provided for @completeYourProfileMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your body stats, goals, and food restrictions so AI meal planning is safer and more accurate.'**
+  String get completeYourProfileMessage;
+
+  /// No description provided for @resumeSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete now'**
+  String get resumeSetup;
+
   /// No description provided for @profileIntroDescription.
   ///
   /// In en, this message translates to:
@@ -1537,6 +1705,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gain Muscle'**
   String get gainMuscle;
+
+  /// No description provided for @foodPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Preferences'**
+  String get foodPreferences;
+
+  /// No description provided for @foodPreferencesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'These selections help AI avoid unsafe ingredients and tailor your meals.'**
+  String get foodPreferencesSubtitle;
+
+  /// No description provided for @dietPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Diet Preference'**
+  String get dietPreference;
+
+  /// No description provided for @selectDietPreference.
+  ///
+  /// In en, this message translates to:
+  /// **'Select diet preference'**
+  String get selectDietPreference;
+
+  /// No description provided for @balancedDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get balancedDiet;
+
+  /// No description provided for @vegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
+  String get vegetarian;
+
+  /// No description provided for @vegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get vegan;
+
+  /// No description provided for @halal.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal'**
+  String get halal;
+
+  /// No description provided for @keto.
+  ///
+  /// In en, this message translates to:
+  /// **'Keto'**
+  String get keto;
+
+  /// No description provided for @highProteinDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'High Protein'**
+  String get highProteinDiet;
+
+  /// No description provided for @allergiesAndAvoidances.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies & Avoidances'**
+  String get allergiesAndAvoidances;
+
+  /// No description provided for @allergiesSelectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose anything the AI must never include.'**
+  String get allergiesSelectionHint;
+
+  /// No description provided for @peanuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Peanuts'**
+  String get peanuts;
+
+  /// No description provided for @treeNuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Tree Nuts'**
+  String get treeNuts;
+
+  /// No description provided for @dairy.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy'**
+  String get dairy;
+
+  /// No description provided for @eggs.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs'**
+  String get eggs;
+
+  /// No description provided for @shellfish.
+  ///
+  /// In en, this message translates to:
+  /// **'Shellfish'**
+  String get shellfish;
+
+  /// No description provided for @fish.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish'**
+  String get fish;
+
+  /// No description provided for @soy.
+  ///
+  /// In en, this message translates to:
+  /// **'Soy'**
+  String get soy;
+
+  /// No description provided for @wheat.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheat'**
+  String get wheat;
+
+  /// No description provided for @sesame.
+  ///
+  /// In en, this message translates to:
+  /// **'Sesame'**
+  String get sesame;
+
+  /// No description provided for @dislikedFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'Disliked Foods'**
+  String get dislikedFoods;
+
+  /// No description provided for @dislikedFoodsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ex: mushrooms, olives, liver'**
+  String get dislikedFoodsHint;
+
+  /// No description provided for @allergySafetyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected allergens should be excluded from AI meal suggestions.'**
+  String get allergySafetyNote;
 
   /// No description provided for @emailRequired.
   ///

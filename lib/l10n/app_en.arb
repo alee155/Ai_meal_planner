@@ -119,6 +119,26 @@
   },
   "dailyCalorieTarget": "Daily calorie target",
   "aiBalanced": "AI Balanced",
+  "todaysProgress": "Today's progress",
+  "completedMealsCount": "{completed} of {total} meals completed",
+  "@completedMealsCount": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "consumedCaloriesLabel": "{consumed} kcal consumed",
+  "@consumedCaloriesLabel": {
+    "placeholders": {
+      "consumed": {
+        "type": "int"
+      }
+    }
+  },
   "breakfast": "Breakfast",
   "lunch": "Lunch",
   "snack": "Snack",
@@ -127,6 +147,20 @@
   "lunchSummary": "Complete protein and complex carbs to keep energy stable through the afternoon.",
   "snackSummary": "A light recovery snack that supports satiety without pushing calories too high.",
   "dinnerSummary": "Omega-3 fats and micronutrients to round out the day without a heavy finish.",
+  "mealStatusPending": "Planned",
+  "mealStatusCompleted": "Completed",
+  "mealStatusSkipped": "Skipped",
+  "markMealDone": "Mark as done",
+  "skipMeal": "Skip",
+  "undoAction": "Undo",
+  "completedAtLabel": "Completed at {time}",
+  "@completedAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "viewNutritionDetails": "View nutrition details",
   "nextStep": "Next step",
   "dietPlanNextStepDescription": "Turn this plan into a shopping checklist or ask the AI to refresh your meals.",
@@ -141,6 +175,22 @@
     }
   },
   "mealDetailsMessage": "Nutrition breakdown, ingredients, and substitutions can be connected here.",
+  "mealCompletedMessage": "{mealTitle} marked as completed.",
+  "@mealCompletedMessage": {
+    "placeholders": {
+      "mealTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "mealSkippedMessage": "{mealTitle} marked as skipped.",
+  "@mealSkippedMessage": {
+    "placeholders": {
+      "mealTitle": {
+        "type": "String"
+      }
+    }
+  },
   "shoppingListReadyTitle": "Shopping list ready",
   "shoppingListReadyMessage": "Connect this action to your shopping-list flow next.",
   "planRefreshRequestedTitle": "Plan refresh requested",
@@ -305,6 +355,32 @@
     }
   },
   "setUpYourProfile": "Set Up Your Profile",
+  "completeSetup": "Complete setup",
+  "skipForNow": "Skip for now",
+  "nextButton": "Next",
+  "backButton": "Back",
+  "saveProfile": "Save profile",
+  "profileUpdatedTitle": "Profile updated",
+  "profileUpdatedMessage": "Your nutrition preferences are saved.",
+  "finishProfileSetupMessage": "Complete your profile so AI meals match your body, goals, and food restrictions.",
+  "profileSetupStepLabel": "Step {current} of {total}",
+  "@profileSetupStepLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "setupSkippedTitle": "Setup skipped",
+  "setupSkippedMessage": "You can complete your profile later from the Profile tab.",
+  "completeRequiredFieldsTitle": "Complete required details",
+  "completeRequiredFieldsMessage": "Add your age, weight, height, activity level, and goal before continuing.",
+  "completeYourProfileTitle": "Complete your profile",
+  "completeYourProfileMessage": "Add your body stats, goals, and food restrictions so AI meal planning is safer and more accurate.",
+  "resumeSetup": "Complete now",
   "profileIntroDescription": "Help us personalize your nutrition plan",
   "basicInformation": "Basic Information",
   "weight": "Weight",
@@ -330,6 +406,30 @@
   "loseWeight": "Lose Weight",
   "maintainWeight": "Maintain Weight",
   "gainMuscle": "Gain Muscle",
+  "foodPreferences": "Food Preferences",
+  "foodPreferencesSubtitle": "These selections help AI avoid unsafe ingredients and tailor your meals.",
+  "dietPreference": "Diet Preference",
+  "selectDietPreference": "Select diet preference",
+  "balancedDiet": "Balanced",
+  "vegetarian": "Vegetarian",
+  "vegan": "Vegan",
+  "halal": "Halal",
+  "keto": "Keto",
+  "highProteinDiet": "High Protein",
+  "allergiesAndAvoidances": "Allergies & Avoidances",
+  "allergiesSelectionHint": "Choose anything the AI must never include.",
+  "peanuts": "Peanuts",
+  "treeNuts": "Tree Nuts",
+  "dairy": "Dairy",
+  "eggs": "Eggs",
+  "shellfish": "Shellfish",
+  "fish": "Fish",
+  "soy": "Soy",
+  "wheat": "Wheat",
+  "sesame": "Sesame",
+  "dislikedFoods": "Disliked Foods",
+  "dislikedFoodsHint": "Ex: mushrooms, olives, liver",
+  "allergySafetyNote": "Selected allergens should be excluded from AI meal suggestions.",
   "emailRequired": "Email is required",
   "validEmailRequired": "Enter a valid email address",
   "passwordRequired": "Password is required",

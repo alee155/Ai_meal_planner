@@ -10,13 +10,21 @@ class DietPlanSummaryCard extends StatelessWidget {
     super.key,
     required this.dailyTarget,
     required this.macros,
+    required this.completedMeals,
+    required this.totalMeals,
+    required this.consumedCalories,
   });
 
   final int dailyTarget;
   final List<DietMacroTarget> macros;
+  final int completedMeals;
+  final int totalMeals;
+  final int consumedCalories;
 
   @override
   Widget build(BuildContext context) {
+    final mealProgress = totalMeals == 0 ? 0.0 : completedMeals / totalMeals;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -89,6 +97,81 @@ class DietPlanSummaryCard extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  SizedBox(height: 18.h),
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(14.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.backgroundSecondaryOf(context),
+                      borderRadius: BorderRadius.circular(18.r),
+                      border: Border.all(color: AppColors.borderOf(context)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.todaysProgress,
+                          style: AppTextStyles.title(
+                            context,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                context.l10n.completedMealsCount(
+                                  completedMeals,
+                                  totalMeals,
+                                ),
+                                style: AppTextStyles.body(
+                                  context,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              context.l10n.consumedCaloriesLabel(
+                                consumedCalories,
+                              ),
+                              style: AppTextStyles.caption(
+                                context,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primaryGreenDark,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(999.r),
+                          child: LinearProgressIndicator(
+                            value: mealProgress,
+                            minHeight: 9.h,
+                            backgroundColor: AppColors.progressBackgroundOf(
+                              context,
+                            ),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              AppColors.primaryGreenDark,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          '$consumedCalories / $dailyTarget kcal',
+                          style: AppTextStyles.caption(
+                            context,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(height: 18.h),
                   Row(

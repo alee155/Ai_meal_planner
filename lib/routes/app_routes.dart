@@ -5,6 +5,7 @@ class AppRoutes {
   static const login = '/login';
   static const signup = '/signup';
   static const otp = '/otp';
+  static const profileSetup = '/profile-setup';
   static const bottomNav = '/bottom-nav';
   static const home = '/home';
   static const dietPlan = '/diet-plan';

@@ -274,6 +274,19 @@ class AppLocalizationsUr extends AppLocalizations {
   String get aiBalanced => 'اے آئی بیلنسڈ';
 
   @override
+  String get todaysProgress => 'آج کی پیش رفت';
+
+  @override
+  String completedMealsCount(int completed, int total) {
+    return '$completed میں سے $total کھانے مکمل';
+  }
+
+  @override
+  String consumedCaloriesLabel(int consumed) {
+    return '$consumed کیلوری استعمال ہو چکی ہیں';
+  }
+
+  @override
   String get breakfast => 'ناشتہ';
 
   @override
@@ -302,6 +315,29 @@ class AppLocalizationsUr extends AppLocalizations {
       'اومیگا 3 چکنائیاں اور مائیکرونیوٹرینٹس جو دن کو متوازن انداز میں مکمل کریں۔';
 
   @override
+  String get mealStatusPending => 'منصوبہ شدہ';
+
+  @override
+  String get mealStatusCompleted => 'مکمل';
+
+  @override
+  String get mealStatusSkipped => 'اسکپ';
+
+  @override
+  String get markMealDone => 'مکمل نشان زد کریں';
+
+  @override
+  String get skipMeal => 'اسکپ کریں';
+
+  @override
+  String get undoAction => 'واپس کریں';
+
+  @override
+  String completedAtLabel(String time) {
+    return '$time پر مکمل ہوا';
+  }
+
+  @override
   String get viewNutritionDetails => 'غذائی تفصیل دیکھیں';
 
   @override
@@ -325,6 +361,16 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get mealDetailsMessage =>
       'غذائی تفصیل، اجزاء اور متبادل یہاں بعد میں منسلک کیے جا سکتے ہیں۔';
+
+  @override
+  String mealCompletedMessage(String mealTitle) {
+    return '$mealTitle کو مکمل نشان زد کر دیا گیا۔';
+  }
+
+  @override
+  String mealSkippedMessage(String mealTitle) {
+    return '$mealTitle کو اسکپ نشان زد کر دیا گیا۔';
+  }
 
   @override
   String get shoppingListReadyTitle => 'شاپنگ لسٹ تیار ہے';
@@ -728,6 +774,60 @@ class AppLocalizationsUr extends AppLocalizations {
   String get setUpYourProfile => 'اپنا پروفائل ترتیب دیں';
 
   @override
+  String get completeSetup => 'سیٹ اپ مکمل کریں';
+
+  @override
+  String get skipForNow => 'ابھی چھوڑ دیں';
+
+  @override
+  String get nextButton => 'اگلا';
+
+  @override
+  String get backButton => 'واپس';
+
+  @override
+  String get saveProfile => 'پروفائل محفوظ کریں';
+
+  @override
+  String get profileUpdatedTitle => 'پروفائل اپ ڈیٹ ہو گیا';
+
+  @override
+  String get profileUpdatedMessage => 'آپ کی غذائی ترجیحات محفوظ ہو گئی ہیں۔';
+
+  @override
+  String get finishProfileSetupMessage =>
+      'اپنا پروفائل مکمل کریں تاکہ اے آئی میلز آپ کے جسم، اہداف اور غذائی پابندیوں کے مطابق ہوں۔';
+
+  @override
+  String profileSetupStepLabel(int current, int total) {
+    return 'مرحلہ $current از $total';
+  }
+
+  @override
+  String get setupSkippedTitle => 'سیٹ اپ چھوڑ دیا گیا';
+
+  @override
+  String get setupSkippedMessage =>
+      'آپ بعد میں پروفائل ٹیب سے اپنا پروفائل مکمل کر سکتے ہیں۔';
+
+  @override
+  String get completeRequiredFieldsTitle => 'ضروری معلومات مکمل کریں';
+
+  @override
+  String get completeRequiredFieldsMessage =>
+      'جاری رکھنے سے پہلے اپنی عمر، وزن، قد، سرگرمی کی سطح اور ہدف درج کریں۔';
+
+  @override
+  String get completeYourProfileTitle => 'اپنا پروفائل مکمل کریں';
+
+  @override
+  String get completeYourProfileMessage =>
+      'اپنے جسمانی اعداد، اہداف اور غذائی پابندیاں شامل کریں تاکہ اے آئی میل پلاننگ زیادہ محفوظ اور درست ہو۔';
+
+  @override
+  String get resumeSetup => 'اب مکمل کریں';
+
+  @override
   String get profileIntroDescription =>
       'ہمیں آپ کا غذائی پلان ذاتی بنانے میں مدد دیں';
 
@@ -802,6 +902,81 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get gainMuscle => 'پٹھے بڑھائیں';
+
+  @override
+  String get foodPreferences => 'غذائی ترجیحات';
+
+  @override
+  String get foodPreferencesSubtitle =>
+      'یہ انتخاب اے آئی کو غیر محفوظ اجزاء سے بچنے اور آپ کے میلز بہتر بنانے میں مدد دیتے ہیں۔';
+
+  @override
+  String get dietPreference => 'غذائی انداز';
+
+  @override
+  String get selectDietPreference => 'غذائی انداز منتخب کریں';
+
+  @override
+  String get balancedDiet => 'متوازن';
+
+  @override
+  String get vegetarian => 'ویجیٹیرین';
+
+  @override
+  String get vegan => 'ویگن';
+
+  @override
+  String get halal => 'حلال';
+
+  @override
+  String get keto => 'کیٹو';
+
+  @override
+  String get highProteinDiet => 'زیادہ پروٹین';
+
+  @override
+  String get allergiesAndAvoidances => 'الرجیز اور پرہیز';
+
+  @override
+  String get allergiesSelectionHint =>
+      'جو چیزیں اے آئی کو کبھی شامل نہیں کرنی چاہئیں وہ منتخب کریں۔';
+
+  @override
+  String get peanuts => 'مونگ پھلی';
+
+  @override
+  String get treeNuts => 'خشک میوہ جات';
+
+  @override
+  String get dairy => 'دودھ سے بنی چیزیں';
+
+  @override
+  String get eggs => 'انڈے';
+
+  @override
+  String get shellfish => 'شیل فش';
+
+  @override
+  String get fish => 'مچھلی';
+
+  @override
+  String get soy => 'سویا';
+
+  @override
+  String get wheat => 'گندم';
+
+  @override
+  String get sesame => 'تل';
+
+  @override
+  String get dislikedFoods => 'ناپسندیدہ غذائیں';
+
+  @override
+  String get dislikedFoodsHint => 'مثلاً مشروم، زیتون، کلیجی';
+
+  @override
+  String get allergySafetyNote =>
+      'منتخب الرجینز کو اے آئی میل تجاویز سے خارج کیا جانا چاہیے۔';
 
   @override
   String get emailRequired => 'ای میل ضروری ہے';
