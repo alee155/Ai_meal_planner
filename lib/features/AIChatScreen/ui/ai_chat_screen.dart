@@ -149,120 +149,82 @@ class _AiChatScreenState extends State<AiChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundSecondaryOf(context),
-      body: SafeArea(
-        child: Column(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundSecondaryOf(context),
+        surfaceTintColor: AppColors.backgroundSecondaryOf(context),
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        titleSpacing: 20.w,
+        title: Row(
           children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 0),
+            Container(
+              width: 12.w,
+              height: 12.w,
+              decoration: const BoxDecoration(
+                color: AppColors.primaryGreenDark,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: 10.w),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'AI Nutrition Coach',
-                              style: AppTextStyles.headline(
-                                context,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              'Quick food guidance, meal swaps, and calorie-aware suggestions.',
-                              style: AppTextStyles.body(
-                                context,
-                                fontSize: 13,
-                                height: 1.45,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 8.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primarylightGreen,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Text(
-                          'AI Online',
-                          style: AppTextStyles.label(
-                            context,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primaryGreenDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(18.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28.r),
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primaryGreenDark,
-                          AppColors.primaryGreen,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryGreenDark.withValues(
-                            alpha: 0.22,
-                          ),
-                          blurRadius: 24,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Today\'s coaching focus',
-                          style: AppTextStyles.label(
-                            context,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          'Fat-loss support with high-protein meals and lighter evening calories.',
-                          style: AppTextStyles.title(
-                            context,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1.35,
-                          ),
-                        ),
-                        SizedBox(height: 14.h),
-                        Wrap(
-                          spacing: 8.w,
-                          runSpacing: 8.h,
-                          children: const [
-                            _InsightChip(label: 'Goal 1700 kcal'),
-                            _InsightChip(label: 'Protein-first'),
-                            _InsightChip(label: 'Easy prep'),
-                          ],
-                        ),
-                      ],
+                  Text(
+                    'AI Nutrition Coach',
+                    style: AppTextStyles.title(
+                      context,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  SizedBox(height: 14.h),
+                  Text(
+                    'Online',
+                    style: AppTextStyles.caption(
+                      context,
+                      color: AppColors.primaryGreenDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 10.h),
+              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (_isTyping && index == _messages.length) {
+                  return const _TypingBubble();
+                }
+
+                final message = _messages[index];
+                return _MessageBubble(message: message);
+              },
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 12.h),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceOf(context),
+              border: Border(
+                top: BorderSide(color: AppColors.borderOf(context)),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   SizedBox(
-                    height: 42.h,
+                    height: 34.h,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: _quickPrompts.length,
@@ -273,141 +235,104 @@ class _AiChatScreenState extends State<AiChatScreen> {
                         return ActionChip(
                           label: Text(prompt),
                           side: BorderSide(color: AppColors.borderOf(context)),
-                          backgroundColor: AppColors.surfaceOf(context),
+                          backgroundColor: AppColors.backgroundSecondaryOf(
+                            context,
+                          ),
                           labelStyle: AppTextStyles.label(
                             context,
-                            fontSize: 12,
+                            fontSize: 11,
                             color: AppColors.textPrimaryOf(context),
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999),
                           ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                           onPressed: () => _sendMessage(prompt),
                         );
                       },
                     ),
                   ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _messageController,
+                          minLines: 1,
+                          maxLines: 4,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _sendMessage(),
+                          style: AppTextStyles.body(
+                            context,
+                            color: AppColors.textPrimaryOf(context),
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'Ask about meals or calories...',
+                            hintStyle: AppTextStyles.body(
+                              context,
+                              color: AppColors.textHintOf(context),
+                            ),
+                            filled: true,
+                            fillColor: AppColors.inputBackgroundOf(context),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 13.h,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18.r),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18.r),
+                              borderSide: BorderSide(
+                                color: AppColors.inputBorderOf(context),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18.r),
+                              borderSide: const BorderSide(
+                                color: AppColors.primaryGreenDark,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.w),
+                      InkWell(
+                        onTap: _sendMessage,
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          width: 50.w,
+                          height: 50.w,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryGreenDark,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: _isTyping
+                              ? Padding(
+                                  padding: EdgeInsets.all(13.w),
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2.2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.arrow_upward_rounded,
+                                  color: Colors.white,
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 14.h),
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 12.w),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceOf(context),
-                  borderRadius: BorderRadius.circular(30.r),
-                  border: Border.all(color: AppColors.borderOf(context)),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: EdgeInsets.fromLTRB(14.w, 18.h, 14.w, 12.h),
-                        itemCount: _messages.length + (_isTyping ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (_isTyping && index == _messages.length) {
-                            return const _TypingBubble();
-                          }
-
-                          final message = _messages[index];
-                          return _MessageBubble(message: message);
-                        },
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(14.w, 10.h, 14.w, 14.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceOf(context),
-                        borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(30.r),
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _messageController,
-                              minLines: 1,
-                              maxLines: 4,
-                              textInputAction: TextInputAction.send,
-                              onSubmitted: (_) => _sendMessage(),
-                              style: AppTextStyles.body(
-                                context,
-                                color: AppColors.textPrimaryOf(context),
-                              ),
-                              decoration: InputDecoration(
-                                hintText:
-                                    'Ask about meals, calories, cravings...',
-                                hintStyle: AppTextStyles.body(
-                                  context,
-                                  color: AppColors.textHintOf(context),
-                                ),
-                                filled: true,
-                                fillColor: AppColors.inputBackgroundOf(context),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 16.w,
-                                  vertical: 14.h,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  borderSide: BorderSide.none,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  borderSide: BorderSide(
-                                    color: AppColors.inputBorderOf(context),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.primaryGreenDark,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          InkWell(
-                            onTap: _sendMessage,
-                            borderRadius: BorderRadius.circular(18.r),
-                            child: Container(
-                              width: 54.w,
-                              height: 54.w,
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryGreenDark,
-                                borderRadius: BorderRadius.circular(18.r),
-                              ),
-                              child: _isTyping
-                                  ? Padding(
-                                      padding: EdgeInsets.all(14.w),
-                                      child: const CircularProgressIndicator(
-                                        strokeWidth: 2.4,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.arrow_upward_rounded,
-                                      color: Colors.white,
-                                    ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 10.h),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -516,28 +441,6 @@ class _TypingBubble extends StatelessWidget {
             style: AppTextStyles.caption(context, fontSize: 10),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _InsightChip extends StatelessWidget {
-  const _InsightChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 7.h),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-      ),
-      child: Text(
-        label,
-        style: AppTextStyles.label(context, fontSize: 12, color: Colors.white),
       ),
     );
   }

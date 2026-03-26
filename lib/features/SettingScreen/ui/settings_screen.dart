@@ -47,322 +47,324 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       backgroundColor: screenBackground,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 28.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader().animateSettingsHeader(
-                enabled: widget.playEntranceAnimation,
-              ),
-              SizedBox(height: 20.h),
-              Obx(
-                () =>
-                    _buildProfileCard(
-                      hasPremium: subscriptionController.hasPremium,
-                    ).animateSettingsCard(
-                      enabled: widget.playEntranceAnimation,
-                      delay: AppMotion.stagger(1, initialMs: 120),
-                      scaleBegin: const Offset(0.985, 0.985),
-                    ),
-              ),
-              SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Account'),
-                  _buildSettingsGroup(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.person_outline_rounded,
-                        title: 'Personal details',
-                        subtitle: 'Name, email, and profile preferences',
-                        onTap: () => _showInfoSheet(
-                          title: 'Personal details',
-                          message:
-                              'Connect this tile to your profile edit flow when you are ready.',
-                        ),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.lock_outline_rounded,
-                        title: 'Change password',
-                        subtitle: 'Update your account password securely',
-                        onTap: _showChangePasswordSheet,
-                      ),
-                      _SettingsTile(
-                        icon: Icons.devices_outlined,
-                        title: 'Connected devices',
-                        subtitle: 'Manage sessions across your devices',
-                        trailing: _buildBadge('2 active'),
-                        onTap: () => _showInfoSheet(
-                          title: 'Connected devices',
-                          message:
-                              'Phone and tablet are currently signed in to this account.',
-                        ),
-                      ),
-                    ],
+      appBar: AppBar(
+        backgroundColor: screenBackground,
+        surfaceTintColor: screenBackground,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: widget.showBackButton
+            ? Padding(
+                padding: EdgeInsets.only(left: 14.w),
+                child: AppIconBackButton(onTap: Get.back),
+              )
+            : const SizedBox.shrink(),
+        leadingWidth: widget.showBackButton ? 64.w : 10.w,
+        titleSpacing: 0,
+        centerTitle: false,
+        title: Padding(
+          padding: EdgeInsets.only(left: 10.w),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Settings',
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimaryOf(context),
                   ),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(2, initialMs: 140),
-              ),
-              SizedBox(height: 18.h),
-              Obx(
-                () =>
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionTitle(
-                          subscriptionController.hasPremium
-                              ? 'Subscription Plan'
-                              : 'Available Subscription',
-                        ),
-                        subscriptionController.hasPremium
-                            ? SubscriptionStatusCard(
-                                subscription: subscriptionController
-                                    .activeSubscription
-                                    .value!,
-                                primaryLabel: 'Manage plan',
-                                onPrimaryTap: () =>
-                                    Get.toNamed(AppRoutes.subscription),
-                                secondaryLabel: 'View benefits',
-                                onSecondaryTap: () =>
-                                    Get.toNamed(AppRoutes.subscription),
-                              )
-                            : _buildAvailableSubscriptionCard(),
-                      ],
-                    ).animateSettingsSection(
-                      enabled: widget.playEntranceAnimation,
-                      delay: AppMotion.stagger(3, initialMs: 140),
-                    ),
-              ),
-              SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Notifications'),
-                  _buildSettingsGroup(
-                    children: [
-                      _SettingsSwitchTile(
-                        icon: Icons.restaurant_menu_outlined,
-                        title: 'Meal reminders',
-                        subtitle: 'Breakfast, lunch, dinner, and snack alerts',
-                        value: _mealReminders,
-                        onChanged: (value) {
-                          setState(() => _mealReminders = value);
-                        },
-                      ),
-                      _SettingsSwitchTile(
-                        icon: Icons.water_drop_outlined,
-                        title: 'Hydration reminders',
-                        subtitle: 'Keep daily water goals on track',
-                        value: _waterReminders,
-                        onChanged: (value) {
-                          setState(() => _waterReminders = value);
-                        },
-                      ),
-                      _SettingsSwitchTile(
-                        icon: Icons.insights_outlined,
-                        title: 'Weekly insights',
-                        subtitle: 'Get progress reports every Sunday',
-                        value: _weeklyInsights,
-                        onChanged: (value) {
-                          setState(() => _weeklyInsights = value);
-                        },
-                      ),
-                    ],
+                ),
+                Text(
+                  'Manage your account, privacy, and subscription',
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    color: AppColors.textSecondaryOf(context),
                   ),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(4, initialMs: 140),
-              ),
-              SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Appearance'),
-                  _buildSettingsGroup(
-                    children: [
-                      Obx(
-                        () => _SettingsTile(
-                          icon: Icons.translate_rounded,
-                          title: context.l10n.language,
-                          subtitle: context.l10n.languageSubtitle,
-                          trailing: _buildBadge(
-                            localeController.isUrdu
-                                ? context.l10n.urdu
-                                : context.l10n.english,
-                          ),
-                          onTap: () => _showLanguageSheet(localeController),
-                        ),
-                      ),
-                      GetX<ThemeController>(
-                        builder: (controller) => _SettingsSwitchTile(
-                          icon: Icons.dark_mode_outlined,
-                          title: 'Dark mode',
-                          subtitle:
-                              'Switch between light and dark theme for the app',
-                          value: controller.isDarkMode,
-                          onChanged: controller.toggleTheme,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(5, initialMs: 140),
-              ),
-              SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Privacy & Security'),
-                  _buildSettingsGroup(
-                    children: [
-                      _SettingsSwitchTile(
-                        icon: Icons.fingerprint,
-                        title: 'Biometric lock',
-                        subtitle: 'Require Face ID or fingerprint to open app',
-                        value: _biometricLock,
-                        onChanged: (value) {
-                          setState(() => _biometricLock = value);
-                        },
-                      ),
-                      _SettingsSwitchTile(
-                        icon: Icons.email_outlined,
-                        title: 'Marketing emails',
-                        subtitle: 'Product updates, offers, and app news',
-                        value: _marketingEmails,
-                        onChanged: (value) {
-                          setState(() => _marketingEmails = value);
-                        },
-                      ),
-                      _SettingsTile(
-                        icon: Icons.privacy_tip_outlined,
-                        title: 'Privacy policy',
-                        subtitle:
-                            'How your nutrition data is used and protected',
-                        onTap: () => _showInfoSheet(
-                          title: 'Privacy policy',
-                          message:
-                              'This can later open a webview or markdown page with your policy.',
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(6, initialMs: 140),
-              ),
-              SizedBox(height: 18.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle('Support'),
-                  _buildSettingsGroup(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.help_outline_rounded,
-                        title: 'Help center',
-                        subtitle: 'FAQs, troubleshooting, and guidance',
-                        onTap: () => _showInfoSheet(
-                          title: 'Help center',
-                          message:
-                              'This area is ready for FAQ content or customer support links.',
-                        ),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.chat_bubble_outline_rounded,
-                        title: 'Contact support',
-                        subtitle: 'Reach the team for billing or account help',
-                        onTap: () => _showInfoSheet(
-                          title: 'Contact support',
-                          message: 'Email: support@aimealplanner.app',
-                        ),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.info_outline_rounded,
-                        title: 'App version',
-                        subtitle: 'AI Diet Planner 1.0.0',
-                        trailing: const Icon(
-                          Icons.check_circle_rounded,
-                          color: AppColors.success,
-                        ),
-                        onTap: null,
-                      ),
-                    ],
-                  ),
-                ],
-              ).animateSettingsSection(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(7, initialMs: 140),
-              ),
-              SizedBox(height: 22.h),
-              _buildSecondaryAction(
-                icon: Icons.logout_rounded,
-                label: 'Log out',
-                color: textPrimary,
-                backgroundColor: surfaceColor,
-                onTap: _logout,
-              ).animateSettingsAction(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(8, initialMs: 140),
-              ),
-              SizedBox(height: 12.h),
-              _buildSecondaryAction(
-                icon: Icons.delete_forever_outlined,
-                label: 'Delete account',
-                color: AppColors.error,
-                backgroundColor: AppColors.isDark(context)
-                    ? AppColors.error.withValues(alpha: 0.12)
-                    : const Color(0xFFFFF1F1),
-                onTap: _openDeleteAccountScreen,
-              ).animateSettingsAction(
-                enabled: widget.playEntranceAnimation,
-                delay: AppMotion.stagger(9, initialMs: 140),
-              ),
-            ],
+                ),
+              ],
+            ).animateSettingsHeader(enabled: widget.playEntranceAnimation),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        if (widget.showBackButton) ...[
-          AppIconBackButton(onTap: Get.back),
-          SizedBox(width: 14.w),
-        ],
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimaryOf(context),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 28.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Obx(
+              () =>
+                  _buildProfileCard(
+                    hasPremium: subscriptionController.hasPremium,
+                  ).animateSettingsCard(
+                    enabled: widget.playEntranceAnimation,
+                    delay: AppMotion.stagger(1, initialMs: 120),
+                    scaleBegin: const Offset(0.985, 0.985),
+                  ),
+            ),
+            SizedBox(height: 18.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle('Account'),
+                _buildSettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.person_outline_rounded,
+                      title: 'Personal details',
+                      subtitle: 'Name, email, and profile preferences',
+                      onTap: () => _showInfoSheet(
+                        title: 'Personal details',
+                        message:
+                            'Connect this tile to your profile edit flow when you are ready.',
+                      ),
+                    ),
+                    _SettingsTile(
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Change password',
+                      subtitle: 'Update your account password securely',
+                      onTap: _showChangePasswordSheet,
+                    ),
+                    _SettingsTile(
+                      icon: Icons.devices_outlined,
+                      title: 'Connected devices',
+                      subtitle: 'Manage sessions across your devices',
+                      trailing: _buildBadge('2 active'),
+                      onTap: () => _showInfoSheet(
+                        title: 'Connected devices',
+                        message:
+                            'Phone and tablet are currently signed in to this account.',
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Text(
-                'Manage your account, privacy, and subscription',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  color: AppColors.textSecondaryOf(context),
+              ],
+            ).animateSettingsSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(2, initialMs: 140),
+            ),
+            SizedBox(height: 18.h),
+            Obx(
+              () =>
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle(
+                        subscriptionController.hasPremium
+                            ? 'Subscription Plan'
+                            : 'Available Subscription',
+                      ),
+                      subscriptionController.hasPremium
+                          ? SubscriptionStatusCard(
+                              subscription: subscriptionController
+                                  .activeSubscription
+                                  .value!,
+                              primaryLabel: 'Manage plan',
+                              onPrimaryTap: () =>
+                                  Get.toNamed(AppRoutes.subscription),
+                              secondaryLabel: 'View benefits',
+                              onSecondaryTap: () =>
+                                  Get.toNamed(AppRoutes.subscription),
+                            )
+                          : _buildAvailableSubscriptionCard(),
+                    ],
+                  ).animateSettingsSection(
+                    enabled: widget.playEntranceAnimation,
+                    delay: AppMotion.stagger(3, initialMs: 140),
+                  ),
+            ),
+            SizedBox(height: 18.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle('Notifications'),
+                _buildSettingsGroup(
+                  children: [
+                    _SettingsSwitchTile(
+                      icon: Icons.restaurant_menu_outlined,
+                      title: 'Meal reminders',
+                      subtitle: 'Breakfast, lunch, dinner, and snack alerts',
+                      value: _mealReminders,
+                      onChanged: (value) {
+                        setState(() => _mealReminders = value);
+                      },
+                    ),
+                    _SettingsSwitchTile(
+                      icon: Icons.water_drop_outlined,
+                      title: 'Hydration reminders',
+                      subtitle: 'Keep daily water goals on track',
+                      value: _waterReminders,
+                      onChanged: (value) {
+                        setState(() => _waterReminders = value);
+                      },
+                    ),
+                    _SettingsSwitchTile(
+                      icon: Icons.insights_outlined,
+                      title: 'Weekly insights',
+                      subtitle: 'Get progress reports every Sunday',
+                      value: _weeklyInsights,
+                      onChanged: (value) {
+                        setState(() => _weeklyInsights = value);
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
+              ],
+            ).animateSettingsSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(4, initialMs: 140),
+            ),
+            SizedBox(height: 18.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle('Appearance'),
+                _buildSettingsGroup(
+                  children: [
+                    Obx(
+                      () => _SettingsTile(
+                        icon: Icons.translate_rounded,
+                        title: context.l10n.language,
+                        subtitle: context.l10n.languageSubtitle,
+                        trailing: _buildBadge(
+                          localeController.isUrdu
+                              ? context.l10n.urdu
+                              : context.l10n.english,
+                        ),
+                        onTap: () => _showLanguageSheet(localeController),
+                      ),
+                    ),
+                    GetX<ThemeController>(
+                      builder: (controller) => _SettingsSwitchTile(
+                        icon: Icons.dark_mode_outlined,
+                        title: 'Dark mode',
+                        subtitle:
+                            'Switch between light and dark theme for the app',
+                        value: controller.isDarkMode,
+                        onChanged: controller.toggleTheme,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ).animateSettingsSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(5, initialMs: 140),
+            ),
+            SizedBox(height: 18.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle('Privacy & Security'),
+                _buildSettingsGroup(
+                  children: [
+                    _SettingsSwitchTile(
+                      icon: Icons.fingerprint,
+                      title: 'Biometric lock',
+                      subtitle: 'Require Face ID or fingerprint to open app',
+                      value: _biometricLock,
+                      onChanged: (value) {
+                        setState(() => _biometricLock = value);
+                      },
+                    ),
+                    _SettingsSwitchTile(
+                      icon: Icons.email_outlined,
+                      title: 'Marketing emails',
+                      subtitle: 'Product updates, offers, and app news',
+                      value: _marketingEmails,
+                      onChanged: (value) {
+                        setState(() => _marketingEmails = value);
+                      },
+                    ),
+                    _SettingsTile(
+                      icon: Icons.privacy_tip_outlined,
+                      title: 'Privacy policy',
+                      subtitle: 'How your nutrition data is used and protected',
+                      onTap: () => _showInfoSheet(
+                        title: 'Privacy policy',
+                        message:
+                            'This can later open a webview or markdown page with your policy.',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ).animateSettingsSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(6, initialMs: 140),
+            ),
+            SizedBox(height: 18.h),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle('Support'),
+                _buildSettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.help_outline_rounded,
+                      title: 'Help center',
+                      subtitle: 'FAQs, troubleshooting, and guidance',
+                      onTap: () => _showInfoSheet(
+                        title: 'Help center',
+                        message:
+                            'This area is ready for FAQ content or customer support links.',
+                      ),
+                    ),
+                    _SettingsTile(
+                      icon: Icons.chat_bubble_outline_rounded,
+                      title: 'Contact support',
+                      subtitle: 'Reach the team for billing or account help',
+                      onTap: () => _showInfoSheet(
+                        title: 'Contact support',
+                        message: 'Email: support@aimealplanner.app',
+                      ),
+                    ),
+                    _SettingsTile(
+                      icon: Icons.info_outline_rounded,
+                      title: 'App version',
+                      subtitle: 'AI Diet Planner 1.0.0',
+                      trailing: const Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.success,
+                      ),
+                      onTap: null,
+                    ),
+                  ],
+                ),
+              ],
+            ).animateSettingsSection(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(7, initialMs: 140),
+            ),
+            SizedBox(height: 22.h),
+            _buildSecondaryAction(
+              icon: Icons.logout_rounded,
+              label: 'Log out',
+              color: textPrimary,
+              backgroundColor: surfaceColor,
+              onTap: _logout,
+            ).animateSettingsAction(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(8, initialMs: 140),
+            ),
+            SizedBox(height: 12.h),
+            _buildSecondaryAction(
+              icon: Icons.delete_forever_outlined,
+              label: 'Delete account',
+              color: AppColors.error,
+              backgroundColor: AppColors.isDark(context)
+                  ? AppColors.error.withValues(alpha: 0.12)
+                  : const Color(0xFFFFF1F1),
+              onTap: _openDeleteAccountScreen,
+            ).animateSettingsAction(
+              enabled: widget.playEntranceAnimation,
+              delay: AppMotion.stagger(9, initialMs: 140),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
