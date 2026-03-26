@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
-import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/features/AIChatScreen/models/ai_chat_models.dart';
+import 'package:ai_meal_planner/features/AIChatScreen/widgets/ai_chat_app_bar_title.dart';
+import 'package:ai_meal_planner/features/AIChatScreen/widgets/ai_chat_composer.dart';
+import 'package:ai_meal_planner/features/AIChatScreen/widgets/ai_chat_message_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,22 +21,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<_ChatMessage> _messages = [
-    const _ChatMessage(
+  final List<ChatMessage> _messages = [
+    const ChatMessage(
       text:
           'Welcome back. I can help with meal swaps, calories, cravings, hydration, and simple cooking guidance.',
-      sender: _ChatSender.ai,
+      sender: ChatSender.ai,
       timestamp: '9:02 AM',
     ),
-    const _ChatMessage(
+    const ChatMessage(
       text: 'I need a lighter dinner idea for today.',
-      sender: _ChatSender.user,
+      sender: ChatSender.user,
       timestamp: '9:03 AM',
     ),
-    const _ChatMessage(
+    const ChatMessage(
       text:
           'Try grilled fish with sauteed vegetables and half a baked sweet potato. It keeps dinner around 430 kcal with strong protein.',
-      sender: _ChatSender.ai,
+      sender: ChatSender.ai,
       timestamp: '9:03 AM',
     ),
   ];
@@ -62,9 +65,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     setState(() {
       _messages.add(
-        _ChatMessage(
+        ChatMessage(
           text: input,
-          sender: _ChatSender.user,
+          sender: ChatSender.user,
           timestamp: _formatTime(DateTime.now()),
         ),
       );
@@ -82,9 +85,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     setState(() {
       _messages.add(
-        _ChatMessage(
+        ChatMessage(
           text: _buildMockReply(input),
-          sender: _ChatSender.ai,
+          sender: ChatSender.ai,
           timestamp: _formatTime(DateTime.now()),
         ),
       );
@@ -156,42 +159,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 20.w,
-        title: Row(
-          children: [
-            Container(
-              width: 12.w,
-              height: 12.w,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryGreenDark,
-                shape: BoxShape.circle,
-              ),
-            ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'AI Nutrition Coach',
-                    style: AppTextStyles.title(
-                      context,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  Text(
-                    'Online',
-                    style: AppTextStyles.caption(
-                      context,
-                      color: AppColors.primaryGreenDark,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        title: const AiChatAppBarTitle(),
       ),
       body: Column(
         children: [
@@ -202,260 +170,23 @@ class _AiChatScreenState extends State<AiChatScreen> {
               itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
                 if (_isTyping && index == _messages.length) {
-                  return const _TypingBubble();
+                  return const AiChatTypingBubble();
                 }
 
                 final message = _messages[index];
-                return _MessageBubble(message: message);
+                return AiChatMessageBubble(message: message);
               },
             ),
           ),
-          Container(
-            padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 12.h),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceOf(context),
-              border: Border(
-                top: BorderSide(color: AppColors.borderOf(context)),
-              ),
-            ),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 34.h,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _quickPrompts.length,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(width: 8.w),
-                      itemBuilder: (context, index) {
-                        final prompt = _quickPrompts[index];
-                        return ActionChip(
-                          label: Text(prompt),
-                          side: BorderSide(color: AppColors.borderOf(context)),
-                          backgroundColor: AppColors.backgroundSecondaryOf(
-                            context,
-                          ),
-                          labelStyle: AppTextStyles.label(
-                            context,
-                            fontSize: 11,
-                            color: AppColors.textPrimaryOf(context),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          onPressed: () => _sendMessage(prompt),
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _messageController,
-                          minLines: 1,
-                          maxLines: 4,
-                          textInputAction: TextInputAction.send,
-                          onSubmitted: (_) => _sendMessage(),
-                          style: AppTextStyles.body(
-                            context,
-                            color: AppColors.textPrimaryOf(context),
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Ask about meals or calories...',
-                            hintStyle: AppTextStyles.body(
-                              context,
-                              color: AppColors.textHintOf(context),
-                            ),
-                            filled: true,
-                            fillColor: AppColors.inputBackgroundOf(context),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.w,
-                              vertical: 13.h,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18.r),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18.r),
-                              borderSide: BorderSide(
-                                color: AppColors.inputBorderOf(context),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18.r),
-                              borderSide: const BorderSide(
-                                color: AppColors.primaryGreenDark,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      InkWell(
-                        onTap: _sendMessage,
-                        borderRadius: BorderRadius.circular(16.r),
-                        child: Container(
-                          width: 50.w,
-                          height: 50.w,
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryGreenDark,
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          child: _isTyping
-                              ? Padding(
-                                  padding: EdgeInsets.all(13.w),
-                                  child: const CircularProgressIndicator(
-                                    strokeWidth: 2.2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.arrow_upward_rounded,
-                                  color: Colors.white,
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+          AiChatComposer(
+            quickPrompts: _quickPrompts,
+            messageController: _messageController,
+            isTyping: _isTyping,
+            onPromptTap: _sendMessage,
+            onSend: _sendMessage,
           ),
         ],
       ),
     );
   }
-}
-
-class _MessageBubble extends StatelessWidget {
-  const _MessageBubble({required this.message});
-
-  final _ChatMessage message;
-
-  @override
-  Widget build(BuildContext context) {
-    final isUser = message.sender == _ChatSender.user;
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Column(
-        crossAxisAlignment: isUser
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: isUser
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 0.76.sw),
-                child: Container(
-                  padding: EdgeInsets.all(14.w),
-                  decoration: BoxDecoration(
-                    color: isUser
-                        ? AppColors.primaryGreenDark
-                        : AppColors.cardBackgroundOf(context),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.r),
-                      topRight: Radius.circular(20.r),
-                      bottomLeft: Radius.circular(isUser ? 20.r : 6.r),
-                      bottomRight: Radius.circular(isUser ? 6.r : 20.r),
-                    ),
-                    border: isUser
-                        ? null
-                        : Border.all(color: AppColors.borderOf(context)),
-                  ),
-                  child: Text(
-                    message.text,
-                    style: AppTextStyles.body(
-                      context,
-                      height: 1.5,
-                      color: isUser
-                          ? Colors.white
-                          : AppColors.textPrimaryOf(context),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            message.timestamp,
-            style: AppTextStyles.caption(context, fontSize: 10),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TypingBubble extends StatelessWidget {
-  const _TypingBubble();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackgroundOf(context),
-              borderRadius: BorderRadius.circular(20.r),
-              border: Border.all(color: AppColors.borderOf(context)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                3,
-                (index) => Container(
-                  width: 8.w,
-                  height: 8.w,
-                  margin: EdgeInsets.only(right: index == 2 ? 0 : 6.w),
-                  decoration: BoxDecoration(
-                    color: AppColors.textHintOf(context),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            'AI is typing...',
-            style: AppTextStyles.caption(context, fontSize: 10),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-enum _ChatSender { ai, user }
-
-class _ChatMessage {
-  const _ChatMessage({
-    required this.text,
-    required this.sender,
-    required this.timestamp,
-  });
-
-  final String text;
-  final _ChatSender sender;
-  final String timestamp;
 }
