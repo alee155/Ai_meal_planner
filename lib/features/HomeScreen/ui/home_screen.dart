@@ -3,6 +3,7 @@ import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calorie_chart_panel.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calories_card.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_header.dart';
+import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final subscriptionController = SubscriptionController.ensureRegistered();
     const calorieGoal = 1700;
     const consumedCalories = 1360;
     const remainingCalories = calorieGoal - consumedCalories;
@@ -54,8 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HomeHeader(
-                onNotificationsTap: () => Get.toNamed(AppRoutes.notifications),
+              Obx(
+                () => HomeHeader(
+                  onNotificationsTap: () =>
+                      Get.toNamed(AppRoutes.notifications),
+                  planLabel: subscriptionController.hasPremium
+                      ? context.l10n.premium
+                      : context.l10n.freePlan,
+                  isPremium: subscriptionController.hasPremium,
+                ),
               ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
               SizedBox(height: 18.h),
               HomeCaloriesCard(
