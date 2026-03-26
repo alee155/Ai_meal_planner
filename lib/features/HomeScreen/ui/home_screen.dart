@@ -56,11 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(
-                () => HomeHeader(
-                  onNotificationsTap: () =>
-                      Get.toNamed(AppRoutes.notifications),
-                ),
+              HomeHeader(
+                onNotificationsTap: () => Get.toNamed(AppRoutes.notifications),
               ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
               SizedBox(height: 18.h),
               Obx(
