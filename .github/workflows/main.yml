@@ -1,0 +1,65 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_release:
+    name: Build & Release
+    runs-on: macos-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - uses: actions/checkout@v3
+
+      # 2️⃣ Setup Java for Android
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17.0.18'
+
+      # 3️⃣ Setup Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.4'
+          channel: 'stable'
+
+      # 4️⃣ Install dependencies
+      - name: Install Flutter packages
+        run: flutter pub get
+
+      # 5️⃣ Analyze code quality
+      - name: Analyze
+        run: flutter analyze
+
+      # 6️⃣ Run tests
+      - name: Run tests
+        run: flutter test
+
+      # 7️⃣ Build Android APK
+      - name: Build Android APK
+        run: flutter build apk --release --split-per-abi
+
+      # 8️⃣ Build iOS IPA
+      - name: Build iOS IPA
+        run: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r app.ipa Payload
+
+      # 9️⃣ Upload APK + IPA as release artifacts
+      - name: Push to GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: |
+            build/app/outputs/flutter-apk/*apk
+            build/ios/iphoneos/app.ipa
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
