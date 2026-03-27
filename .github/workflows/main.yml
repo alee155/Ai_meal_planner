@@ -10,8 +10,8 @@ on:
 
 jobs:
   build_release:
-    name: Build & Release
-    runs-on: macos-latest
+    name: Build & Release (Android)
+    runs-on: ubuntu-latest   # ✅ faster & cheaper than macOS
 
     steps:
       # 1️⃣ Checkout code
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '17.0.18'
+          java-version: '17'
 
       # 3️⃣ Setup Flutter
       - uses: subosito/flutter-action@v2
@@ -41,25 +41,15 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # 7️⃣ Build Android APK
+      # 7️⃣ Build Android APK (single file)
       - name: Build Android APK
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release
 
-      # 8️⃣ Build iOS IPA
-      - name: Build iOS IPA
-        run: |
-          flutter build ios --release --no-codesign
-          cd build/ios/iphoneos
-          mkdir -p Payload
-          cp -r Runner.app Payload/
-          zip -r app.ipa Payload
-
-      # 9️⃣ Upload APK + IPA as release artifacts
+      # 8️⃣ Upload APK to GitHub Release
       - name: Push to GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: |
-            build/app/outputs/flutter-apk/*apk
-            build/ios/iphoneos/app.ipa
+          artifacts: build/app/outputs/flutter-apk/app-release.apk
           tag: v1.0.${{ github.run_number }}
+          allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
