@@ -1,8 +1,10 @@
 name: Flutter CI/CD (Android Only)
 
-# ⚡ Trigger only on push to master
 on:
   push:
+    branches:
+      - master
+  pull_request:
     branches:
       - master
 
@@ -31,7 +33,7 @@ jobs:
       - name: Install Flutter packages
         run: flutter pub get
 
-      # 5️⃣ Analyze code quality (optional fail-safe)
+      # 5️⃣ Analyze code quality
       - name: Analyze
         run: flutter analyze || true
 
@@ -39,15 +41,15 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # 7️⃣ Build Android APK (single release file)
+      # 7️⃣ Build Android APK (single file)
       - name: Build Android APK
         run: flutter build apk --release
 
       # 8️⃣ Upload APK to GitHub Release
-      - name: Push APK to GitHub Release
+      - name: Push to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: build/app/outputs/flutter-apk/app-release.apk
           tag: v1.0.${{ github.run_number }}
           allowUpdates: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
