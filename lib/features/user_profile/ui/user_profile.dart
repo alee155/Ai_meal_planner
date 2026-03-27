@@ -9,7 +9,7 @@ import 'package:ai_meal_planner/features/user_profile/widgets/fitness_goals_card
 import 'package:ai_meal_planner/features/user_profile/widgets/food_preferences_card.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/health_metrics_card.dart';
 import 'package:ai_meal_planner/features/user_profile/widgets/profile_completion_prompt_card.dart';
-import 'package:ai_meal_planner/features/user_profile/widgets/profile_overview_card.dart';
+
 import 'package:ai_meal_planner/l10n/app_localizations.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
