@@ -1,17 +1,15 @@
-name: Flutter CI/CD
+name: Flutter CI/CD (Android Only)
 
+# ⚡ Trigger only on push to master
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
 jobs:
   build_release:
     name: Build & Release (Android)
-    runs-on: ubuntu-latest   # ✅ faster & cheaper than macOS
+    runs-on: ubuntu-latest
 
     steps:
       # 1️⃣ Checkout code
@@ -33,7 +31,7 @@ jobs:
       - name: Install Flutter packages
         run: flutter pub get
 
-      # 5️⃣ Analyze code quality
+      # 5️⃣ Analyze code quality (optional fail-safe)
       - name: Analyze
         run: flutter analyze || true
 
@@ -41,12 +39,12 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # 7️⃣ Build Android APK (single file)
+      # 7️⃣ Build Android APK (single release file)
       - name: Build Android APK
         run: flutter build apk --release
 
       # 8️⃣ Upload APK to GitHub Release
-      - name: Push to GitHub Release
+      - name: Push APK to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: build/app/outputs/flutter-apk/app-release.apk
