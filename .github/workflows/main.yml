@@ -1,4 +1,4 @@
-name: Flutter CI/CD (Android Only)
+name: Flutter CI/CD
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 jobs:
   build_release:
     name: Build & Release (Android)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # ✅ Ubuntu is faster & cheaper than macOS for Android
 
     steps:
       # 1️⃣ Checkout code
@@ -41,15 +41,15 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # 7️⃣ Build Android APK (single file)
+      # 7️⃣ Build Android APK
       - name: Build Android APK
         run: flutter build apk --release
 
-      # 8️⃣ Upload APK to GitHub Release
-      - name: Push to GitHub Release
+      # 8️⃣ Push APK to GitHub Release
+      - name: Push APK to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: build/app/outputs/flutter-apk/app-release.apk
-          tag: v1.0.${{ github.run_number }}
+          tag: v1.0.${{ github.run_number }}   # ✅ auto-increment version per run
           allowUpdates: true
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN }}  # ✅ must match your secret name
