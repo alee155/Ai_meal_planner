@@ -1,30 +1,28 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:get/get.dart';
 import 'package:ai_meal_planner/main.dart';
+import 'package:ai_meal_planner/core/localization/locale_controller.dart';
+import 'package:ai_meal_planner/core/theme/theme_controller.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  setUp(() {
+    // Make sure the GetX controllers are registered before each test
+    if (!Get.isRegistered<LocaleController>()) {
+      Get.put(LocaleController());
+    }
+    if (!Get.isRegistered<ThemeController>()) {
+      Get.put(ThemeController());
+    }
+  });
+
+  testWidgets('App builds without errors', (WidgetTester tester) async {
+    // Build the app
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that MyApp exists in the widget tree
+    expect(find.byType(MyApp), findsOneWidget);
   });
+
+  // If you still want a counter test, you need to isolate a counter widget
+  // Instead of testing MyApp directly, test only the widget containing the counter.
 }
