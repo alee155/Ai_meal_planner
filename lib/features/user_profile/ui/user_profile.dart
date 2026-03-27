@@ -117,12 +117,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final headerSubtitle = widget.isOnboarding
         ? l10n.finishProfileSetupMessage
         : l10n.profileIntroDescription;
-    final overviewTitle = storedProfile.fullName.trim().isEmpty
-        ? l10n.setUpYourProfile
-        : storedProfile.fullName.trim();
-    final overviewSubtitle = storedProfile.email.trim().isEmpty
-        ? headerSubtitle
-        : storedProfile.email.trim();
+    // final overviewTitle = storedProfile.fullName.trim().isEmpty
+    //     ? l10n.setUpYourProfile
+    //     : storedProfile.fullName.trim();
+    // final overviewSubtitle = storedProfile.email.trim().isEmpty
+    //     ? headerSubtitle
+    //     : storedProfile.email.trim();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundMainOf(context),
@@ -187,27 +187,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ProfileOverviewCard(
-              title: overviewTitle,
-              subtitle: overviewSubtitle,
-              planLabel: subscriptionController.hasPremium
-                  ? l10n.premiumPlan
-                  : l10n.freePlan,
-              goalLabel: l10n.goal,
-              goalValue: goalOptions[_selectedGoalKey]!,
-              activityLabel: l10n.activityLevel,
-              activityValue: _selectedActivityKey == null
-                  ? l10n.notEnoughData
-                  : activityOptions[_selectedActivityKey]!,
-              bmiLabel: l10n.bmiAutoCalculated,
-              bmiValue: bmiDisplayValue,
-              bmiStatus: bmiCategory,
-              hasPremium: subscriptionController.hasPremium,
-              hasBmiData: hasBmiData,
-            ).animateProfileAvatar(
-              enabled: widget.playEntranceAnimation,
-              delay: AppMotion.stagger(1, initialMs: 120),
-            ),
+            // ProfileOverviewCard(
+            //   title: overviewTitle,
+            //   subtitle: overviewSubtitle,
+            //   planLabel: subscriptionController.hasPremium
+            //       ? l10n.premiumPlan
+            //       : l10n.freePlan,
+            //   goalLabel: l10n.goal,
+            //   goalValue: goalOptions[_selectedGoalKey]!,
+            //   activityLabel: l10n.activityLevel,
+            //   activityValue: _selectedActivityKey == null
+            //       ? l10n.notEnoughData
+            //       : activityOptions[_selectedActivityKey]!,
+            //   bmiLabel: l10n.bmiAutoCalculated,
+            //   bmiValue: bmiDisplayValue,
+            //   bmiStatus: bmiCategory,
+            //   hasPremium: subscriptionController.hasPremium,
+            //   hasBmiData: hasBmiData,
+            // ).animateProfileAvatar(
+            //   enabled: widget.playEntranceAnimation,
+            //   delay: AppMotion.stagger(1, initialMs: 120),
+            // ),
             if (!widget.isOnboarding && !storedProfile.onboardingComplete)
               ProfileCompletionPromptCard(
                 title: l10n.completeYourProfileTitle,
