@@ -4,12 +4,11 @@ An AI-powered Flutter application that helps users plan meals, manage diet, and 
 
 ---
 
-## 📱 App Screenshots
+## Screenshots
 
-<p align="center">
-  <img src="screenshots/ss_light.png" width="250"/>
-  <img src="screenshots/ss_dark.png" width="250"/>
-</p>
+![Light Mode Screenshot](screenshots/ss_light.png)
+
+![Dark Mode Screenshot](screenshots/ss_dark.png)
 
 ---
 
