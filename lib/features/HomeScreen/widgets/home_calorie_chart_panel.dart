@@ -462,7 +462,7 @@ class _ColumnBarChartPainter extends CustomPainter {
             ],
           ).createShader(rect.outerRect),
       );
-
+      //
       _drawValueLabel(
         canvas: canvas,
         size: size,
