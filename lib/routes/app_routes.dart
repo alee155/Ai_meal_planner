@@ -15,4 +15,6 @@ class AppRoutes {
   static const notifications = '/notifications';
   static const deleteAccount = '/delete-account';
   static const subscription = '/subscription';
+  static const multicolorloader = '/multicolorloader';
+  static const alarmRinging = '/alarm-ringing';
 }

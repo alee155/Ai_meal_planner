@@ -1,10 +1,10 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
+import 'package:ai_meal_planner/features/Auth/signup/controller/signup_controller.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_auth_card.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_guest_mode_action.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_hero_section.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_top_bar.dart';
-import 'package:ai_meal_planner/features/user_profile/controller/user_profile_controller.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:ai_meal_planner/shared/widgets/auth_background_decor.dart';
@@ -25,10 +25,11 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final SignupController _signupController =
+      SignupController.ensureRegistered();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -47,41 +48,39 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    final result = await _signupController.registerUser(
+      name: _nameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
 
     if (!mounted) {
       return;
     }
 
-    final profileController = UserProfileController.ensureRegistered();
-    await profileController.init();
-    profileController.seedAccountDetails(
-      fullName: _nameController.text,
-      email: _emailController.text,
-    );
+    if (result.isSuccess) {
+      Get.offAllNamed(AppRoutes.login);
+      AppSnackbar.success(l10n.accountCreatedTitle, result.message);
+      return;
+    }
 
-    setState(() => _isSubmitting = false);
-    Get.offAllNamed(AppRoutes.profileSetup);
-    AppSnackbar.success(l10n.accountCreatedTitle, l10n.accountCreatedMessage);
+    AppSnackbar.error('Signup failed', result.message);
   }
 
   Future<void> _handleGoogleSignup() async {
     final l10n = context.l10n;
     FocusScope.of(context).unfocus();
 
-    setState(() => _isSubmitting = true);
+    _signupController.isSubmitting.value = true;
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) {
+      _signupController.isSubmitting.value = false;
       return;
     }
 
-    final profileController = UserProfileController.ensureRegistered();
-    await profileController.init();
-
-    setState(() => _isSubmitting = false);
-    Get.offAllNamed(AppRoutes.profileSetup);
+    _signupController.isSubmitting.value = false;
+    Get.offAllNamed(AppRoutes.login);
     AppSnackbar.info(l10n.googleSignUpTitle, l10n.googleSignUpMessage);
   }
 
@@ -97,55 +96,62 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundMainOf(context),
-      body: Stack(
-        children: [
-          const AuthBackgroundDecor(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 0.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SignupTopBar(onBackTap: _goBack, isSubmitting: _isSubmitting),
-                  10.h.verticalSpace,
-                  const SignupHeroSection(),
-                  10.h.verticalSpace,
-                  SignupAuthCard(
-                    formKey: _formKey,
-                    nameController: _nameController,
-                    emailController: _emailController,
-                    passwordController: _passwordController,
-                    confirmPasswordController: _confirmPasswordController,
-                    obscurePassword: _obscurePassword,
-                    obscureConfirmPassword: _obscureConfirmPassword,
-                    isSubmitting: _isSubmitting,
-                    onTogglePasswordVisibility: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
-                    onToggleConfirmPasswordVisibility: () {
-                      setState(
-                        () =>
-                            _obscureConfirmPassword = !_obscureConfirmPassword,
-                      );
-                    },
-                    onSignup: _handleSignup,
-                    onGoogleSignup: _handleGoogleSignup,
-                    onSignIn: _goBack,
-                  ),
-                  10.h.verticalSpace,
-                  SignupGuestModeAction(
-                    onPressed: _continueAsGuest,
-                    isSubmitting: _isSubmitting,
-                  ),
-                  10.h.verticalSpace,
-                ],
+    return Obx(() {
+      final isSubmitting = _signupController.isSubmitting.value;
+
+      return Scaffold(
+        backgroundColor: AppColors.backgroundMainOf(context),
+        body: Stack(
+          children: [
+            const AuthBackgroundDecor(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 0.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SignupTopBar(
+                      onBackTap: _goBack,
+                      isSubmitting: isSubmitting,
+                    ),
+                    10.h.verticalSpace,
+                    const SignupHeroSection(),
+                    10.h.verticalSpace,
+                    SignupAuthCard(
+                      formKey: _formKey,
+                      nameController: _nameController,
+                      emailController: _emailController,
+                      passwordController: _passwordController,
+                      confirmPasswordController: _confirmPasswordController,
+                      obscurePassword: _obscurePassword,
+                      obscureConfirmPassword: _obscureConfirmPassword,
+                      isSubmitting: isSubmitting,
+                      onTogglePasswordVisibility: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
+                      onToggleConfirmPasswordVisibility: () {
+                        setState(
+                          () => _obscureConfirmPassword =
+                              !_obscureConfirmPassword,
+                        );
+                      },
+                      onSignup: _handleSignup,
+                      onGoogleSignup: _handleGoogleSignup,
+                      onSignIn: _goBack,
+                    ),
+                    10.h.verticalSpace,
+                    SignupGuestModeAction(
+                      onPressed: _continueAsGuest,
+                      isSubmitting: isSubmitting,
+                    ),
+                    10.h.verticalSpace,
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }

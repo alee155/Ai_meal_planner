@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
+import 'package:ai_meal_planner/features/Auth/login/controller/login_controller.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_auth_card.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_guest_mode_action.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_hero_section.dart';
@@ -21,9 +22,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final LoginController _loginController = LoginController.ensureRegistered();
 
   bool _obscurePassword = true;
-  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -39,32 +40,36 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-    await Future<void>.delayed(const Duration(milliseconds: 600));
+    final result = await _loginController.loginUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
 
     if (!mounted) {
       return;
     }
 
-    setState(() => _isSubmitting = false);
-    Get.offAllNamed(AppRoutes.bottomNav);
-    AppSnackbar.success(
-      context.l10n.welcomeBackTitle,
-      context.l10n.mealPlannerReadyMessage,
-    );
+    if (result.isSuccess) {
+      Get.offAllNamed(AppRoutes.bottomNav);
+      AppSnackbar.success(context.l10n.welcomeBackTitle, result.message);
+      return;
+    }
+
+    AppSnackbar.error('Login failed', result.message);
   }
 
   Future<void> _handleGoogleLogin() async {
     FocusScope.of(context).unfocus();
 
-    setState(() => _isSubmitting = true);
+    _loginController.isSubmitting.value = true;
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) {
+      _loginController.isSubmitting.value = false;
       return;
     }
 
-    setState(() => _isSubmitting = false);
+    _loginController.isSubmitting.value = false;
     Get.offAllNamed(AppRoutes.bottomNav);
     AppSnackbar.info(
       context.l10n.googleSignInTitle,
@@ -84,49 +89,55 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundMainOf(context),
-      body: Stack(
-        children: [
-          const AuthBackgroundDecor(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 0.h),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: 1.sh - 40.h),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const LoginHeroSection(),
-                      5.h.verticalSpace,
-                      LoginAuthCard(
-                        formKey: _formKey,
-                        emailController: _emailController,
-                        passwordController: _passwordController,
-                        obscurePassword: _obscurePassword,
-                        isSubmitting: _isSubmitting,
-                        onTogglePasswordVisibility: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
-                        onEmailLogin: _handleEmailLogin,
-                        onGoogleLogin: _handleGoogleLogin,
-                        onSignup: _signup,
-                      ),
-                      5.h.verticalSpace,
-                      LoginGuestModeAction(
-                        onPressed: _continueAsGuest,
-                        isSubmitting: _isSubmitting,
-                      ),
-                      const Spacer(),
-                    ],
+    return Obx(() {
+      final isSubmitting = _loginController.isSubmitting.value;
+
+      return Scaffold(
+        backgroundColor: AppColors.backgroundMainOf(context),
+        body: Stack(
+          children: [
+            const AuthBackgroundDecor(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 0.h),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: 1.sh - 40.h),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const LoginHeroSection(),
+                        5.h.verticalSpace,
+                        LoginAuthCard(
+                          formKey: _formKey,
+                          emailController: _emailController,
+                          passwordController: _passwordController,
+                          obscurePassword: _obscurePassword,
+                          isSubmitting: isSubmitting,
+                          onTogglePasswordVisibility: () {
+                            setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            );
+                          },
+                          onEmailLogin: _handleEmailLogin,
+                          onGoogleLogin: _handleGoogleLogin,
+                          onSignup: _signup,
+                        ),
+                        5.h.verticalSpace,
+                        LoginGuestModeAction(
+                          onPressed: _continueAsGuest,
+                          isSubmitting: isSubmitting,
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }

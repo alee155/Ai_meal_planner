@@ -1,7 +1,9 @@
 import 'package:ai_meal_planner/core/localization/locale_controller.dart';
 import 'package:ai_meal_planner/core/theme/app_theme.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
+import 'package:ai_meal_planner/features/AlarmRingScreen/ui/alarm_ring_screen.dart';
 import 'package:ai_meal_planner/l10n/app_localizations.dart';
+import 'package:ai_meal_planner/notification_service.dart';
 import 'package:ai_meal_planner/routes/app_pages.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +13,17 @@ import 'package:get/get.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  final launchAlarmData = await NotificationService.getLaunchAlarmData();
   LocaleController.ensureRegistered();
   await ThemeController.ensureRegistered().init();
-  runApp(const MyApp());
+  runApp(MyApp(initialAlarmData: launchAlarmData));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, this.initialAlarmData});
+
+  final AlarmLaunchData? initialAlarmData;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,12 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeController.themeMode.value,
             locale: localeController.locale.value,
-            initialRoute: AppRoutes.splash,
+            home: initialAlarmData == null
+                ? null
+                : AlarmRingScreen(initialAlarmData: initialAlarmData),
+            initialRoute: initialAlarmData == null
+                ? AppRoutes.multicolorloader
+                : null,
             getPages: AppPages.routes,
             localizationsDelegates: const [
               AppLocalizations.delegate,

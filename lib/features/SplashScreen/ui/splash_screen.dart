@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_background_decor.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_brand_panel.dart';
@@ -18,6 +19,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Timer? _navigationTimer;
+  final AuthSessionController _authSessionController =
+      AuthSessionController.ensureRegistered();
 
   @override
   void initState() {
@@ -43,7 +46,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   String _resolveNextRoute() {
-    return AppRoutes.bottomNav;
+    return _authSessionController.isLoggedIn
+        ? AppRoutes.bottomNav
+        : AppRoutes.login;
   }
 
   @override

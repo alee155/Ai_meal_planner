@@ -1,3 +1,6 @@
+import 'package:ai_meal_planner/MultiColorLoader.dart';
+import 'package:ai_meal_planner/alram.dart';
+import 'package:ai_meal_planner/features/AlarmRingScreen/ui/alarm_ring_screen.dart';
 import 'package:ai_meal_planner/features/Auth/login/ui/login_screen.dart';
 import 'package:ai_meal_planner/features/Auth/otp/ui/otp_screen.dart';
 import 'package:ai_meal_planner/features/Auth/signup/ui/signup_screen.dart';
@@ -11,7 +14,9 @@ import 'package:ai_meal_planner/features/ProfileSetupScreen/ui/profile_setup_scr
 import 'package:ai_meal_planner/features/SettingScreen/ui/settings_screen.dart';
 import 'package:ai_meal_planner/features/SplashScreen/ui/splash_screen.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/ui/subscription_screen.dart';
+
 import 'package:ai_meal_planner/features/user_profile/ui/user_profile.dart';
+
 import 'package:get/get.dart';
 
 import 'app_routes.dart';
@@ -45,6 +50,14 @@ class AppPages {
     GetPage(
       name: AppRoutes.deleteAccount,
       page: () => const DeleteAccountScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.multicolorloader,
+      page: () => const TimePickerScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.alarmRinging,
+      page: () => const AlarmRingScreen(),
     ),
   ];
 }
