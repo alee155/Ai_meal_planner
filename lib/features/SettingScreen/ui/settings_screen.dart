@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/localization/locale_controller.dart';
+import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
+import 'package:ai_meal_planner/features/Account/controller/account_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/widgets/subscription_status_card.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
@@ -16,6 +20,7 @@ import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -464,13 +469,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                     ),
-                    Container(
-                      padding: EdgeInsets.all(6.w),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
+                    InkWell(
+                      onTap: _showEditProfileSheet,
+                      borderRadius: BorderRadius.circular(999),
+                      child: Container(
+                        padding: EdgeInsets.all(6.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          size: 16.sp,
+                          color: Colors.white,
+                        ),
                       ),
-                      child: Icon(Icons.edit, size: 16.sp, color: Colors.white),
                     ),
                   ],
                 ),
@@ -885,9 +898,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
+    final accountController = AccountController.ensureRegistered();
     var obscureCurrent = true;
     var obscureNew = true;
     var obscureConfirm = true;
+    var isUpdating = false;
 
     Get.bottomSheet(
       StatefulBuilder(
@@ -928,35 +943,333 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             primaryLabel: 'Update password',
             secondaryLabel: 'Cancel',
-            onPrimaryTap: () {
-              if (!AppValidators.isValidPassword(
-                    currentPasswordController.text,
-                  ) ||
-                  !AppValidators.isValidPassword(newPasswordController.text) ||
-                  AppValidators.confirmPassword(
-                        confirmPasswordController.text,
-                        originalPassword: newPasswordController.text,
-                      ) !=
-                      null) {
+            isPrimaryLoading: isUpdating,
+            onPrimaryTap: () async {
+              final currentPasswordError = AppValidators.requiredPassword(
+                currentPasswordController.text,
+              );
+              final newPasswordError = AppValidators.requiredPassword(
+                newPasswordController.text,
+              );
+              final confirmPasswordError = AppValidators.confirmPassword(
+                confirmPasswordController.text,
+                originalPassword: newPasswordController.text,
+              );
+
+              if (currentPasswordError != null ||
+                  newPasswordError != null ||
+                  confirmPasswordError != null) {
                 AppSnackbar.error(
                   'Check your password',
-                  'Make sure all password fields are valid before continuing.',
+                  currentPasswordError ??
+                      newPasswordError ??
+                      confirmPasswordError!,
                 );
                 return;
               }
 
-              Get.back();
-              AppSnackbar.success(
-                'Password updated',
-                'Your password has been changed successfully.',
+              setModalState(() => isUpdating = true);
+              final result = await accountController.updatePassword(
+                currentPassword: currentPasswordController.text,
+                newPassword: newPasswordController.text,
               );
+              if (!mounted) {
+                return;
+              }
+
+              setModalState(() => isUpdating = false);
+              if (!result.isSuccess) {
+                AppSnackbar.error('Unable to update password', result.message);
+                return;
+              }
+
+              Get.back();
+              AppSnackbar.success('Password updated', result.message);
             },
-            onSecondaryTap: () => Get.back(),
+            onSecondaryTap: isUpdating ? null : () => Get.back(),
           );
         },
       ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+    );
+  }
+
+  void _showEditProfileSheet() {
+    final authSessionController = AuthSessionController.ensureRegistered();
+    final accountController = AccountController.ensureRegistered();
+    final user = authSessionController.currentUser.value;
+
+    if (user == null) {
+      AppSnackbar.error(
+        'Profile unavailable',
+        'Please log in again to edit your profile.',
+      );
+      return;
+    }
+
+    final nameController = TextEditingController(text: user.name);
+    final picker = ImagePicker();
+    XFile? selectedImage;
+    var isUpdating = false;
+
+    Get.bottomSheet(
+      StatefulBuilder(
+        builder: (sheetContext, setModalState) {
+          Future<void> pickProfileImage() async {
+            final source = await _showProfileImageSourceSheet(sheetContext);
+            if (source == null) {
+              return;
+            }
+
+            try {
+              final pickedImage = await picker.pickImage(
+                source: source,
+                maxWidth: 1400,
+                imageQuality: 88,
+              );
+
+              if (pickedImage == null) {
+                return;
+              }
+
+              setModalState(() => selectedImage = pickedImage);
+            } catch (_) {
+              AppSnackbar.error(
+                'Unable to open picker',
+                'Please check gallery or camera permissions and try again.',
+              );
+            }
+          }
+
+          final imageProvider = selectedImage != null
+              ? FileImage(File(selectedImage!.path)) as ImageProvider<Object>
+              : (user.resolvedProfileImageUrl ?? '').isNotEmpty
+              ? NetworkImage(user.resolvedProfileImageUrl!)
+              : null;
+
+          return _SettingsBottomSheet(
+            title: 'Edit profile',
+            message:
+                'Update your display name and choose a profile photo that feels familiar.',
+            primaryLabel: 'Update profile',
+            secondaryLabel: 'Cancel',
+            isPrimaryLoading: isUpdating,
+            content: Column(
+              children: [
+                Center(
+                  child: Column(
+                    children: [
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          InkWell(
+                            onTap: isUpdating ? null : pickProfileImage,
+                            borderRadius: BorderRadius.circular(999),
+                            child: Container(
+                              width: 110.w,
+                              height: 110.w,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.chipBackgroundOf(context),
+                                border: Border.all(
+                                  color: AppColors.primaryGreenDark.withValues(
+                                    alpha: 0.16,
+                                  ),
+                                  width: 1.6,
+                                ),
+                                image: imageProvider == null
+                                    ? null
+                                    : DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                              alignment: Alignment.center,
+                              child: imageProvider == null
+                                  ? Text(
+                                      _resolveInitials(nameController.text),
+                                      style: TextStyle(
+                                        fontSize: 30.sp,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.primaryGreenDark,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            right: -2.w,
+                            bottom: -2.h,
+                            child: Container(
+                              width: 34.w,
+                              height: 34.w,
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGreenDark,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.surfaceOf(context),
+                                  width: 2,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.camera_alt_outlined,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          if (selectedImage != null)
+                            Positioned(
+                              top: -6.h,
+                              right: -4.w,
+                              child: InkWell(
+                                onTap: isUpdating
+                                    ? null
+                                    : () => setModalState(
+                                        () => selectedImage = null,
+                                      ),
+                                borderRadius: BorderRadius.circular(999),
+                                child: Container(
+                                  width: 28.w,
+                                  height: 28.w,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.surfaceOf(context),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    size: 15.sp,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 12.h),
+                      Text(
+                        'Tap avatar to choose from camera or gallery',
+                        style: AppTextStyles.body(context, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 18.h),
+                AppTextFormField(
+                  controller: nameController,
+                  hintText: 'Full name',
+                  prefixIcon: Icons.person_outline_rounded,
+                  textCapitalization: TextCapitalization.words,
+                ),
+              ],
+            ),
+            onPrimaryTap: () async {
+              final nameError = AppValidators.requiredFullName(
+                nameController.text,
+              );
+              if (nameError != null) {
+                AppSnackbar.error('Check your name', nameError);
+                return;
+              }
+
+              setModalState(() => isUpdating = true);
+              final result = await accountController.updateProfile(
+                name: nameController.text,
+                profileImagePath: selectedImage?.path,
+              );
+
+              if (!mounted) {
+                return;
+              }
+
+              setModalState(() => isUpdating = false);
+              if (!result.isSuccess) {
+                AppSnackbar.error('Unable to update profile', result.message);
+                return;
+              }
+
+              Get.back();
+              AppSnackbar.success('Profile updated', result.message);
+            },
+            onSecondaryTap: isUpdating ? null : () => Get.back(),
+          );
+        },
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Future<ImageSource?> _showProfileImageSourceSheet(BuildContext context) {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 26.h),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceOf(context),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 44.w,
+                    height: 5.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.borderOf(context),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 18.h),
+                Text(
+                  'Choose profile photo',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimaryOf(context),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Pick a new image from your gallery or capture one with the camera.',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    height: 1.5,
+                    color: AppColors.textSecondaryOf(context),
+                  ),
+                ),
+                SizedBox(height: 18.h),
+                _ProfileImageSourceTile(
+                  icon: Icons.photo_library_outlined,
+                  title: 'Choose from gallery',
+                  subtitle: 'Use an existing photo from your phone',
+                  onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+                ),
+                SizedBox(height: 10.h),
+                _ProfileImageSourceTile(
+                  icon: Icons.photo_camera_outlined,
+                  title: 'Take a photo',
+                  subtitle: 'Capture a new profile picture right away',
+                  onTap: () => Navigator.of(context).pop(ImageSource.camera),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1142,6 +1455,7 @@ class _SettingsBottomSheet extends StatelessWidget {
     this.content,
     required this.primaryLabel,
     this.secondaryLabel,
+    this.isPrimaryLoading = false,
     required this.onPrimaryTap,
     this.onSecondaryTap,
   });
@@ -1151,6 +1465,7 @@ class _SettingsBottomSheet extends StatelessWidget {
   final Widget? content;
   final String primaryLabel;
   final String? secondaryLabel;
+  final bool isPrimaryLoading;
   final VoidCallback onPrimaryTap;
   final VoidCallback? onSecondaryTap;
 
@@ -1222,12 +1537,85 @@ class _SettingsBottomSheet extends StatelessWidget {
                     label: primaryLabel,
                     backgroundColor: AppColors.primaryGreenDark,
                     foregroundColor: AppColors.textWhite,
+                    isLoading: isPrimaryLoading,
                     borderRadius: 16,
                     paddingVertical: 15,
                     fontSize: 14,
                   ),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileImageSourceTile extends StatelessWidget {
+  const _ProfileImageSourceTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceOf(context),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: AppColors.borderOf(context)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44.w,
+              height: 44.w,
+              decoration: BoxDecoration(
+                color: AppColors.chipBackgroundOf(context),
+                borderRadius: BorderRadius.circular(14.r),
+              ),
+              child: Icon(icon, color: AppColors.primaryGreenDark, size: 22.sp),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimaryOf(context),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColors.textSecondaryOf(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16.sp,
+              color: AppColors.textHintOf(context),
             ),
           ],
         ),

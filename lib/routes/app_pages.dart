@@ -1,4 +1,6 @@
 import 'package:ai_meal_planner/alram.dart';
+import 'package:ai_meal_planner/features/Account/ui/password_reset_confirm_screen.dart';
+import 'package:ai_meal_planner/features/Account/ui/password_reset_request_screen.dart';
 import 'package:ai_meal_planner/features/AlarmRingScreen/ui/alarm_ring_screen.dart';
 import 'package:ai_meal_planner/features/Auth/login/ui/login_screen.dart';
 import 'package:ai_meal_planner/features/Auth/otp/ui/otp_screen.dart';
@@ -29,6 +31,14 @@ class AppPages {
     GetPage(name: AppRoutes.login, page: () => const LoginScreen()),
     GetPage(name: AppRoutes.signup, page: () => const SignupScreen()),
     GetPage(name: AppRoutes.otp, page: () => const OtpScreen()),
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => const PasswordResetRequestScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.resetPasswordConfirm,
+      page: () => const PasswordResetConfirmScreen(),
+    ),
     GetPage(
       name: AppRoutes.profileSetup,
       page: () => const ProfileSetupScreen(),

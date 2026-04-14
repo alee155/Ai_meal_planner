@@ -9,6 +9,7 @@ class AuthUser {
     this.isPremium = false,
     this.isActive = true,
     this.profileImageUrl,
+    this.passwordChangedAt,
     this.createdAt,
     this.updatedAt,
   });
@@ -20,6 +21,7 @@ class AuthUser {
   final bool isPremium;
   final bool isActive;
   final String? profileImageUrl;
+  final DateTime? passwordChangedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -49,6 +51,7 @@ class AuthUser {
     bool? isActive,
     String? profileImageUrl,
     bool clearProfileImageUrl = false,
+    DateTime? passwordChangedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -62,6 +65,7 @@ class AuthUser {
       profileImageUrl: clearProfileImageUrl
           ? null
           : profileImageUrl ?? this.profileImageUrl,
+      passwordChangedAt: passwordChangedAt ?? this.passwordChangedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -76,6 +80,7 @@ class AuthUser {
       'isPremium': isPremium,
       'isActive': isActive,
       'profileImageUrl': profileImageUrl,
+      'passwordChangedAt': passwordChangedAt?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
@@ -90,6 +95,7 @@ class AuthUser {
       isPremium: json['isPremium'] == true,
       isActive: json['isActive'] != false,
       profileImageUrl: json['profileImageUrl']?.toString(),
+      passwordChangedAt: _parseDateTime(json['passwordChangedAt']),
       createdAt: _parseDateTime(json['createdAt']),
       updatedAt: _parseDateTime(json['updatedAt']),
     );

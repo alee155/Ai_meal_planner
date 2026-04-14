@@ -5,13 +5,16 @@ import 'dart:convert';
 import 'package:ai_meal_planner/core/auth/models/auth_user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AuthSessionStorageService {
   AuthSessionStorageService({FlutterSecureStorage? secureStorage})
     : _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   static const _tokenKey = 'auth_token';
-  static const _userKey = 'auth_user';
+  static const _legacyUserKey = 'auth_user';
+  static const _authCacheBoxName = 'auth_cache';
+  static const _userCacheKey = 'auth_user';
 
   final FlutterSecureStorage _secureStorage;
 
@@ -33,7 +36,8 @@ class AuthSessionStorageService {
   Future<void> saveUser(AuthUser user) async {
     print('******** AUTH USER SAVE START ********');
     print('user email: ${user.email}');
-    await _secureStorage.write(key: _userKey, value: jsonEncode(user.toJson()));
+    await _authCacheBox.put(_userCacheKey, jsonEncode(user.toJson()));
+    await _secureStorage.delete(key: _legacyUserKey);
     print('******** AUTH USER SAVE END ********');
   }
 
@@ -57,7 +61,8 @@ class AuthSessionStorageService {
   }
 
   Future<AuthUser?> readUser() async {
-    final rawUser = await _secureStorage.read(key: _userKey);
+    final cachedUser = _authCacheBox.get(_userCacheKey);
+    final rawUser = cachedUser ?? await _readLegacyUserAndMigrate();
     print('******** AUTH USER READ ********');
     print('user exists: ${rawUser != null && rawUser.isNotEmpty}');
 
@@ -72,7 +77,21 @@ class AuthSessionStorageService {
   Future<void> clearSession() async {
     print('******** AUTH SESSION CLEAR START ********');
     await _secureStorage.delete(key: _tokenKey);
-    await _secureStorage.delete(key: _userKey);
+    await _secureStorage.delete(key: _legacyUserKey);
+    await _authCacheBox.delete(_userCacheKey);
     print('******** AUTH SESSION CLEAR END ********');
+  }
+
+  Box<String> get _authCacheBox => Hive.box<String>(_authCacheBoxName);
+
+  Future<String?> _readLegacyUserAndMigrate() async {
+    final legacyUser = await _secureStorage.read(key: _legacyUserKey);
+    if (legacyUser == null || legacyUser.isEmpty) {
+      return null;
+    }
+
+    await _authCacheBox.put(_userCacheKey, legacyUser);
+    await _secureStorage.delete(key: _legacyUserKey);
+    return legacyUser;
   }
 }

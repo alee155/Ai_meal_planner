@@ -68,6 +68,8 @@ class AuthInterceptor extends Interceptor {
     return path == ApiEndpoints.auth.register ||
         path == ApiEndpoints.auth.verifyOtp ||
         path == ApiEndpoints.auth.resendOtp ||
-        path == ApiEndpoints.auth.login;
+        path == ApiEndpoints.auth.login ||
+        path == ApiEndpoints.auth.password.resetRequest ||
+        path == ApiEndpoints.auth.password.resetConfirm;
   }
 }

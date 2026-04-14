@@ -7,7 +7,7 @@ import 'package:ai_meal_planner/core/network/api_exception.dart';
 import 'package:ai_meal_planner/core/network/api_response.dart';
 import 'package:ai_meal_planner/core/network/interceptors/auth_interceptor.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 
 class ApiClient {
   ApiClient({Dio? dio})
@@ -59,7 +59,7 @@ class ApiClient {
       () => _dio.post<dynamic>(
         endpoint,
         data: body,
-        options: Options(headers: _jsonHeaders(headers)),
+        options: Options(headers: _headers(headers)),
       ),
       method: 'POST',
       endpoint: endpoint,
@@ -83,7 +83,7 @@ class ApiClient {
     return _send(
       () => _dio.get<dynamic>(
         endpoint,
-        options: Options(headers: _jsonHeaders(headers)),
+        options: Options(headers: _headers(headers)),
       ),
       method: 'GET',
       endpoint: endpoint,
@@ -110,11 +110,97 @@ class ApiClient {
       () => _dio.patch<dynamic>(
         endpoint,
         data: body,
-        options: Options(headers: _jsonHeaders(headers)),
+        options: Options(headers: _headers(headers)),
       ),
       method: 'PATCH',
       endpoint: endpoint,
       body: body,
+      headers: headers,
+    );
+  }
+
+  Future<Map<String, dynamic>> putRequest(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    final response = await put(endpoint, body: body, headers: headers);
+
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> put(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    return _send(
+      () => _dio.put<dynamic>(
+        endpoint,
+        data: body,
+        options: Options(headers: _headers(headers)),
+      ),
+      method: 'PUT',
+      endpoint: endpoint,
+      body: body,
+      headers: headers,
+    );
+  }
+
+  Future<Map<String, dynamic>> putMultipartRequest(
+    String endpoint, {
+    required FormData body,
+    Map<String, String>? headers,
+  }) async {
+    final response = await putMultipart(endpoint, body: body, headers: headers);
+
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> putMultipart(
+    String endpoint, {
+    required FormData body,
+    Map<String, String>? headers,
+  }) async {
+    return _send(
+      () => _dio.put<dynamic>(
+        endpoint,
+        data: body,
+        options: Options(
+          headers: _headers(headers, includeJsonContentType: false),
+        ),
+      ),
+      method: 'PUT',
+      endpoint: endpoint,
+      body: body.fields.isEmpty
+          ? <String, dynamic>{}
+          : Map<String, dynamic>.fromEntries(
+              body.fields.map((field) => MapEntry(field.key, field.value)),
+            ),
+      headers: headers,
+    );
+  }
+
+  Future<Map<String, dynamic>> deleteRequest(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    final response = await delete(endpoint, headers: headers);
+
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> delete(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
+    return _send(
+      () => _dio.delete<dynamic>(
+        endpoint,
+        options: Options(headers: _headers(headers)),
+      ),
+      method: 'DELETE',
+      endpoint: endpoint,
       headers: headers,
     );
   }
@@ -211,7 +297,7 @@ class ApiClient {
     print('******** API REQUEST START ********');
     print('method: $method');
     print('url: ${ApiEndpoints.url(endpoint)}');
-    print('headers: ${_stringifyPayload(_jsonHeaders(headers))}');
+    print('headers: ${_stringifyPayload(_headers(headers))}');
     print('body: ${_stringifyPayload(body ?? <String, dynamic>{})}');
     print('******** API REQUEST END ********');
   }
@@ -260,10 +346,13 @@ class ApiClient {
     }
   }
 
-  Map<String, String> _jsonHeaders(Map<String, String>? headers) {
+  Map<String, String> _headers(
+    Map<String, String>? headers, {
+    bool includeJsonContentType = true,
+  }) {
     return <String, String>{
       'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      if (includeJsonContentType) 'Content-Type': 'application/json',
       ...?headers,
     };
   }

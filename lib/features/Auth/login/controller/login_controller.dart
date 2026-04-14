@@ -71,6 +71,7 @@ class LoginController extends GetxController {
 
       successMessage.value = resolvedMessage;
       print('login success message: $resolvedMessage');
+      print('login token: $token');
       print('login token length: ${token.length}');
       print('******** LOGIN FLOW END ********');
 

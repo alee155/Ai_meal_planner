@@ -96,6 +96,14 @@ class _LoginScreenState extends State<LoginScreen> {
     Get.toNamed(AppRoutes.signup);
   }
 
+  void _forgotPassword() {
+    FocusScope.of(context).unfocus();
+    Get.toNamed(
+      AppRoutes.forgotPassword,
+      arguments: _emailController.text.trim(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -130,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           onEmailLogin: _handleEmailLogin,
                           onGoogleLogin: _handleGoogleLogin,
+                          onForgotPassword: _forgotPassword,
                           onSignup: _signup,
                         ),
                         5.h.verticalSpace,

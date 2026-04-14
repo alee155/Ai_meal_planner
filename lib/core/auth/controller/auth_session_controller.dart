@@ -43,6 +43,7 @@ class AuthSessionController extends GetxController {
     currentUser.value = await _storageService.readUser();
     isLoaded.value = true;
     print('isLoggedIn: $isLoggedIn');
+    print('storedToken: ${token.value ?? 'N/A'}');
     print('currentUserEmail: ${currentUser.value?.email ?? 'N/A'}');
     print('******** AUTH SESSION INIT END ********');
   }

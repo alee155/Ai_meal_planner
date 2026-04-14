@@ -51,7 +51,8 @@ class DeleteAccountWarningCard extends StatelessWidget {
             text: 'You will be signed out immediately after deletion.',
           ),
           const _WarningRow(
-            text: 'For this demo, any valid password with 6+ characters will work.',
+            text:
+                'If you only need a break, deactivate instead of deleting permanently.',
           ),
         ],
       ),

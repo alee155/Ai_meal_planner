@@ -77,5 +77,7 @@
 		<!-- ✅ Camera permission (if needed for other features) -->
 		<key>NSCameraUsageDescription</key>
 		<string>We use your camera to create interactive visual effects that respond to your environment.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We use your photo library so you can choose a profile picture for your account.</string>
 	</dict>
 </plist>

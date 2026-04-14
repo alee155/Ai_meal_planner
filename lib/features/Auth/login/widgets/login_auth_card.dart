@@ -20,6 +20,7 @@ class LoginAuthCard extends StatelessWidget {
     required this.onTogglePasswordVisibility,
     required this.onEmailLogin,
     required this.onGoogleLogin,
+    required this.onForgotPassword,
     required this.onSignup,
   });
 
@@ -31,6 +32,7 @@ class LoginAuthCard extends StatelessWidget {
   final VoidCallback onTogglePasswordVisibility;
   final VoidCallback onEmailLogin;
   final VoidCallback onGoogleLogin;
+  final VoidCallback onForgotPassword;
   final VoidCallback onSignup;
 
   @override
@@ -102,6 +104,26 @@ class LoginAuthCard extends StatelessWidget {
                 value,
                 requiredMessage: l10n.passwordRequired,
                 minLengthMessage: l10n.passwordMinLength,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: isSubmitting ? null : onForgotPassword,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 4.h),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Forgot password?',
+                  style: AppTextStyles.button(
+                    context,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryGreenDark,
+                  ),
+                ),
               ),
             ),
             20.h.verticalSpace,
