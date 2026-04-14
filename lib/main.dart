@@ -47,9 +47,7 @@ class MyApp extends StatelessWidget {
             home: initialAlarmData == null
                 ? null
                 : AlarmRingScreen(initialAlarmData: initialAlarmData),
-            initialRoute: initialAlarmData == null
-                ? AppRoutes.multicolorloader
-                : null,
+            initialRoute: initialAlarmData == null ? AppRoutes.splash : null,
             getPages: AppPages.routes,
             localizationsDelegates: const [
               AppLocalizations.delegate,

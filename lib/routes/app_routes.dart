@@ -11,6 +11,7 @@ class AppRoutes {
   static const dietPlan = '/diet-plan';
   static const aiChat = '/ai-chat';
   static const profile = '/profile';
+  static const personalDetails = '/personal-details';
   static const settings = '/settings';
   static const notifications = '/notifications';
   static const deleteAccount = '/delete-account';

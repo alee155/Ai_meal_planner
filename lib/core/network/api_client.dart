@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:ai_meal_planner/core/network/api_endpoints.dart';
 import 'package:ai_meal_planner/core/network/api_exception.dart';
+import 'package:ai_meal_planner/core/network/api_response.dart';
+import 'package:ai_meal_planner/core/network/interceptors/auth_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response;
 
@@ -24,7 +26,9 @@ class ApiClient {
                 'Content-Type': 'application/json',
               },
             ),
-          );
+          ) {
+    _dio.interceptors.add(AuthInterceptor());
+  }
 
   final Dio _dio;
 
@@ -37,6 +41,16 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> postRequest(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    final response = await post(endpoint, body: body, headers: headers);
+
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> post(
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
@@ -58,6 +72,14 @@ class ApiClient {
     String endpoint, {
     Map<String, String>? headers,
   }) async {
+    final response = await get(endpoint, headers: headers);
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> get(
+    String endpoint, {
+    Map<String, String>? headers,
+  }) async {
     return _send(
       () => _dio.get<dynamic>(
         endpoint,
@@ -70,6 +92,16 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> patchRequest(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    Map<String, String>? headers,
+  }) async {
+    final response = await patch(endpoint, body: body, headers: headers);
+
+    return response.data;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> patch(
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
@@ -87,7 +119,7 @@ class ApiClient {
     );
   }
 
-  Future<Map<String, dynamic>> _send(
+  Future<ApiResponse<Map<String, dynamic>>> _send(
     Future<Response<dynamic>> Function() requestBuilder, {
     required String method,
     required String endpoint,
@@ -114,7 +146,13 @@ class ApiClient {
       );
 
       if (statusCode >= 200 && statusCode < 300) {
-        return responseBody;
+        return ApiResponse<Map<String, dynamic>>(
+          data: responseBody,
+          statusCode: statusCode,
+          headers: response.headers.map.map(
+            (key, value) => MapEntry(key, List<String>.from(value)),
+          ),
+        );
       }
 
       throw ApiException(
@@ -263,6 +301,21 @@ class ApiClient {
   String? _extractMessage(Map<String, dynamic> body) {
     final message = body['message']?.toString().trim() ?? '';
     if (message.isEmpty) {
+      final nestedData = body['data'];
+      if (nestedData is Map<String, dynamic>) {
+        final nestedMessage = nestedData['message']?.toString().trim() ?? '';
+        return nestedMessage.isEmpty ? null : nestedMessage;
+      }
+
+      if (nestedData is Map) {
+        final normalizedData = nestedData.map(
+          (key, value) => MapEntry(key.toString(), value),
+        );
+        final nestedMessage =
+            normalizedData['message']?.toString().trim() ?? '';
+        return nestedMessage.isEmpty ? null : nestedMessage;
+      }
+
       return null;
     }
 

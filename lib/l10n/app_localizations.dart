@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @verificationCodeTitle.
   ///
   /// In en, this message translates to:
-  /// **'4-digit verification code'**
+  /// **'6-digit verification code'**
   String get verificationCodeTitle;
 
   /// No description provided for @otpPasteHint.
@@ -347,7 +347,7 @@ abstract class AppLocalizations {
   /// No description provided for @otpPendingStatus.
   ///
   /// In en, this message translates to:
-  /// **'Code expires soon. Enter all 4 digits to continue.'**
+  /// **'Code expires soon. Enter all 6 digits to continue.'**
   String get otpPendingStatus;
 
   /// No description provided for @verifyCode.
@@ -377,7 +377,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterCompleteCodeMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please enter the full 4-digit verification code.'**
+  /// **'Please enter the full 6-digit verification code.'**
   String get enterCompleteCodeMessage;
 
   /// No description provided for @codeVerifiedTitle.

@@ -1,101 +1,291 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/alarm_body_bg">
 
-    <!-- ── GREEN HEADER BAND ── -->
-    <RelativeLayout android:id="@+id/headerBand" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/alarm_header_gradient" android:clipChildren="false" android:clipToPadding="false" android:paddingStart="22dp" android:paddingTop="48dp" android:paddingEnd="22dp" android:paddingBottom="28dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/alarm_header_gradient"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingStart="22dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="28dp">
 
-        <!-- Decorative orb top-right -->
-        <View android:layout_width="180dp" android:layout_height="180dp" android:layout_alignParentTop="true" android:layout_alignParentEnd="true" android:layout_marginTop="-50dp" android:layout_marginEnd="-50dp" android:background="@drawable/alarm_header_orb_a" />
+        <View
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="-50dp"
+            android:layout_marginEnd="-50dp"
+            android:background="@drawable/alarm_header_orb_a" />
 
-        <!-- Decorative orb bottom-left -->
-        <View android:layout_width="130dp" android:layout_height="130dp" android:layout_alignParentBottom="true" android:layout_alignParentStart="true" android:layout_marginStart="-40dp" android:layout_marginBottom="-30dp" android:background="@drawable/alarm_header_orb_b" />
+        <View
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="-40dp"
+            android:layout_marginBottom="-30dp"
+            android:background="@drawable/alarm_header_orb_b" />
 
-        <!-- Badge row -->
-        <LinearLayout android:id="@+id/badgeRow" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/badgeRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- Status pill with pulsing dot -->
-            <LinearLayout android:id="@+id/statusPill" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/alarm_header_pill" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="12dp" android:paddingTop="6dp" android:paddingEnd="12dp" android:paddingBottom="6dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/alarm_header_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp">
 
-                <View android:id="@+id/pulseDot" android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/alarm_pulse_dot" />
+                <View
+                    android:id="@+id/pulseDot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/alarm_pulse_dot" />
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="Meal alarm ringing" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.02" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="7dp"
+                    android:text="Meal alarm ringing"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
             </LinearLayout>
-
-            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
-
-            <TextView android:id="@+id/alarmCurrentDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Monday, April 14" android:textColor="#A8D4BC" android:textSize="11sp" android:textStyle="normal" />
         </LinearLayout>
 
-        <!-- Pulse ring + bell icon -->
-        <FrameLayout android:id="@+id/pulseRingContainer" android:layout_width="68dp" android:layout_height="68dp" android:layout_below="@id/badgeRow" android:layout_centerHorizontal="true" android:layout_marginTop="20dp">
+        <FrameLayout
+            android:id="@+id/pulseRingContainer"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_below="@id/badgeRow"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp">
 
-            <!-- Animated pulse ring (drawn in code) -->
-            <View android:id="@+id/pulseRing" android:layout_width="68dp" android:layout_height="68dp" android:layout_gravity="center" android:background="@drawable/alarm_pulse_ring" />
+            <View
+                android:id="@+id/pulseRing"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="center"
+                android:background="@drawable/alarm_pulse_ring" />
 
-            <!-- Bell circle -->
-            <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_gravity="center" android:background="@drawable/alarm_bell_circle">
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="@drawable/alarm_bell_circle">
 
-                <ImageView android:id="@+id/bellIcon" android:layout_width="28dp" android:layout_height="28dp" android:layout_gravity="center" android:src="@drawable/ic_notifications_active" android:tint="#FFFFFF" />
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_alarm_bell"
+                    android:tint="#FFFFFF" />
             </FrameLayout>
         </FrameLayout>
 
-        <!-- Big clock -->
-        <TextView android:id="@+id/alarmCurrentTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/pulseRingContainer" android:layout_centerHorizontal="true" android:layout_marginTop="16dp" android:text="08:30" android:textColor="#FFFFFF" android:textSize="58sp" android:textStyle="bold" android:letterSpacing="-0.03" />
+        <TextView
+            android:id="@+id/alarmCurrentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pulseRingContainer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:textColor="#FFFFFF"
+            android:textSize="58sp"
+            android:textStyle="bold"
+            tools:text="8:30 AM" />
 
-        <!-- Scheduled chip -->
-        <LinearLayout android:id="@+id/scheduledChip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/alarmCurrentTime" android:layout_centerHorizontal="true" android:layout_marginTop="16dp" android:background="@drawable/alarm_header_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="14dp" android:paddingTop="8dp" android:paddingEnd="14dp" android:paddingBottom="8dp">
+        <TextView
+            android:id="@+id/alarmCurrentDateCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/alarmCurrentTime"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="#D2EFE0"
+            android:textSize="11sp"
+            tools:text="Tuesday, April 14" />
 
-            <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_schedule" android:tint="#BDE8D4" />
+        <LinearLayout
+            android:id="@+id/scheduledChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/alarmCurrentDateCenter"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/alarm_header_chip"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="8dp">
 
-            <TextView android:id="@+id/alarmScheduledTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="Scheduled for 08:30 AM" android:textColor="#D6F0E4" android:textSize="12sp" android:textStyle="bold" />
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_alarm_schedule"
+                android:tint="#D6F0E4" />
+
+            <TextView
+                android:id="@+id/alarmScheduledTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="#E8FAF1"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Scheduled for 8:00 AM" />
         </LinearLayout>
-
     </RelativeLayout>
 
-    <!-- ── SCROLLABLE BODY ── -->
-    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:background="@drawable/alarm_body_bg" android:fillViewport="true" android:overScrollMode="never">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="20dp" android:paddingTop="20dp" android:paddingEnd="20dp" android:paddingBottom="32dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="32dp">
 
-            <!-- Meal card -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/alarm_card_bg" android:elevation="4dp" android:orientation="horizontal" android:padding="20dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/alarm_card_bg"
+                android:orientation="horizontal"
+                android:padding="20dp">
 
-                <!-- Icon tile -->
-                <FrameLayout android:layout_width="52dp" android:layout_height="52dp" android:background="@drawable/alarm_icon_tile">
+                <FrameLayout
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/alarm_icon_tile">
 
-                    <ImageView android:layout_width="26dp" android:layout_height="26dp" android:layout_gravity="center" android:src="@drawable/ic_restaurant_menu" android:tint="#1D9E75" />
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_alarm_meal"
+                        android:tint="#1D9E75" />
                 </FrameLayout>
 
-                <!-- Title + instruction -->
-                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                    <TextView android:id="@+id/alarmTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Meal Reminder" android:textColor="#122015" android:textSize="20sp" android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/alarmTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#122015"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        tools:text="Breakfast reminder" />
 
-                    <TextView android:id="@+id/alarmInstruction" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:lineSpacingExtra="6dp" android:text="Time to complete your meal and follow your nutrition plan." android:textColor="#33463A" android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/alarmInstruction"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="6dp"
+                        android:textColor="#33463A"
+                        android:textSize="14sp"
+                        tools:text="Time to complete your meal and follow your nutrition plan." />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Hint row -->
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/alarm_hint_bg" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="14dp" android:paddingTop="11dp" android:paddingEnd="14dp" android:paddingBottom="11dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/alarm_hint_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingTop="11dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="11dp">
 
-                <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_tips" android:tint="#1D9E75" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_alarm_tip"
+                    android:tint="#1D9E75" />
 
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="10dp" android:layout_weight="1" android:lineSpacingExtra="3dp" android:text="Snooze pauses for 30 s · Stop silences &amp; keeps your schedule" android:textColor="#203127" android:textSize="12sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:lineSpacingExtra="3dp"
+                    android:text="Snooze pauses for 30 s · Stop silences &amp; keeps your schedule"
+                    android:textColor="#203127"
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- SWIPE TO SNOOZE label -->
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="28dp" android:gravity="center" android:letterSpacing="0.14" android:text="SWIPE TO SNOOZE" android:textColor="#7A9A87" android:textSize="10sp" android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:letterSpacing="0.14"
+                android:text="SWIPE TO SNOOZE"
+                android:textColor="#7A9A87"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
-            <!-- Snooze swipe slider -->
-            <com.yourapp.widgets.SwipeActionButton android:id="@+id/snoozeSlider" android:layout_width="match_parent" android:layout_height="64dp" android:layout_marginTop="8dp" app:sab_label="Snooze 30s" app:sab_trackColor="#E1F5EE" app:sab_fillColorStart="#9FE1CB" app:sab_fillColorEnd="#5DCAA5" app:sab_thumbColor="#FFFFFF" app:sab_labelColor="#0F6E56" app:sab_completedLabel="Snoozed!" app:sab_completedColor="#1D9E75" app:sab_thumbIconType="snooze" />
+            <com.example.ai_meal_planner.widgets.SwipeActionView
+                android:id="@+id/alarmSnoozeSlider"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp" />
 
-            <!-- SWIPE TO STOP label -->
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center" android:letterSpacing="0.14" android:text="SWIPE TO STOP" android:textColor="#7A9A87" android:textSize="10sp" android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:letterSpacing="0.14"
+                android:text="SWIPE TO STOP"
+                android:textColor="#7A9A87"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
-            <!-- Stop swipe slider -->
-            <com.yourapp.widgets.SwipeActionButton android:id="@+id/stopSlider" android:layout_width="match_parent" android:layout_height="64dp" android:layout_marginTop="8dp" app:sab_label="Stop alarm" app:sab_trackColor="#FCEBEB" app:sab_fillColorStart="#F7C1C1" app:sab_fillColorEnd="#F09595" app:sab_thumbColor="#FFFFFF" app:sab_labelColor="#A32D2D" app:sab_completedLabel="Alarm stopped!" app:sab_completedColor="#E24B4A" app:sab_thumbIconType="stop" />
-
+            <com.example.ai_meal_planner.widgets.SwipeActionView
+                android:id="@+id/alarmStopSlider"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp" />
         </LinearLayout>
     </ScrollView>
 

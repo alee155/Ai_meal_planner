@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.graphics.BitmapFactory
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -195,7 +196,10 @@ object AlarmScheduler {
         )
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(
+                BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher),
+            )
             .setContentTitle(config.title)
             .setContentText(config.instruction)
             .setPriority(NotificationCompat.PRIORITY_MAX)

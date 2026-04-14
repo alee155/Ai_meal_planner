@@ -130,7 +130,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'اپنے اکاؤنٹ تک رسائی کی تصدیق کے لیے وہ تصدیقی کوڈ استعمال کریں جو ہم نے ابھی بھیجا ہے۔';
 
   @override
-  String get verificationCodeTitle => '4 ہندسوں کا تصدیقی کوڈ';
+  String get verificationCodeTitle => '6 ہندسوں کا تصدیقی کوڈ';
 
   @override
   String get otpPasteHint =>
@@ -141,7 +141,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get otpPendingStatus =>
-      'کوڈ جلد ختم ہو جائے گا۔ جاری رکھنے کے لیے تمام 4 ہندسے درج کریں۔';
+      'کوڈ جلد ختم ہو جائے گا۔ جاری رکھنے کے لیے تمام 6 ہندسے درج کریں۔';
 
   @override
   String get verifyCode => 'کوڈ کی تصدیق کریں';
@@ -157,7 +157,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get enterCompleteCodeMessage =>
-      'براہ کرم مکمل 4 ہندسوں کا تصدیقی کوڈ درج کریں۔';
+      'براہ کرم مکمل 6 ہندسوں کا تصدیقی کوڈ درج کریں۔';
 
   @override
   String get codeVerifiedTitle => 'کوڈ کی تصدیق ہو گئی';

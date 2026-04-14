@@ -58,20 +58,19 @@ class LoginController extends GetxController {
       final resolvedMessage = response.message.trim().isEmpty
           ? 'Login successful'
           : response.message.trim();
-      final token = response.data?.token ?? '';
-      final user = response.data?.user;
+      final token = response.token.trim();
 
-      if (token.isEmpty || user == null) {
+      if (token.isEmpty) {
         throw const ApiException(
-          message: 'Login response is missing token or user data.',
+          message: 'Login response is missing auth token.',
         );
       }
 
-      await _authSessionController.saveSession(token: token, user: user);
+      await _authSessionController.saveToken(token);
+      await _authSessionController.fetchAndStoreCurrentUser();
 
       successMessage.value = resolvedMessage;
       print('login success message: $resolvedMessage');
-      print('login user id: ${user.id}');
       print('login token length: ${token.length}');
       print('******** LOGIN FLOW END ********');
 
@@ -79,15 +78,20 @@ class LoginController extends GetxController {
         isSuccess: true,
         message: resolvedMessage,
         token: token,
-        user: user,
       );
     } on ApiException catch (error) {
+      if (_authSessionController.currentUser.value == null) {
+        await _authSessionController.clearSession();
+      }
       errorMessage.value = error.message;
       print('login api exception: ${error.message}');
       print('******** LOGIN FLOW END ********');
 
       return LoginActionResult(isSuccess: false, message: error.message);
     } catch (_) {
+      if (_authSessionController.currentUser.value == null) {
+        await _authSessionController.clearSession();
+      }
       const fallbackMessage = 'Something went wrong. Please try again.';
       errorMessage.value = fallbackMessage;
       print('login unexpected exception: $fallbackMessage');

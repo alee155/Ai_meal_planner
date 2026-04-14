@@ -129,7 +129,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the verification code we just sent to confirm access to your account.';
 
   @override
-  String get verificationCodeTitle => '4-digit verification code';
+  String get verificationCodeTitle => '6-digit verification code';
 
   @override
   String get otpPasteHint =>
@@ -140,7 +140,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpPendingStatus =>
-      'Code expires soon. Enter all 4 digits to continue.';
+      'Code expires soon. Enter all 6 digits to continue.';
 
   @override
   String get verifyCode => 'Verify code';
@@ -156,7 +156,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterCompleteCodeMessage =>
-      'Please enter the full 4-digit verification code.';
+      'Please enter the full 6-digit verification code.';
 
   @override
   String get codeVerifiedTitle => 'Code verified';

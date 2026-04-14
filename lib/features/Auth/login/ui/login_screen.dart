@@ -27,6 +27,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    final initialEmail = Get.arguments;
+    if (initialEmail is String && initialEmail.trim().isNotEmpty) {
+      _emailController.text = initialEmail.trim();
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();

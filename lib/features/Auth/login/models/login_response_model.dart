@@ -1,51 +1,77 @@
-import 'package:ai_meal_planner/core/auth/models/auth_user.dart';
+import 'package:ai_meal_planner/core/network/api_response.dart';
 
 class LoginResponseModel {
   const LoginResponseModel({
     required this.success,
     required this.message,
-    this.data,
+    required this.token,
   });
 
   final bool success;
   final String message;
-  final LoginResponseData? data;
+  final String token;
 
-  factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
+  factory LoginResponseModel.fromApiResponse(
+    ApiResponse<Map<String, dynamic>> response,
+  ) {
+    final json = response.data;
     final data = json['data'];
+    final normalizedData = data is Map<String, dynamic>
+        ? data
+        : data is Map
+        ? data.map((key, value) => MapEntry(key.toString(), value))
+        : null;
+    final nestedMessage = normalizedData?['message']?.toString().trim() ?? '';
+    final rootMessage = json['message']?.toString().trim() ?? '';
 
     return LoginResponseModel(
       success: json['success'] == true,
-      message: json['message']?.toString() ?? '',
-      data: data is Map<String, dynamic>
-          ? LoginResponseData.fromJson(data)
-          : data is Map
-          ? LoginResponseData.fromJson(
-              data.map((key, value) => MapEntry(key.toString(), value)),
-            )
-          : null,
+      message: nestedMessage.isNotEmpty ? nestedMessage : rootMessage,
+      token: _extractToken(json, normalizedData, response),
     );
   }
-}
 
-class LoginResponseData {
-  const LoginResponseData({required this.token, required this.user});
+  static String _extractToken(
+    Map<String, dynamic> rootJson,
+    Map<String, dynamic>? dataJson,
+    ApiResponse<Map<String, dynamic>> response,
+  ) {
+    final bodyCandidates = <dynamic>[
+      dataJson?['token'],
+      dataJson?['accessToken'],
+      dataJson?['jwt'],
+      rootJson['token'],
+      rootJson['accessToken'],
+      rootJson['jwt'],
+    ];
 
-  final String token;
-  final AuthUser? user;
+    for (final candidate in bodyCandidates) {
+      final token = candidate?.toString().trim() ?? '';
+      if (token.isNotEmpty) {
+        return token;
+      }
+    }
 
-  factory LoginResponseData.fromJson(Map<String, dynamic> json) {
-    final user = json['user'];
+    final headerCandidates = <String?>[
+      response.firstHeader('authorization'),
+      response.firstHeader('Authorization'),
+      response.firstHeader('x-access-token'),
+      response.firstHeader('token'),
+    ];
 
-    return LoginResponseData(
-      token: json['token']?.toString() ?? '',
-      user: user is Map<String, dynamic>
-          ? AuthUser.fromJson(user)
-          : user is Map
-          ? AuthUser.fromJson(
-              user.map((key, value) => MapEntry(key.toString(), value)),
-            )
-          : null,
-    );
+    for (final candidate in headerCandidates) {
+      final value = candidate?.trim() ?? '';
+      if (value.isEmpty) {
+        continue;
+      }
+
+      if (value.toLowerCase().startsWith('bearer ')) {
+        return value.substring(7).trim();
+      }
+
+      return value;
+    }
+
+    return '';
   }
 }

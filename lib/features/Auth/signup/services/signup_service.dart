@@ -20,7 +20,7 @@ class SignupService {
 
   Future<SignupResponseModel> registerUser(SignupRequestModel request) async {
     final response = await _apiClient.postRequest(
-      ApiEndpoints.register,
+      ApiEndpoints.auth.register,
       body: request.toJson(),
     );
 

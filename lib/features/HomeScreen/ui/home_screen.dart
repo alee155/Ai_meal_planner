@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
+import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calorie_chart_panel.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calories_card.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final subscriptionController = SubscriptionController.ensureRegistered();
+    final authSessionController = AuthSessionController.ensureRegistered();
     const calorieGoal = 1700;
     const consumedCalories = 1360;
     const remainingCalories = calorieGoal - consumedCalories;
@@ -56,8 +58,22 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HomeHeader(
-                onNotificationsTap: () => Get.toNamed(AppRoutes.notifications),
+              Obx(
+                () => HomeHeader(
+                  onNotificationsTap: () =>
+                      Get.toNamed(AppRoutes.notifications),
+                  userName:
+                      authSessionController.currentUser.value?.name
+                              .trim()
+                              .isNotEmpty ==
+                          true
+                      ? authSessionController.currentUser.value!.name.trim()
+                      : 'Guest User',
+                  avatarImageUrl: authSessionController
+                      .currentUser
+                      .value
+                      ?.resolvedProfileImageUrl,
+                ),
               ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
               SizedBox(height: 18.h),
               Obx(

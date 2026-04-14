@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
+import 'package:ai_meal_planner/features/Auth/otp/models/otp_screen_arguments.dart';
 import 'package:ai_meal_planner/features/Auth/signup/controller/signup_controller.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_auth_card.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_guest_mode_action.dart';
@@ -59,7 +60,12 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     if (result.isSuccess) {
-      Get.offAllNamed(AppRoutes.login);
+      Get.toNamed(
+        AppRoutes.otp,
+        arguments: OtpScreenArguments(
+          email: result.email ?? _emailController.text.trim(),
+        ),
+      );
       AppSnackbar.success(l10n.accountCreatedTitle, result.message);
       return;
     }

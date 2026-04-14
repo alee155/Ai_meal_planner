@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
+import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/localization/locale_controller.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
@@ -39,6 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authSessionController = AuthSessionController.ensureRegistered();
     final localeController = LocaleController.ensureRegistered();
     final subscriptionController = SubscriptionController.ensureRegistered();
     final screenBackground = AppColors.backgroundSecondaryOf(context);
@@ -98,6 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               () =>
                   _buildProfileCard(
                     hasPremium: subscriptionController.hasPremium,
+                    authSessionController: authSessionController,
                   ).animateSettingsCard(
                     enabled: widget.playEntranceAnimation,
                     delay: AppMotion.stagger(1, initialMs: 120),
@@ -115,11 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.person_outline_rounded,
                       title: 'Personal details',
                       subtitle: 'Name, email, and profile preferences',
-                      onTap: () => _showInfoSheet(
-                        title: 'Personal details',
-                        message:
-                            'Connect this tile to your profile edit flow when you are ready.',
-                      ),
+                      onTap: () => Get.toNamed(AppRoutes.personalDetails),
                     ),
                     _SettingsTile(
                       icon: Icons.lock_outline_rounded,
@@ -368,7 +367,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildProfileCard({required bool hasPremium}) {
+  Widget _buildProfileCard({
+    required bool hasPremium,
+    required AuthSessionController authSessionController,
+  }) {
+    final user = authSessionController.currentUser.value;
+    final resolvedName = (user?.name.trim().isNotEmpty ?? false)
+        ? user!.name.trim()
+        : 'Guest user';
+    final resolvedEmail = (user?.email.trim().isNotEmpty ?? false)
+        ? user!.email.trim()
+        : 'No email connected';
+    final resolvedImageUrl = user?.resolvedProfileImageUrl;
+    final initials = _resolveInitials(resolvedName);
+
     return Container(
       padding: EdgeInsets.all(18.w),
       decoration: BoxDecoration(
@@ -400,22 +412,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             child: ClipOval(
-              child: Image.network(
-                'https://i.pravatar.cc/150?img=3',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'AK',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: (resolvedImageUrl ?? '').isEmpty
+                  ? Container(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      alignment: Alignment.center,
+                      child: Text(
+                        initials,
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  : Image.network(
+                      resolvedImageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        alignment: Alignment.center,
+                        child: Text(
+                          initials,
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ),
           ),
 
@@ -431,7 +456,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Ali Abbas',
+                        resolvedName,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w700,
@@ -453,7 +478,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 4.h),
 
                 Text(
-                  'ali12@gmail.com',
+                  resolvedEmail,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: Colors.white.withValues(alpha: 0.85),
@@ -473,7 +498,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ? Icons.workspace_premium
                           : Icons.shield_outlined,
                     ),
-                    _buildProfileChip('Fat Loss', Icons.local_fire_department),
+                    _buildProfileChip(
+                      user?.isEmailVerified == true
+                          ? 'Email verified'
+                          : 'Verification pending',
+                      user?.isEmailVerified == true
+                          ? Icons.verified_rounded
+                          : Icons.mark_email_unread_outlined,
+                    ),
                   ],
                 ),
               ],
@@ -507,6 +539,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  String _resolveInitials(String name) {
+    final parts = name
+        .split(RegExp(r'\s+'))
+        .where((part) => part.trim().isNotEmpty)
+        .take(2)
+        .toList();
+
+    if (parts.isEmpty) {
+      return 'AI';
+    }
+
+    return parts.map((part) => part[0].toUpperCase()).join();
   }
 
   Widget _buildSectionTitle(String title) {
@@ -944,7 +990,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Get.toNamed(AppRoutes.deleteAccount);
   }
 
-  void _logout() {
+  Future<void> _logout() async {
+    await AuthSessionController.ensureRegistered().clearSession();
     Get.offAllNamed(AppRoutes.login);
     AppSnackbar.info('Logged out', 'See you again soon.');
   }

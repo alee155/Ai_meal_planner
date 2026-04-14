@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_background_decor.dart';
@@ -18,26 +16,21 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Timer? _navigationTimer;
   final AuthSessionController _authSessionController =
       AuthSessionController.ensureRegistered();
 
   @override
   void initState() {
     super.initState();
-    _navigationTimer = Timer(
-      const Duration(milliseconds: 3000),
-      _navigateToInitialRoute,
-    );
+    _bootstrapSession();
   }
 
-  @override
-  void dispose() {
-    _navigationTimer?.cancel();
-    super.dispose();
-  }
+  Future<void> _bootstrapSession() async {
+    await Future.wait<void>([
+      _authSessionController.bootstrapSession(),
+      Future<void>.delayed(const Duration(milliseconds: 1800)),
+    ]);
 
-  void _navigateToInitialRoute() {
     if (!mounted) {
       return;
     }

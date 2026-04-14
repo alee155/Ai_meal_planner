@@ -23,6 +23,20 @@ class AuthSessionStorageService {
     return Get.put(AuthSessionStorageService(), permanent: true);
   }
 
+  Future<void> saveToken(String token) async {
+    print('******** AUTH TOKEN SAVE START ********');
+    print('token length: ${token.length}');
+    await _secureStorage.write(key: _tokenKey, value: token);
+    print('******** AUTH TOKEN SAVE END ********');
+  }
+
+  Future<void> saveUser(AuthUser user) async {
+    print('******** AUTH USER SAVE START ********');
+    print('user email: ${user.email}');
+    await _secureStorage.write(key: _userKey, value: jsonEncode(user.toJson()));
+    print('******** AUTH USER SAVE END ********');
+  }
+
   Future<void> saveSession({
     required String token,
     required AuthUser user,
@@ -30,8 +44,8 @@ class AuthSessionStorageService {
     print('******** AUTH SESSION SAVE START ********');
     print('token length: ${token.length}');
     print('user email: ${user.email}');
-    await _secureStorage.write(key: _tokenKey, value: token);
-    await _secureStorage.write(key: _userKey, value: jsonEncode(user.toJson()));
+    await saveToken(token);
+    await saveUser(user);
     print('******** AUTH SESSION SAVE END ********');
   }
 

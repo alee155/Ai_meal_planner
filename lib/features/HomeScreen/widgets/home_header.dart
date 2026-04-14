@@ -9,16 +9,16 @@ class HomeHeader extends StatelessWidget {
     super.key,
     required this.onNotificationsTap,
     this.greeting = 'Good morning',
-    this.userName = 'Ali Abbas',
+    this.userName = 'Guest User',
     this.badgeCount = 2,
-    this.avatarImageUrl = 'https://picsum.photos/200',
+    this.avatarImageUrl,
   });
 
   final VoidCallback onNotificationsTap;
   final String greeting;
   final String userName;
   final int? badgeCount;
-  final String avatarImageUrl;
+  final String? avatarImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +35,20 @@ class HomeHeader extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.buttonDisabled,
-            image: DecorationImage(
-              image: NetworkImage(avatarImageUrl),
-              fit: BoxFit.cover,
-            ),
+            image: (avatarImageUrl ?? '').trim().isEmpty
+                ? null
+                : DecorationImage(
+                    image: NetworkImage(avatarImageUrl!),
+                    fit: BoxFit.cover,
+                  ),
           ),
+          alignment: Alignment.center,
+          child: (avatarImageUrl ?? '').trim().isEmpty
+              ? Icon(
+                  Icons.person_rounded,
+                  color: AppColors.textSecondaryOf(context),
+                )
+              : null,
         ),
         5.w.horizontalSpace,
         Expanded(

@@ -19,11 +19,11 @@ class LoginService {
   }
 
   Future<LoginResponseModel> loginUser(LoginRequestModel request) async {
-    final response = await _apiClient.postRequest(
-      ApiEndpoints.login,
+    final response = await _apiClient.post(
+      ApiEndpoints.auth.login,
       body: request.toJson(),
     );
 
-    return LoginResponseModel.fromJson(response);
+    return LoginResponseModel.fromApiResponse(response);
   }
 }

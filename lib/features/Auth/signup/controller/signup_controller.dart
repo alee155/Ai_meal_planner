@@ -52,18 +52,17 @@ class SignupController extends GetxController {
       );
 
       final resolvedMessage = response.message.trim().isEmpty
-          ? 'User registered successfully'
+          ? 'Verification code sent successfully.'
           : response.message.trim();
 
       successMessage.value = resolvedMessage;
       print('signup success message: $resolvedMessage');
-      print('signup userId: ${response.data?.userId ?? 'N/A'}');
       print('******** SIGNUP FLOW END ********');
 
       return SignupActionResult(
         isSuccess: true,
         message: resolvedMessage,
-        userId: response.data?.userId,
+        email: email.trim(),
       );
     } on ApiException catch (error) {
       errorMessage.value = error.message;

@@ -1,4 +1,3 @@
-import 'package:ai_meal_planner/MultiColorLoader.dart';
 import 'package:ai_meal_planner/alram.dart';
 import 'package:ai_meal_planner/features/AlarmRingScreen/ui/alarm_ring_screen.dart';
 import 'package:ai_meal_planner/features/Auth/login/ui/login_screen.dart';
@@ -10,6 +9,7 @@ import 'package:ai_meal_planner/features/DeleteAccountScreen/ui/delete_account_s
 import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart';
 import 'package:ai_meal_planner/features/HomeScreen/ui/home_screen.dart';
 import 'package:ai_meal_planner/features/NotificationsScreen/ui/notification_screen.dart';
+import 'package:ai_meal_planner/features/PersonalDetailsScreen/ui/personal_details_screen.dart';
 import 'package:ai_meal_planner/features/ProfileSetupScreen/ui/profile_setup_screen.dart';
 import 'package:ai_meal_planner/features/SettingScreen/ui/settings_screen.dart';
 import 'package:ai_meal_planner/features/SplashScreen/ui/splash_screen.dart';
@@ -38,6 +38,10 @@ class AppPages {
     GetPage(name: AppRoutes.dietPlan, page: () => const DietPlanScreen()),
     GetPage(name: AppRoutes.aiChat, page: () => const AiChatScreen()),
     GetPage(name: AppRoutes.profile, page: () => const UserProfileScreen()),
+    GetPage(
+      name: AppRoutes.personalDetails,
+      page: () => const PersonalDetailsScreen(),
+    ),
     GetPage(name: AppRoutes.settings, page: () => const SettingsScreen()),
     GetPage(
       name: AppRoutes.subscription,
@@ -55,9 +59,6 @@ class AppPages {
       name: AppRoutes.multicolorloader,
       page: () => const TimePickerScreen(),
     ),
-    GetPage(
-      name: AppRoutes.alarmRinging,
-      page: () => const AlarmRingScreen(),
-    ),
+    GetPage(name: AppRoutes.alarmRinging, page: () => const AlarmRingScreen()),
   ];
 }

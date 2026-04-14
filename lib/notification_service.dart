@@ -170,9 +170,7 @@ class NotificationService {
 
   static Future<AlarmLaunchData?> getLaunchAlarmData() async {
     final details = await _plugin.getNotificationAppLaunchDetails();
-    return AlarmLaunchData.fromPayload(
-      details?.notificationResponse?.payload,
-    );
+    return AlarmLaunchData.fromPayload(details?.notificationResponse?.payload);
   }
 
   static Future<void> _openAlarmScreen({AlarmLaunchData? alarmData}) async {
@@ -182,10 +180,7 @@ class NotificationService {
     }
 
     if (Get.currentRoute == AppRoutes.alarmRinging) {
-      await Get.offNamed(
-        AppRoutes.alarmRinging,
-        arguments: resolvedAlarmData,
-      );
+      await Get.offNamed(AppRoutes.alarmRinging, arguments: resolvedAlarmData);
       return;
     }
 
@@ -262,8 +257,9 @@ class NotificationService {
     String? title,
     String? instruction,
   }) async {
-    final normalizedTitle =
-        (title == null || title.trim().isEmpty) ? defaultTitle : title.trim();
+    final normalizedTitle = (title == null || title.trim().isEmpty)
+        ? defaultTitle
+        : title.trim();
     final normalizedInstruction =
         (instruction == null || instruction.trim().isEmpty)
         ? defaultInstruction
