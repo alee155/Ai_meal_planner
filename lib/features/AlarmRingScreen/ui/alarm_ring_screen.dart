@@ -3,13 +3,13 @@ import 'dart:io';
 
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
+import 'package:ai_meal_planner/features/AlarmRingScreen/widgets/alarm_header.dart';
+import 'package:ai_meal_planner/features/AlarmRingScreen/widgets/swipe_action_button.dart';
 import 'package:ai_meal_planner/notification_service.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
-import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
-import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class AlarmRingScreen extends StatefulWidget {
@@ -28,14 +28,13 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
   AlarmLaunchData get _alarmData {
     final arguments = Get.arguments;
-    if (arguments is AlarmLaunchData) {
-      return arguments;
-    }
+    if (arguments is AlarmLaunchData) return arguments;
+
     return widget.initialAlarmData ??
         const AlarmLaunchData(
           title: NotificationService.defaultTitle,
           instruction: NotificationService.defaultInstruction,
-          hour: 0,
+          hour: 8,
           minute: 0,
         );
   }
@@ -44,6 +43,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
   void initState() {
     super.initState();
     _currentTime = DateTime.now();
+
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       setState(() => _currentTime = DateTime.now());
@@ -56,26 +56,38 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
     super.dispose();
   }
 
+  // ───────────────────────── ACTIONS ─────────────────────────
+
   Future<void> _handleStop() async {
+    if (_isHandlingAction) return;
+
     setState(() => _isHandlingAction = true);
+
     await NotificationService.stopAlarm();
+
     if (!mounted) return;
-    await _dismissAlarmUi();
+    await _dismiss();
   }
 
   Future<void> _handleSnooze() async {
+    if (_isHandlingAction) return;
+
     setState(() => _isHandlingAction = true);
+
     await NotificationService.snoozeAlarm();
+
     if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Alarm will ring again after 30 seconds.')),
     );
-    await _dismissAlarmUi();
+
+    await _dismiss();
   }
 
-  Future<void> _dismissAlarmUi() async {
+  Future<void> _dismiss() async {
     if (Get.key.currentState?.canPop() ?? false) {
-      Get.back<void>();
+      Get.back();
       return;
     }
 
@@ -87,312 +99,13 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
     await Get.offAllNamed(AppRoutes.multicolorloader);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDark = AppColors.isDark(context);
-    final primary = isDark
-        ? AppColors.primaryGreenLight
-        : AppColors.primaryGreenDark;
-    final accent = isDark
-        ? AppColors.primaryGreenDark
-        : AppColors.primaryGreenLight;
-    final surface = AppColors.surfaceOf(context);
-    final scheduledTime = TimeOfDay(
-      hour: _alarmData.hour,
-      minute: _alarmData.minute,
-    ).format(context);
+  // ───────────────────────── FORMATTERS ─────────────────────────
 
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundMainOf(context),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      primary.withValues(alpha: isDark ? 0.24 : 0.16),
-                      AppColors.backgroundMainOf(context),
-                      AppColors.backgroundSecondaryOf(context),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: -110.h,
-              right: -90.w,
-              child: Container(
-                width: 260.w,
-                height: 260.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: accent.withValues(alpha: isDark ? 0.22 : 0.18),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 140.h,
-              left: -100.w,
-              child: Container(
-                width: 220.w,
-                height: 220.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: primary.withValues(alpha: isDark ? 0.16 : 0.10),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 18.h, 20.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 14.w,
-                        vertical: 10.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: surface.withValues(alpha: 0.88),
-                        borderRadius: BorderRadius.circular(999.r),
-                        border: Border.all(color: AppColors.borderOf(context)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.alarm_rounded,
-                            color: primary,
-                            size: 18.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            'Meal alarm ringing',
-                            style: AppTextStyles.caption(
-                              context,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimaryOf(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 28.h),
-                    Text(
-                      _formatCurrentTime(context),
-                      style: AppTextStyles.display(
-                        context,
-                        fontSize: 56,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.textPrimaryOf(context),
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      _formatCurrentDate(),
-                      style: AppTextStyles.body(
-                        context,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondaryOf(context),
-                      ),
-                    ),
-                    SizedBox(height: 26.h),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(22.w),
-                            decoration: BoxDecoration(
-                              color: surface.withValues(alpha: 0.94),
-                              borderRadius: BorderRadius.circular(28.r),
-                              border: Border.all(
-                                color: AppColors.borderOf(context),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: primary.withValues(alpha: 0.12),
-                                  blurRadius: 32,
-                                  offset: const Offset(0, 16),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 60.w,
-                                  height: 60.w,
-                                  decoration: BoxDecoration(
-                                    color: primary.withValues(alpha: 0.10),
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  child: Icon(
-                                    Icons.restaurant_menu_rounded,
-                                    color: primary,
-                                    size: 28.sp,
-                                  ),
-                                ),
-                                SizedBox(height: 18.h),
-                                Text(
-                                  _alarmData.title,
-                                  style: AppTextStyles.headline(
-                                    context,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                SizedBox(height: 10.h),
-                                Text(
-                                  _alarmData.instruction,
-                                  style: AppTextStyles.body(
-                                    context,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.textPrimaryOf(
-                                      context,
-                                    ).withValues(alpha: 0.82),
-                                    height: 1.5,
-                                  ),
-                                ),
-                                SizedBox(height: 18.h),
-                                Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(16.w),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.backgroundSecondaryOf(
-                                      context,
-                                    ),
-                                    borderRadius: BorderRadius.circular(18.r),
-                                    border: Border.all(
-                                      color: AppColors.borderOf(context),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.schedule_rounded,
-                                        size: 20.sp,
-                                        color: primary,
-                                      ),
-                                      SizedBox(width: 10.w),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Scheduled alarm time',
-                                              style: AppTextStyles.caption(
-                                                context,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                            SizedBox(height: 3.h),
-                                            Text(
-                                              scheduledTime,
-                                              style: AppTextStyles.title(
-                                                context,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 18.h),
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 18.w,
-                              vertical: 16.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.chipBackgroundOf(context),
-                              borderRadius: BorderRadius.circular(20.r),
-                              border: Border.all(
-                                color: primary.withValues(alpha: 0.18),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.tips_and_updates_rounded,
-                                  color: primary,
-                                  size: 20.sp,
-                                ),
-                                SizedBox(width: 12.w),
-                                Expanded(
-                                  child: Text(
-                                    'Snooze pauses this alarm for 30 seconds. Stop silences it and keeps your daily reminder schedule.',
-                                    style: AppTextStyles.body(
-                                      context,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textPrimaryOf(context),
-                                      height: 1.45,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AppOutlinedButton(
-                      label: 'Snooze 30s',
-                      onPressed: _isHandlingAction ? null : _handleSnooze,
-                      foregroundColor: primary,
-                      borderColor: primary.withValues(alpha: 0.32),
-                      borderRadius: 22,
-                      paddingVertical: 17,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    SizedBox(height: 12.h),
-                    AppFilledButton(
-                      label: 'Stop Alarm',
-                      onPressed: _isHandlingAction ? null : _handleStop,
-                      backgroundColor: primary,
-                      foregroundColor: AppColors.textWhite,
-                      borderRadius: 22,
-                      paddingVertical: 18,
-                      fontSize: 16,
-                      isLoading: _isHandlingAction,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  String _formatHHMM(BuildContext context) =>
+      TimeOfDay.fromDateTime(_currentTime).format(context);
 
-  String _formatCurrentTime(BuildContext context) {
-    return TimeOfDay.fromDateTime(_currentTime).format(context);
-  }
-
-  String _formatCurrentDate() {
-    const months = <String>[
+  String _formatDate() {
+    const months = [
       'January',
       'February',
       'March',
@@ -406,7 +119,8 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
       'November',
       'December',
     ];
-    const weekdays = <String>[
+
+    const weekdays = [
       'Monday',
       'Tuesday',
       'Wednesday',
@@ -416,6 +130,211 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
       'Sunday',
     ];
 
-    return '${weekdays[_currentTime.weekday - 1]}, ${months[_currentTime.month - 1]} ${_currentTime.day}';
+    return '${weekdays[_currentTime.weekday - 1]}, '
+        '${months[_currentTime.month - 1]} ${_currentTime.day}';
+  }
+
+  // ───────────────────────── BUILD ─────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
+    final primary = isDark
+        ? AppColors.primaryGreenLight
+        : AppColors.primaryGreenDark;
+
+    final scheduledTime = TimeOfDay(
+      hour: _alarmData.hour,
+      minute: _alarmData.minute,
+    ).format(context);
+
+    // colors
+    final snoozeTrackDark = const Color(0xFF0F6E56).withOpacity(0.25);
+    final snoozeFill = isDark
+        ? const Color(0xFF1D9E75)
+        : const Color(0xFF5DCAA5);
+
+    final stopTrackDark = const Color(0xFFA32D2D).withOpacity(0.25);
+    const stopFill = Color(0xFFE24B4A);
+
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundMainOf(context),
+        body: Column(
+          children: [
+            // ───────── HEADER (clean extracted widget)
+            AlarmHeader(
+              isDark: isDark,
+              primary: primary,
+              scheduledTime: scheduledTime,
+              dateText: _formatDate(),
+              currentTime: _formatHHMM(context),
+            ),
+
+            // ───────── BODY
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0),
+                child: Column(
+                  children: [
+                    // ── Meal Card (still inside screen for now)
+                    _mealCard(context, primary, isDark),
+
+                    SizedBox(height: 12.h),
+
+                    _hintBanner(context, primary, isDark),
+
+                    SizedBox(height: 28.h),
+
+                    // ── Snooze
+                    _sectionLabel("SWIPE TO SNOOZE"),
+
+                    SizedBox(height: 8.h),
+
+                    SwipeActionButton(
+                      label: 'Snooze 30s',
+                      icon: Icon(Icons.schedule_rounded, size: 16.sp),
+                      thumbIcon: Icon(Icons.access_time_rounded, size: 22.sp),
+                      trackColor: isDark
+                          ? snoozeTrackDark
+                          : AppColors.primaryGreenLight,
+                      fillColor: snoozeFill,
+                      thumbColor: isDark
+                          ? const Color(0xFF1a2e27)
+                          : Colors.white,
+                      labelColor: isDark
+                          ? AppColors.primaryGreenLight
+                          : AppColors.surfaceWhite,
+                      onCompleted: _isHandlingAction ? () {} : _handleSnooze,
+                    ),
+
+                    SizedBox(height: 20.h),
+
+                    // ── Stop
+                    _sectionLabel("SWIPE TO STOP"),
+
+                    SizedBox(height: 8.h),
+
+                    SwipeActionButton(
+                      label: 'Stop alarm',
+                      icon: Icon(Icons.stop_circle_outlined, size: 16.sp),
+                      thumbIcon: Icon(Icons.stop_rounded, size: 22.sp),
+                      trackColor: isDark
+                          ? stopTrackDark
+                          : const Color(0xFFFCEBEB),
+                      fillColor: stopFill,
+                      thumbColor: isDark
+                          ? const Color(0xFF2e1a1a)
+                          : Colors.white,
+                      labelColor: isDark
+                          ? const Color(0xFFF09595)
+                          : const Color(0xFFA32D2D),
+                      onCompleted: _isHandlingAction ? () {} : _handleStop,
+                    ),
+
+                    SizedBox(height: 32.h),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ───────────────────────── LOCAL SMALL WIDGETS ─────────────────────────
+
+  Widget _sectionLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 10.sp,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.4,
+        color: AppColors.textSecondaryOf(context),
+      ),
+    );
+  }
+
+  Widget _mealCard(BuildContext context, Color primary, bool isDark) {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceOf(context).withOpacity(0.95),
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(color: AppColors.borderOf(context), width: 0.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52.w,
+            height: 52.w,
+            decoration: BoxDecoration(
+              color: primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Icon(
+              Icons.restaurant_menu_rounded,
+              color: primary,
+              size: 26.sp,
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _alarmData.title,
+                  style: AppTextStyles.headline(
+                    context,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  _alarmData.instruction,
+                  style: AppTextStyles.body(
+                    context,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textPrimaryOf(context).withOpacity(0.72),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _hintBanner(BuildContext context, Color primary, bool isDark) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 11.h),
+      decoration: BoxDecoration(
+        color: primary.withOpacity(isDark ? 0.14 : 0.08),
+        borderRadius: BorderRadius.circular(14.r),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.tips_and_updates_rounded, color: primary, size: 16.sp),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              'Snooze pauses for 30 s · Stop silences & keeps your schedule',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.textPrimaryOf(context),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
