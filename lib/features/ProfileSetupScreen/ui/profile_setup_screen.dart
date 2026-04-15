@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/network/api_exception.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/ProfileSetupScreen/widgets/profile_setup_footer.dart';
 import 'package:ai_meal_planner/features/ProfileSetupScreen/widgets/profile_setup_header.dart';
@@ -287,23 +288,49 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     }
 
     setState(() => _isSaving = true);
-    await _profileController.saveProfile(
-      _buildProfileData(onboardingComplete: true),
-    );
 
-    if (!mounted) {
-      return;
+    try {
+      final profileData = _buildProfileData(onboardingComplete: true);
+      if (_profileController.hasRemoteStats.value) {
+        await _profileController.updateProfile(profileData);
+      } else {
+        await _profileController.createProfile(profileData);
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isSaving = false);
+      Get.offAllNamed(AppRoutes.bottomNav);
+      AppSnackbar.success(
+        l10n.profileUpdatedTitle,
+        l10n.mealPlannerReadyMessage,
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isSaving = false);
+      AppSnackbar.error(l10n.profileUpdatedTitle, error.message);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isSaving = false);
+      AppSnackbar.error(
+        l10n.profileUpdatedTitle,
+        'Unable to complete setup right now. Please try again.',
+      );
     }
-
-    setState(() => _isSaving = false);
-    Get.offAllNamed(AppRoutes.bottomNav);
-    AppSnackbar.success(l10n.profileUpdatedTitle, l10n.mealPlannerReadyMessage);
   }
 
   Future<void> _skipSetup() async {
     final l10n = context.l10n;
     setState(() => _isSaving = true);
-    await _profileController.saveProfile(
+    await _profileController.saveDraft(
       _buildProfileData(onboardingComplete: false),
     );
 
@@ -502,37 +529,37 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   Map<String, String> _activityOptions(AppLocalizations l10n) {
     return <String, String>{
-      'lightlyActive': l10n.lightlyActive,
-      'moderatelyActive': l10n.moderatelyActive,
-      'veryActive': l10n.veryActive,
+      'light': l10n.lightlyActive,
+      'moderate': l10n.moderatelyActive,
+      'active': l10n.veryActive,
     };
   }
 
   Map<String, String> _goalOptions(AppLocalizations l10n) {
     return <String, String>{
-      'loseWeight': l10n.loseWeight,
-      'maintainWeight': l10n.maintainWeight,
-      'gainMuscle': l10n.gainMuscle,
+      'loss': l10n.loseWeight,
+      'maintain': l10n.maintainWeight,
+      'gain': l10n.gainMuscle,
     };
   }
 
   Map<String, String> _dietPreferenceOptions(AppLocalizations l10n) {
     return <String, String>{
-      'balancedDiet': l10n.balancedDiet,
+      'balanced': l10n.balancedDiet,
       'vegetarian': l10n.vegetarian,
       'vegan': l10n.vegan,
       'halal': l10n.halal,
       'keto': l10n.keto,
-      'highProteinDiet': l10n.highProteinDiet,
+      'high-protein': l10n.highProteinDiet,
     };
   }
 
   Map<String, String> _allergyOptions(AppLocalizations l10n) {
     return <String, String>{
-      'peanuts': l10n.peanuts,
-      'treeNuts': l10n.treeNuts,
+      'peanut': l10n.peanuts,
+      'tree-nut': l10n.treeNuts,
       'dairy': l10n.dairy,
-      'eggs': l10n.eggs,
+      'egg': l10n.eggs,
       'shellfish': l10n.shellfish,
       'fish': l10n.fish,
       'soy': l10n.soy,

@@ -22,6 +22,7 @@ class UserApiEndpoints {
   const UserApiEndpoints._();
 
   final String me = '/api/users/me';
+  final String stats = '/api/users/stats';
   final UserAccountApiEndpoints account = const UserAccountApiEndpoints._();
 }
 

@@ -1,6 +1,7 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -35,20 +36,24 @@ class HomeHeader extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.buttonDisabled,
-            image: (avatarImageUrl ?? '').trim().isEmpty
-                ? null
-                : DecorationImage(
-                    image: NetworkImage(avatarImageUrl!),
-                    fit: BoxFit.cover,
-                  ),
           ),
+          clipBehavior: Clip.antiAlias,
           alignment: Alignment.center,
           child: (avatarImageUrl ?? '').trim().isEmpty
               ? Icon(
                   Icons.person_rounded,
                   color: AppColors.textSecondaryOf(context),
                 )
-              : null,
+              : CachedNetworkImage(
+                  imageUrl: avatarImageUrl!.trim(),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorWidget: (_, _, _) => Icon(
+                    Icons.person_rounded,
+                    color: AppColors.textSecondaryOf(context),
+                  ),
+                ),
         ),
         5.w.horizontalSpace,
         Expanded(

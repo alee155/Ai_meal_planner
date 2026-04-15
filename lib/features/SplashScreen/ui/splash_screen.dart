@@ -3,6 +3,7 @@ import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_background_decor.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_brand_panel.dart';
 import 'package:ai_meal_planner/features/SplashScreen/widgets/splash_loading_footer.dart';
+import 'package:ai_meal_planner/features/user_profile/controller/user_profile_controller.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final AuthSessionController _authSessionController =
       AuthSessionController.ensureRegistered();
+  final UserProfileController _userProfileController =
+      UserProfileController.ensureRegistered();
 
   @override
   void initState() {
@@ -26,6 +29,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _bootstrapSession() async {
+    await _authSessionController.init();
+    await _userProfileController.init(refreshRemote: false);
+
     await Future.wait<void>([
       _authSessionController.bootstrapSession(),
       Future<void>.delayed(const Duration(milliseconds: 1800)),
@@ -35,13 +41,19 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    Get.offAllNamed(_resolveNextRoute());
+    Get.offAllNamed(await _resolveNextRoute());
   }
 
-  String _resolveNextRoute() {
-    return _authSessionController.isLoggedIn
-        ? AppRoutes.bottomNav
-        : AppRoutes.login;
+  Future<String> _resolveNextRoute() async {
+    if (!_authSessionController.isLoggedIn) {
+      return AppRoutes.login;
+    }
+
+    final hasCompletedProfile = await _userProfileController.refreshProfile(
+      suppressErrors: true,
+    );
+
+    return hasCompletedProfile ? AppRoutes.bottomNav : AppRoutes.profileSetup;
   }
 
   @override

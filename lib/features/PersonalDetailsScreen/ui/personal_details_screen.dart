@@ -4,6 +4,7 @@ import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/shared/widgets/app_icon_back_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -223,6 +224,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   Widget _buildHeroCard(BuildContext context, AuthUser? user) {
     final initials = _resolveInitials(user);
+    final profileImageUrl = user?.resolvedProfileImageUrl?.trim() ?? '';
 
     return Container(
       padding: EdgeInsets.all(20.w),
@@ -246,34 +248,9 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
         children: [
           Row(
             children: [
-              Container(
-                width: 72.w,
-                height: 72.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.18),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.28),
-                    width: 2,
-                  ),
-                  image: (user?.resolvedProfileImageUrl ?? '').isEmpty
-                      ? null
-                      : DecorationImage(
-                          image: NetworkImage(user!.resolvedProfileImageUrl!),
-                          fit: BoxFit.cover,
-                        ),
-                ),
-                alignment: Alignment.center,
-                child: (user?.resolvedProfileImageUrl ?? '').isEmpty
-                    ? Text(
-                        initials,
-                        style: TextStyle(
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      )
-                    : null,
+              _buildAvatar(
+                initials: initials,
+                profileImageUrl: profileImageUrl,
               ),
               SizedBox(width: 14.w),
               Expanded(
@@ -330,6 +307,62 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar({
+    required String initials,
+    required String profileImageUrl,
+  }) {
+    return Container(
+      width: 72.w,
+      height: 72.w,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.18),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.28),
+          width: 2,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      child: profileImageUrl.isEmpty
+          ? _buildAvatarFallback(initials)
+          : CachedNetworkImage(
+              imageUrl: profileImageUrl,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              placeholder: (_, _) => _buildAvatarLoader(),
+              errorWidget: (_, _, _) => _buildAvatarFallback(initials),
+            ),
+    );
+  }
+
+  Widget _buildAvatarFallback(String initials) {
+    return Center(
+      child: Text(
+        initials,
+        style: TextStyle(
+          fontSize: 22.sp,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarLoader() {
+    return Center(
+      child: SizedBox(
+        width: 22.w,
+        height: 22.w,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2.2,
+          color: Colors.white,
+        ),
       ),
     );
   }

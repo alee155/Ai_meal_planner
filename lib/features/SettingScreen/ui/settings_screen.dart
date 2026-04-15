@@ -17,6 +17,7 @@ import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_icon_back_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -430,10 +431,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                     )
-                  : Image.network(
-                      resolvedImageUrl!,
+                  : CachedNetworkImage(
+                      imageUrl: resolvedImageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                      errorWidget: (context, url, error) => Container(
                         color: Colors.white.withValues(alpha: 0.2),
                         alignment: Alignment.center,
                         child: Text(
@@ -1042,11 +1043,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             }
           }
 
-          final imageProvider = selectedImage != null
+          final localImageProvider = selectedImage != null
               ? FileImage(File(selectedImage!.path)) as ImageProvider<Object>
-              : (user.resolvedProfileImageUrl ?? '').isNotEmpty
-              ? NetworkImage(user.resolvedProfileImageUrl!)
               : null;
+          final remoteImageUrl = (user.resolvedProfileImageUrl ?? '').trim();
 
           return _SettingsBottomSheet(
             title: 'Edit profile',
@@ -1078,24 +1078,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                   width: 1.6,
                                 ),
-                                image: imageProvider == null
-                                    ? null
-                                    : DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
                               ),
                               alignment: Alignment.center,
-                              child: imageProvider == null
-                                  ? Text(
+                              clipBehavior: Clip.antiAlias,
+                              child: localImageProvider != null
+                                  ? DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: localImageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      child: const SizedBox.expand(),
+                                    )
+                                  : remoteImageUrl.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: remoteImageUrl,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      errorWidget: (_, _, _) => Center(
+                                        child: Text(
+                                          _resolveInitials(nameController.text),
+                                          style: TextStyle(
+                                            fontSize: 30.sp,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.primaryGreenDark,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Text(
                                       _resolveInitials(nameController.text),
                                       style: TextStyle(
                                         fontSize: 30.sp,
                                         fontWeight: FontWeight.w800,
                                         color: AppColors.primaryGreenDark,
                                       ),
-                                    )
-                                  : null,
+                                    ),
                             ),
                           ),
                           Positioned(

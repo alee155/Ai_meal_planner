@@ -1,5 +1,6 @@
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/network/api_exception.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/widgets/subscription_status_card.dart';
@@ -111,6 +112,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final bmiDisplayValue = hasBmiData ? bmiValue.toStringAsFixed(1) : '--';
     final bmiCategory = _bmiCategory(context, bmiValue);
     final storedProfile = _profileController.profile.value;
+    final currentProfileDraft = _buildProfileData(
+      onboardingComplete: storedProfile.onboardingComplete,
+    );
+    final hasUnsavedChanges =
+        widget.isOnboarding ||
+        !storedProfile.hasSameEditableValues(currentProfileDraft);
     final headerTitle = widget.isOnboarding
         ? l10n.setUpYourProfile
         : l10n.navProfile;
@@ -339,22 +346,23 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(6, initialMs: 140),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(20.w, 18.h, 20.w, 0),
-              child: AppFilledButton(
-                label: widget.isOnboarding
-                    ? l10n.completeSetup
-                    : l10n.saveProfile,
-                onPressed: _isSaving ? null : _saveProfile,
-                backgroundColor: AppColors.buttonPrimary,
-                foregroundColor: AppColors.textWhite,
-                isLoading: _isSaving,
-                fontSize: 16,
+            if (hasUnsavedChanges)
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.w, 18.h, 20.w, 0),
+                child: AppFilledButton(
+                  label: widget.isOnboarding
+                      ? l10n.completeSetup
+                      : l10n.saveProfile,
+                  onPressed: _isSaving ? null : _saveProfile,
+                  backgroundColor: AppColors.buttonPrimary,
+                  foregroundColor: AppColors.textWhite,
+                  isLoading: _isSaving,
+                  fontSize: 16,
+                ),
+              ).animateProfileSection(
+                enabled: widget.playEntranceAnimation,
+                delay: AppMotion.stagger(7, initialMs: 160),
               ),
-            ).animateProfileSection(
-              enabled: widget.playEntranceAnimation,
-              delay: AppMotion.stagger(7, initialMs: 160),
-            ),
             150.h.verticalSpace,
           ],
         ),
@@ -393,7 +401,56 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     setState(() => _isSaving = true);
 
-    final data = _profileController.profile.value.copyWith(
+    final data = _buildProfileData(onboardingComplete: true);
+
+    try {
+      if (_profileController.hasRemoteStats.value) {
+        await _profileController.updateProfile(data);
+      } else {
+        await _profileController.createProfile(data);
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _applyProfileData(_profileController.profile.value);
+        _isSaving = false;
+      });
+
+      if (widget.isOnboarding) {
+        Get.offAllNamed(AppRoutes.bottomNav);
+      }
+
+      AppSnackbar.success(
+        l10n.profileUpdatedTitle,
+        widget.isOnboarding
+            ? l10n.mealPlannerReadyMessage
+            : l10n.profileUpdatedMessage,
+      );
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isSaving = false);
+      AppSnackbar.error(l10n.profileUpdatedTitle, error.message);
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isSaving = false);
+      AppSnackbar.error(
+        l10n.profileUpdatedTitle,
+        'Unable to save your profile right now. Please try again.',
+      );
+    }
+  }
+
+  UserProfileData _buildProfileData({required bool onboardingComplete}) {
+    return _profileController.profile.value.copyWith(
       weight: _weightController.text.trim(),
       height: _heightController.text.trim(),
       heightFeet: _heightFeetController.text.trim(),
@@ -408,26 +465,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       dietPreferenceKey: _selectedDietPreferenceKey,
       allergies: _selectedAllergyKeys.toList()..sort(),
       dislikedFoods: _dislikedFoodsController.text.trim(),
-      onboardingComplete: true,
-    );
-
-    await _profileController.saveProfile(data);
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() => _isSaving = false);
-
-    if (widget.isOnboarding) {
-      Get.offAllNamed(AppRoutes.bottomNav);
-    }
-
-    AppSnackbar.success(
-      l10n.profileUpdatedTitle,
-      widget.isOnboarding
-          ? l10n.mealPlannerReadyMessage
-          : l10n.profileUpdatedMessage,
+      onboardingComplete: onboardingComplete,
     );
   }
 
@@ -582,37 +620,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Map<String, String> _activityOptions(AppLocalizations l10n) {
     return <String, String>{
-      'lightlyActive': l10n.lightlyActive,
-      'moderatelyActive': l10n.moderatelyActive,
-      'veryActive': l10n.veryActive,
+      'light': l10n.lightlyActive,
+      'moderate': l10n.moderatelyActive,
+      'active': l10n.veryActive,
     };
   }
 
   Map<String, String> _goalOptions(AppLocalizations l10n) {
     return <String, String>{
-      'loseWeight': l10n.loseWeight,
-      'maintainWeight': l10n.maintainWeight,
-      'gainMuscle': l10n.gainMuscle,
+      'loss': l10n.loseWeight,
+      'maintain': l10n.maintainWeight,
+      'gain': l10n.gainMuscle,
     };
   }
 
   Map<String, String> _dietPreferenceOptions(AppLocalizations l10n) {
     return <String, String>{
-      'balancedDiet': l10n.balancedDiet,
+      'balanced': l10n.balancedDiet,
       'vegetarian': l10n.vegetarian,
       'vegan': l10n.vegan,
       'halal': l10n.halal,
       'keto': l10n.keto,
-      'highProteinDiet': l10n.highProteinDiet,
+      'high-protein': l10n.highProteinDiet,
     };
   }
 
   Map<String, String> _allergyOptions(AppLocalizations l10n) {
     return <String, String>{
-      'peanuts': l10n.peanuts,
-      'treeNuts': l10n.treeNuts,
+      'peanut': l10n.peanuts,
+      'tree-nut': l10n.treeNuts,
       'dairy': l10n.dairy,
-      'eggs': l10n.eggs,
+      'egg': l10n.eggs,
       'shellfish': l10n.shellfish,
       'fish': l10n.fish,
       'soy': l10n.soy,

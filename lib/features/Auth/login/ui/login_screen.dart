@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     if (result.isSuccess) {
-      Get.offAllNamed(AppRoutes.bottomNav);
+      Get.offAllNamed(result.nextRoute ?? AppRoutes.bottomNav);
       AppSnackbar.success(context.l10n.welcomeBackTitle, result.message);
       return;
     }

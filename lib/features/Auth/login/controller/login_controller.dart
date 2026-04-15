@@ -5,18 +5,24 @@ import 'package:ai_meal_planner/core/network/api_exception.dart';
 import 'package:ai_meal_planner/features/Auth/login/models/login_action_result.dart';
 import 'package:ai_meal_planner/features/Auth/login/models/login_request_model.dart';
 import 'package:ai_meal_planner/features/Auth/login/services/login_service.dart';
+import 'package:ai_meal_planner/features/user_profile/controller/user_profile_controller.dart';
+import 'package:ai_meal_planner/routes/app_routes.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   LoginController({
     LoginService? loginService,
     AuthSessionController? authSessionController,
+    UserProfileController? userProfileController,
   }) : _loginService = loginService ?? LoginService.ensureRegistered(),
        _authSessionController =
-           authSessionController ?? AuthSessionController.ensureRegistered();
+           authSessionController ?? AuthSessionController.ensureRegistered(),
+       _userProfileController =
+           userProfileController ?? UserProfileController.ensureRegistered();
 
   final LoginService _loginService;
   final AuthSessionController _authSessionController;
+  final UserProfileController _userProfileController;
 
   final RxBool isSubmitting = false.obs;
   final RxnString successMessage = RxnString();
@@ -68,17 +74,26 @@ class LoginController extends GetxController {
 
       await _authSessionController.saveToken(token);
       await _authSessionController.fetchAndStoreCurrentUser();
+      await _userProfileController.init(refreshRemote: false);
+      final hasCompletedProfile = await _userProfileController.refreshProfile(
+        suppressErrors: true,
+      );
+      final nextRoute = hasCompletedProfile
+          ? AppRoutes.bottomNav
+          : AppRoutes.profileSetup;
 
       successMessage.value = resolvedMessage;
       print('login success message: $resolvedMessage');
       print('login token: $token');
       print('login token length: ${token.length}');
+      print('login next route: $nextRoute');
       print('******** LOGIN FLOW END ********');
 
       return LoginActionResult(
         isSuccess: true,
         message: resolvedMessage,
         token: token,
+        nextRoute: nextRoute,
       );
     } on ApiException catch (error) {
       if (_authSessionController.currentUser.value == null) {
