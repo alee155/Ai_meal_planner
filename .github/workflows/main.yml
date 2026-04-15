@@ -11,45 +11,59 @@ on:
 jobs:
   build_release:
     name: Build & Release (Android)
-    runs-on: ubuntu-latest # ✅ Ubuntu is faster & cheaper than macOS for Android
+    runs-on: ubuntu-latest
 
     steps:
       # 1️⃣ Checkout code
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       # 2️⃣ Setup Java for Android
-      - uses: actions/setup-java@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
           distribution: "zulu"
           java-version: "17"
 
-      # 3️⃣ Setup Flutter
-      - uses: subosito/flutter-action@v2
+      # 3️⃣ Setup Flutter (✅ latest stable automatically)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.41.4"
-          channel: "stable"
+          channel: stable
+          cache: true
 
-      # 4️⃣ Install dependencies
+      # 4️⃣ Verify Flutter
+      - name: Flutter Doctor
+        run: flutter doctor
+
+      # 5️⃣ Install dependencies
       - name: Install Flutter packages
         run: flutter pub get
 
-      # 5️⃣ Analyze code quality
+      # 6️⃣ Analyze code quality (won’t fail pipeline)
       - name: Analyze
         run: flutter analyze || true
 
-      # 6️⃣ Run tests
+      # 7️⃣ Run tests
       - name: Run tests
         run: flutter test
 
-      # 7️⃣ Build Android APK
+      # 8️⃣ Build Android APK
       - name: Build Android APK
         run: flutter build apk --release
 
-      # 8️⃣ Push APK to GitHub Release
+      # 9️⃣ Upload APK as artifact (optional but useful)
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # 🔟 Push APK to GitHub Release
       - name: Push APK to GitHub Release
         uses: ncipollo/release-action@v1
         with:
           artifacts: build/app/outputs/flutter-apk/app-release.apk
-          tag: v1.0.${{ github.run_number }} # ✅ auto-increment version per run
+          tag: v1.0.${{ github.run_number }}
           allowUpdates: true
-          token: ${{ secrets.RELEASE_TOKEN }} # ✅ must match your secret name
+          token: ${{ secrets.RELEASE_TOKEN }}
