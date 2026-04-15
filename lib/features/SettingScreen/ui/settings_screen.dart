@@ -40,8 +40,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _mealReminders = true;
   bool _waterReminders = true;
   bool _weeklyInsights = false;
-  bool _biometricLock = true;
-  bool _marketingEmails = false;
+  // bool _biometricLock = true;
+  // bool _marketingEmails = false;
 
   @override
   Widget build(BuildContext context) {
@@ -131,17 +131,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: 'Update your account password securely',
                       onTap: _showChangePasswordSheet,
                     ),
-                    _SettingsTile(
-                      icon: Icons.devices_outlined,
-                      title: 'Connected devices',
-                      subtitle: 'Manage sessions across your devices',
-                      trailing: _buildBadge('2 active'),
-                      onTap: () => _showInfoSheet(
-                        title: 'Connected devices',
-                        message:
-                            'Phone and tablet are currently signed in to this account.',
-                      ),
-                    ),
+                    // _SettingsTile(
+                    //   icon: Icons.devices_outlined,
+                    //   title: 'Connected devices',
+                    //   subtitle: 'Manage sessions across your devices',
+                    //   trailing: _buildBadge('2 active'),
+                    //   onTap: () => _showInfoSheet(
+                    //     title: 'Connected devices',
+                    //     message:
+                    //         'Phone and tablet are currently signed in to this account.',
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -264,24 +264,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildSectionTitle('Privacy & Security'),
                 _buildSettingsGroup(
                   children: [
-                    _SettingsSwitchTile(
-                      icon: Icons.fingerprint,
-                      title: 'Biometric lock',
-                      subtitle: 'Require Face ID or fingerprint to open app',
-                      value: _biometricLock,
-                      onChanged: (value) {
-                        setState(() => _biometricLock = value);
-                      },
-                    ),
-                    _SettingsSwitchTile(
-                      icon: Icons.email_outlined,
-                      title: 'Marketing emails',
-                      subtitle: 'Product updates, offers, and app news',
-                      value: _marketingEmails,
-                      onChanged: (value) {
-                        setState(() => _marketingEmails = value);
-                      },
-                    ),
+                    // _SettingsSwitchTile(
+                    //   icon: Icons.fingerprint,
+                    //   title: 'Biometric lock',
+                    //   subtitle: 'Require Face ID or fingerprint to open app',
+                    //   value: _biometricLock,
+                    //   onChanged: (value) {
+                    //     setState(() => _biometricLock = value);
+                    //   },
+                    // ),
+                    // _SettingsSwitchTile(
+                    //   icon: Icons.email_outlined,
+                    //   title: 'Marketing emails',
+                    //   subtitle: 'Product updates, offers, and app news',
+                    //   value: _marketingEmails,
+                    //   onChanged: (value) {
+                    //     setState(() => _marketingEmails = value);
+                    //   },
+                    // ),
                     _SettingsTile(
                       icon: Icons.privacy_tip_outlined,
                       title: 'Privacy policy',

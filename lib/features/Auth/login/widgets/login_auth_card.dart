@@ -8,6 +8,7 @@ import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 class LoginAuthCard extends StatelessWidget {
   const LoginAuthCard({
@@ -168,13 +169,11 @@ class LoginAuthCard extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: Text(
-                      'G',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimaryOf(context),
-                      ),
+                    child: SvgPicture.asset(
+                      'assets/icons/google_icon.svg',
+                      width: 26.w,
+                      height: 26.w,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   SizedBox(width: 10.w),

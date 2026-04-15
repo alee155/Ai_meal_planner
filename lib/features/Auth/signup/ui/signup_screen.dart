@@ -3,7 +3,7 @@ import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/Auth/otp/models/otp_screen_arguments.dart';
 import 'package:ai_meal_planner/features/Auth/signup/controller/signup_controller.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_auth_card.dart';
-import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_guest_mode_action.dart';
+
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_hero_section.dart';
 import 'package:ai_meal_planner/features/Auth/signup/widgets/signup_top_bar.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
@@ -90,11 +90,6 @@ class _SignupScreenState extends State<SignupScreen> {
     AppSnackbar.info(l10n.googleSignUpTitle, l10n.googleSignUpMessage);
   }
 
-  void _continueAsGuest() {
-    FocusScope.of(context).unfocus();
-    Get.offAllNamed(AppRoutes.bottomNav);
-  }
-
   void _goBack() {
     FocusScope.of(context).unfocus();
     Get.back();
@@ -145,12 +140,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       onGoogleSignup: _handleGoogleSignup,
                       onSignIn: _goBack,
                     ),
-                    10.h.verticalSpace,
-                    SignupGuestModeAction(
-                      onPressed: _continueAsGuest,
-                      isSubmitting: isSubmitting,
-                    ),
-                    10.h.verticalSpace,
                   ],
                 ),
               ),
