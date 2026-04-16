@@ -3,7 +3,6 @@ import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
 import 'package:ai_meal_planner/shared/widgets/app_filled_button.dart';
-import 'package:ai_meal_planner/shared/widgets/app_outlined_button.dart';
 import 'package:ai_meal_planner/shared/widgets/app_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

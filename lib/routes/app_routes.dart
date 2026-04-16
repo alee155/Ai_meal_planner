@@ -16,6 +16,7 @@ class AppRoutes {
   static const personalDetails = '/personal-details';
   static const settings = '/settings';
   static const notifications = '/notifications';
+  static const mealReminders = '/meal-reminders';
   static const deleteAccount = '/delete-account';
   static const subscription = '/subscription';
   static const multicolorloader = '/multicolorloader';

@@ -37,12 +37,55 @@ class MainActivity : FlutterActivity() {
                     )
                     result.success(null)
                 }
+                "scheduleMealAlarm" -> {
+                    val alarmId = call.argument<Int>("alarmId")
+                    val hour = call.argument<Int>("hour")
+                    val minute = call.argument<Int>("minute")
+                    val title = call.argument<String>("title")
+                    val instruction = call.argument<String>("instruction")
+                    val mealKey = call.argument<String>("mealKey")
+                    val enabled = call.argument<Boolean>("enabled") ?: true
+
+                    if (alarmId == null || hour == null || minute == null || title == null || instruction == null) {
+                        result.error("invalid_args", "Missing alarm arguments", null)
+                        return@setMethodCallHandler
+                    }
+
+                    AlarmScheduler.scheduleMealAlarm(
+                        applicationContext,
+                        AlarmConfig(
+                            id = alarmId,
+                            mealKey = mealKey,
+                            title = title,
+                            instruction = instruction,
+                            hour = hour,
+                            minute = minute,
+                            enabled = enabled,
+                        ),
+                    )
+                    result.success(null)
+                }
+                "cancelMealAlarm" -> {
+                    val alarmId = call.argument<Int>("alarmId")
+                    if (alarmId == null) {
+                        result.error("invalid_args", "Missing alarmId", null)
+                        return@setMethodCallHandler
+                    }
+                    AlarmScheduler.cancelMealAlarm(applicationContext, alarmId)
+                    result.success(null)
+                }
+                "cancelAllMealAlarms" -> {
+                    AlarmScheduler.cancelAllMealAlarms(applicationContext)
+                    result.success(null)
+                }
                 "stopAlarm" -> {
-                    AlarmScheduler.stopAlarm(applicationContext)
+                    val alarmId = call.argument<Int>("alarmId") ?: 1
+                    AlarmScheduler.stopAlarm(applicationContext, alarmId)
                     result.success(null)
                 }
                 "snoozeAlarm" -> {
-                    AlarmScheduler.snoozeAlarm(applicationContext, showToast = false)
+                    val alarmId = call.argument<Int>("alarmId") ?: 1
+                    AlarmScheduler.snoozeAlarm(applicationContext, alarmId, showToast = false)
                     result.success(null)
                 }
                 "getAlarmUri" -> {

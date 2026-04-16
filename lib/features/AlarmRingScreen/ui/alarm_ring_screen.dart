@@ -63,7 +63,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
     setState(() => _isHandlingAction = true);
 
-    await NotificationService.stopAlarm();
+    await NotificationService.stopAlarm(alarmId: _alarmData.alarmId);
 
     if (!mounted) return;
     await _dismiss();
@@ -74,7 +74,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
     setState(() => _isHandlingAction = true);
 
-    await NotificationService.snoozeAlarm();
+    await NotificationService.snoozeAlarm(alarmId: _alarmData.alarmId);
 
     if (!mounted) return;
 

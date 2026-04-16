@@ -194,7 +194,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ProfileOverviewCard(
+            //   // ProfileOverviewCard(
             //   title: overviewTitle,
             //   subtitle: overviewSubtitle,
             //   planLabel: subscriptionController.hasPremium

@@ -10,6 +10,7 @@ import 'package:ai_meal_planner/features/BottomNavScreen/ui/bottom_nav_screen.da
 import 'package:ai_meal_planner/features/DeleteAccountScreen/ui/delete_account_screen.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/ui/diet_plan_screen.dart';
 import 'package:ai_meal_planner/features/HomeScreen/ui/home_screen.dart';
+import 'package:ai_meal_planner/features/MealRemindersScreen/ui/meal_reminders_screen.dart';
 import 'package:ai_meal_planner/features/NotificationsScreen/ui/notification_screen.dart';
 import 'package:ai_meal_planner/features/PersonalDetailsScreen/ui/personal_details_screen.dart';
 import 'package:ai_meal_planner/features/ProfileSetupScreen/ui/profile_setup_screen.dart';
@@ -60,6 +61,10 @@ class AppPages {
     GetPage(
       name: AppRoutes.notifications,
       page: () => const NotificationScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.mealReminders,
+      page: () => const MealRemindersScreen(),
     ),
     GetPage(
       name: AppRoutes.deleteAccount,

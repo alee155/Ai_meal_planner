@@ -9,10 +9,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.example.ai_meal_planner.widgets.SwipeActionView
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -27,8 +27,10 @@ class AlarmActivity : Activity() {
     private lateinit var scheduledTimeView: TextView
     private lateinit var pulseRing: View
     private lateinit var pulseDot: View
-    private lateinit var snoozeSlider: SwipeActionView
-    private lateinit var stopSlider: SwipeActionView
+    private lateinit var snoozeButton: View
+    private lateinit var stopButton: View
+    private var handlingAction = false
+    private var alarmId: Int = 1
 
     private val clockUpdater = object : Runnable {
         override fun run() {
@@ -51,10 +53,10 @@ class AlarmActivity : Activity() {
         scheduledTimeView = findViewById(R.id.alarmScheduledTime)
         pulseRing = findViewById(R.id.pulseRing)
         pulseDot = findViewById(R.id.pulseDot)
-        snoozeSlider = findViewById(R.id.alarmSnoozeSlider)
-        stopSlider = findViewById(R.id.alarmStopSlider)
+        snoozeButton = findViewById(R.id.alarmSnoozeButton)
+        stopButton = findViewById(R.id.alarmStopButton)
 
-        configureSliders()
+        configureActions()
         startPulseAnimation()
 
         bindAlarmData(intent)
@@ -75,6 +77,7 @@ class AlarmActivity : Activity() {
         super.onDestroy()
     }
 
+    @Deprecated("Deprecated in Android 13.0 (API 33)")
     override fun onBackPressed() {
         // Ignore back press while alarm is visible.
     }
@@ -98,6 +101,7 @@ class AlarmActivity : Activity() {
     }
 
     private fun bindAlarmData(intent: Intent) {
+        alarmId = intent.getIntExtra(AlarmScheduler.extraAlarmId, 1)
         val title = intent.getStringExtra(AlarmScheduler.extraTitle)
             ?: "Meal Reminder"
         val instruction = intent.getStringExtra(AlarmScheduler.extraInstruction)
@@ -126,29 +130,19 @@ class AlarmActivity : Activity() {
         return SimpleDateFormat("h:mm a", Locale.getDefault()).format(calendar.time)
     }
 
-    private fun configureSliders() {
-        snoozeSlider.configure(
-            label = "Snooze 30s",
-            labelColor = 0xFFFFFFFF.toInt(),
-            trackColor = 0xFF81C784.toInt(),
-            fillStartColor = 0xCC5DCAA5.toInt(),
-            fillEndColor = 0xFF5DCAA5.toInt(),
-            iconRes = R.drawable.ic_alarm_schedule,
-            thumbIconRes = R.drawable.ic_alarm_schedule,
-        ) {
-            AlarmScheduler.snoozeAlarm(this)
+    private fun configureActions() {
+        snoozeButton.setOnClickListener {
+            if (handlingAction) return@setOnClickListener
+            handlingAction = true
+            it.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+            AlarmScheduler.snoozeAlarm(this, alarmId)
         }
 
-        stopSlider.configure(
-            label = "Stop alarm",
-            labelColor = 0xFFA32D2D.toInt(),
-            trackColor = 0xFFFCEBEB.toInt(),
-            fillStartColor = 0xB3E24B4A.toInt(),
-            fillEndColor = 0xFFE24B4A.toInt(),
-            iconRes = R.drawable.ic_alarm_stop_outline,
-            thumbIconRes = R.drawable.ic_alarm_stop_thumb,
-        ) {
-            AlarmScheduler.stopAlarm(this)
+        stopButton.setOnClickListener {
+            if (handlingAction) return@setOnClickListener
+            handlingAction = true
+            it.performHapticFeedback(HapticFeedbackConstants.REJECT)
+            AlarmScheduler.stopAlarm(this, alarmId)
         }
     }
 
@@ -186,6 +180,8 @@ class AlarmActivity : Activity() {
 
         fun createIntent(context: Context, config: AlarmConfig): Intent {
             return Intent(context, AlarmActivity::class.java).apply {
+                putExtra(AlarmScheduler.extraAlarmId, config.id)
+                putExtra(AlarmScheduler.extraMealKey, config.mealKey)
                 putExtra(AlarmScheduler.extraTitle, config.title)
                 putExtra(AlarmScheduler.extraInstruction, config.instruction)
                 putExtra(AlarmScheduler.extraHour, config.hour)

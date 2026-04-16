@@ -9,6 +9,7 @@ import 'package:ai_meal_planner/core/theme/theme_controller.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/core/utils/app_validators.dart';
 import 'package:ai_meal_planner/features/Account/controller/account_controller.dart';
+import 'package:ai_meal_planner/features/MealRemindersScreen/controller/meal_reminders_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/controller/subscription_controller.dart';
 import 'package:ai_meal_planner/features/SubscriptionScreen/widgets/subscription_status_card.dart';
 import 'package:ai_meal_planner/l10n/l10n.dart';
@@ -38,7 +39,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _mealReminders = true;
   bool _waterReminders = true;
   bool _weeklyInsights = false;
   // bool _biometricLock = true;
@@ -49,6 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final authSessionController = AuthSessionController.ensureRegistered();
     final localeController = LocaleController.ensureRegistered();
     final subscriptionController = SubscriptionController.ensureRegistered();
+    final mealRemindersController = MealRemindersController.ensureRegistered();
     final screenBackground = AppColors.backgroundSecondaryOf(context);
     final surfaceColor = AppColors.surfaceOf(context);
     final textPrimary = AppColors.textPrimaryOf(context);
@@ -187,14 +188,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildSectionTitle('Notifications'),
                 _buildSettingsGroup(
                   children: [
-                    _SettingsSwitchTile(
-                      icon: Icons.restaurant_menu_outlined,
-                      title: 'Meal reminders',
-                      subtitle: 'Breakfast, lunch, dinner, and snack alerts',
-                      value: _mealReminders,
-                      onChanged: (value) {
-                        setState(() => _mealReminders = value);
-                      },
+                    Obx(
+                      () => _SettingsTile(
+                        icon: Icons.restaurant_menu_outlined,
+                        title: 'Meal reminders',
+                        subtitle: 'Breakfast, lunch, dinner, and snack alerts',
+                        trailing: _buildBadge(
+                          mealRemindersController.isEnabled.value
+                              ? 'On'
+                              : 'Off',
+                        ),
+                        onTap: () => Get.toNamed(AppRoutes.mealReminders),
+                      ),
                     ),
                     _SettingsSwitchTile(
                       icon: Icons.water_drop_outlined,

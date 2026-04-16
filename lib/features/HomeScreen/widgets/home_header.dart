@@ -11,7 +11,7 @@ class HomeHeader extends StatelessWidget {
     required this.onNotificationsTap,
     this.greeting = 'Good morning',
     this.userName = 'Guest User',
-    this.badgeCount = 2,
+    this.badgeCount,
     this.avatarImageUrl,
   });
 

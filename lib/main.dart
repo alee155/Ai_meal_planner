@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/localization/locale_controller.dart';
+import 'package:ai_meal_planner/core/notifications/in_app_inbox_store.dart';
 import 'package:ai_meal_planner/core/theme/app_theme.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
 import 'package:ai_meal_planner/features/AlarmRingScreen/ui/alarm_ring_screen.dart';
@@ -18,6 +19,26 @@ Future<void> main() async {
   await Hive.openBox<String>('auth_cache');
   await NotificationService.init();
   final launchAlarmData = await NotificationService.getLaunchAlarmData();
+  if (launchAlarmData != null) {
+    // Cold-start from an alarm should still create an in-app inbox entry.
+    try {
+      await InAppInboxStore.add(
+        InAppInboxItem(
+          id: 0,
+          type: 'meal_alarm',
+          title: launchAlarmData.title,
+          message: launchAlarmData.instruction,
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          isRead: false,
+          mealKey: launchAlarmData.mealKey,
+          hour: launchAlarmData.hour,
+          minute: launchAlarmData.minute,
+        ),
+      );
+    } catch (_) {
+      // Ignore; never block app start.
+    }
+  }
   LocaleController.ensureRegistered();
   await ThemeController.ensureRegistered().init();
   runApp(MyApp(initialAlarmData: launchAlarmData));

@@ -10,11 +10,94 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'core/notifications/in_app_inbox_store.dart';
+import 'features/NotificationsScreen/controller/notifications_inbox_controller.dart';
 import 'routes/app_routes.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
   NotificationService.handleNotificationResponse(notificationResponse);
+}
+
+class MealAlarmConfig {
+  const MealAlarmConfig({
+    required this.id,
+    required this.mealKey,
+    required this.title,
+    required this.instruction,
+    required this.hour,
+    required this.minute,
+    required this.enabled,
+  });
+
+  final int id;
+  final String mealKey;
+  final String title;
+  final String instruction;
+  final int hour;
+  final int minute;
+  final bool enabled;
+
+  MealAlarmConfig copyWith({
+    int? id,
+    String? mealKey,
+    String? title,
+    String? instruction,
+    int? hour,
+    int? minute,
+    bool? enabled,
+  }) {
+    return MealAlarmConfig(
+      id: id ?? this.id,
+      mealKey: mealKey ?? this.mealKey,
+      title: title ?? this.title,
+      instruction: instruction ?? this.instruction,
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+      enabled: enabled ?? this.enabled,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'mealKey': mealKey,
+      'title': title,
+      'instruction': instruction,
+      'hour': hour,
+      'minute': minute,
+      'enabled': enabled,
+    };
+  }
+
+  static MealAlarmConfig? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final map = Map<String, dynamic>.from(json);
+    final id = map['id'];
+    final mealKey = map['mealKey'];
+    final title = map['title'];
+    final instruction = map['instruction'];
+    final hour = map['hour'];
+    final minute = map['minute'];
+    if (id is! int ||
+        mealKey is! String ||
+        title is! String ||
+        instruction is! String ||
+        hour is! int ||
+        minute is! int) {
+      return null;
+    }
+
+    return MealAlarmConfig(
+      id: id,
+      mealKey: mealKey,
+      title: title,
+      instruction: instruction,
+      hour: hour,
+      minute: minute,
+      enabled: map['enabled'] is bool ? map['enabled'] as bool : true,
+    );
+  }
 }
 
 class AlarmLaunchData {
@@ -23,16 +106,22 @@ class AlarmLaunchData {
     required this.instruction,
     required this.hour,
     required this.minute,
+    this.alarmId,
+    this.mealKey,
   });
 
   final String title;
   final String instruction;
   final int hour;
   final int minute;
+  final int? alarmId;
+  final String? mealKey;
 
   String toPayload() {
     return jsonEncode({
       'type': 'meal_alarm',
+      'alarmId': alarmId,
+      'mealKey': mealKey,
       'title': title,
       'instruction': instruction,
       'hour': hour,
@@ -63,6 +152,8 @@ class AlarmLaunchData {
             NotificationService.defaultInstruction,
         hour: payloadMap['hour'] as int? ?? 0,
         minute: payloadMap['minute'] as int? ?? 0,
+        alarmId: payloadMap['alarmId'] as int?,
+        mealKey: payloadMap['mealKey'] as String?,
       );
     } catch (_) {
       return null;
@@ -95,6 +186,11 @@ class NotificationService {
   static const String _prefsAlarmUriKey = 'meal_alarm_sound_uri';
   static const String _prefsTitleKey = 'meal_alarm_title';
   static const String _prefsInstructionKey = 'meal_alarm_instruction';
+  static const String _prefsMealAlarmsKey = 'meal_alarm_items_v1';
+  static const String _prefsMealAlarmsNextIdKey = 'meal_alarm_next_id_v1';
+  static const int _multiAlarmIdStart = 1000;
+  static const int _multiSnoozeIdOffset = 900000;
+  static const int _multiStatusIdOffset = 950000;
 
   static Future<void> init() async {
     await _ensureTimezoneInitialized();
@@ -153,17 +249,17 @@ class NotificationService {
   static Future<void> handleNotificationResponse(
     NotificationResponse response,
   ) async {
+    final payloadData = AlarmLaunchData.fromPayload(response.payload);
+    final resolvedAlarmId = payloadData?.alarmId ?? response.id;
     switch (response.actionId) {
       case _stopActionId:
-        await stopAlarm();
+        await stopAlarm(alarmId: resolvedAlarmId);
         break;
       case _snoozeActionId:
-        await snoozeAlarm();
+        await snoozeAlarm(alarmId: resolvedAlarmId);
         break;
       default:
-        await _openAlarmScreen(
-          alarmData: AlarmLaunchData.fromPayload(response.payload),
-        );
+        await _openAlarmScreen(alarmData: payloadData);
         break;
     }
   }
@@ -177,6 +273,31 @@ class NotificationService {
     final resolvedAlarmData = alarmData ?? await getSavedAlarmData();
     if (resolvedAlarmData == null || Get.key.currentContext == null) {
       return;
+    }
+
+    // Log an in-app "notification inbox" item when an alarm is opened/rings.
+    // This is what powers the bell badge + Notifications screen.
+    try {
+      await InAppInboxStore.add(
+        InAppInboxItem(
+          id: 0, // overwritten by store
+          type: 'meal_alarm',
+          title: resolvedAlarmData.title,
+          message: resolvedAlarmData.instruction,
+          createdAtMs: DateTime.now().millisecondsSinceEpoch,
+          isRead: false,
+          mealKey: resolvedAlarmData.mealKey,
+          hour: resolvedAlarmData.hour,
+          minute: resolvedAlarmData.minute,
+        ),
+      );
+
+      // Keep the bell badge in sync if the controller is alive.
+      if (Get.isRegistered<NotificationsInboxController>()) {
+        unawaited(Get.find<NotificationsInboxController>().reload());
+      }
+    } catch (_) {
+      // Ignore logging failures; never block the alarm UI.
     }
 
     if (Get.currentRoute == AppRoutes.alarmRinging) {
@@ -294,43 +415,263 @@ class NotificationService {
     );
   }
 
-  static Future<void> stopAlarm() async {
+  static Future<List<MealAlarmConfig>> getSavedMealAlarmConfigs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_prefsMealAlarmsKey);
+    if (raw == null || raw.isEmpty) return const <MealAlarmConfig>[];
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return const <MealAlarmConfig>[];
+      return decoded
+          .map((item) => MealAlarmConfig.fromJson(item))
+          .whereType<MealAlarmConfig>()
+          .toList(growable: false);
+    } catch (_) {
+      return const <MealAlarmConfig>[];
+    }
+  }
+
+  static Future<MealAlarmConfig?> getSavedMealAlarmConfig(int id) async {
+    final items = await getSavedMealAlarmConfigs();
+    for (final item in items) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+
+  static Future<int> allocateMealAlarmId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final nextId = prefs.getInt(_prefsMealAlarmsNextIdKey);
+    if (nextId == null || nextId < _multiAlarmIdStart) {
+      await prefs.setInt(_prefsMealAlarmsNextIdKey, _multiAlarmIdStart + 1);
+      return _multiAlarmIdStart;
+    }
+
+    await prefs.setInt(_prefsMealAlarmsNextIdKey, nextId + 1);
+    return nextId;
+  }
+
+  static Future<void> upsertMealAlarmConfig(MealAlarmConfig config) async {
+    final prefs = await SharedPreferences.getInstance();
+    final items = (await getSavedMealAlarmConfigs()).toList(growable: true);
+    final existingIndex = items.indexWhere((item) => item.id == config.id);
+    if (existingIndex == -1) {
+      items.add(config);
+    } else {
+      items[existingIndex] = config;
+    }
+    await prefs.setString(
+      _prefsMealAlarmsKey,
+      jsonEncode(items.map((e) => e.toJson()).toList()),
+    );
+  }
+
+  static Future<void> deleteMealAlarmConfig(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final items = (await getSavedMealAlarmConfigs())
+        .where((item) => item.id != id)
+        .toList(growable: false);
+    await prefs.setString(
+      _prefsMealAlarmsKey,
+      jsonEncode(items.map((e) => e.toJson()).toList()),
+    );
+  }
+
+  static Future<void> scheduleMealAlarm(MealAlarmConfig config) async {
+    await upsertMealAlarmConfig(config);
+
+    await _plugin.cancel(id: config.id);
+    await _plugin.cancel(id: _multiSnoozeIdOffset + config.id);
+    await _plugin.cancel(id: _multiStatusIdOffset + config.id);
+
     if (Platform.isAndroid) {
-      await _alarmChannel.invokeMethod<void>('stopAlarm');
+      if (!config.enabled) {
+        await _alarmChannel.invokeMethod<void>('cancelMealAlarm', {
+          'alarmId': config.id,
+        });
+        return;
+      }
+
+      await _alarmChannel.invokeMethod<void>('scheduleMealAlarm', {
+        'alarmId': config.id,
+        'mealKey': config.mealKey,
+        'hour': config.hour,
+        'minute': config.minute,
+        'title': config.title,
+        'instruction': config.instruction,
+        'enabled': config.enabled,
+      });
       return;
     }
 
-    await _cancelActiveAlarmNotifications();
-    await _restoreDailyAlarmSchedule();
+    await _ensureTimezoneInitialized();
+
+    if (!config.enabled) {
+      return;
+    }
+
+    final now = DateTime.now();
+    final scheduled = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      config.hour,
+      config.minute,
+    );
+    final nextOccurrence = scheduled.isBefore(now)
+        ? scheduled.add(const Duration(days: 1))
+        : scheduled;
+
+    await _scheduleOneTimeAlarm(
+      id: config.id,
+      scheduledDate: tz.TZDateTime.from(nextOccurrence, tz.local),
+      alarmData: AlarmLaunchData(
+        title: config.title,
+        instruction: config.instruction,
+        hour: config.hour,
+        minute: config.minute,
+        alarmId: config.id,
+        mealKey: config.mealKey,
+      ),
+      notificationBody: config.instruction,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
   }
 
-  static Future<void> snoozeAlarm() async {
+  static Future<void> scheduleMealAlarms(
+    Iterable<MealAlarmConfig> configs,
+  ) async {
+    for (final config in configs) {
+      await scheduleMealAlarm(config);
+    }
+  }
+
+  static Future<void> cancelMealAlarm(int id) async {
+    await _plugin.cancel(id: id);
+    await _plugin.cancel(id: _multiSnoozeIdOffset + id);
+    await _plugin.cancel(id: _multiStatusIdOffset + id);
+
     if (Platform.isAndroid) {
-      await _alarmChannel.invokeMethod<void>('snoozeAlarm');
+      await _alarmChannel.invokeMethod<void>('cancelMealAlarm', {
+        'alarmId': id,
+      });
+    }
+  }
+
+  static Future<void> cancelAllMealAlarms() async {
+    final configs = await getSavedMealAlarmConfigs();
+    if (Platform.isAndroid) {
+      await _alarmChannel.invokeMethod<void>('cancelAllMealAlarms');
+      for (final config in configs) {
+        await _plugin.cancel(id: config.id);
+        await _plugin.cancel(id: _multiSnoozeIdOffset + config.id);
+        await _plugin.cancel(id: _multiStatusIdOffset + config.id);
+      }
+      return;
+    }
+
+    for (final config in configs) {
+      await cancelMealAlarm(config.id);
+    }
+  }
+
+  static Future<void> clearAllMealAlarms() async {
+    await cancelAllMealAlarms();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefsMealAlarmsKey);
+  }
+
+  static Future<void> _restoreMealAlarmSchedule(int alarmId) async {
+    final config = await getSavedMealAlarmConfig(alarmId);
+    if (config == null || !config.enabled) return;
+    await scheduleMealAlarm(config);
+  }
+
+  static Future<void> stopAlarm({int? alarmId}) async {
+    // Backwards compatible: "single alarm" flow.
+    if (alarmId == null ||
+        alarmId == _dailyAlarmId ||
+        alarmId == _snoozeAlarmId) {
+      if (Platform.isAndroid) {
+        await _alarmChannel.invokeMethod<void>('stopAlarm');
+        return;
+      }
+
+      await _cancelActiveAlarmNotifications();
+      await _restoreDailyAlarmSchedule();
+      return;
+    }
+
+    // Multi-alarm flow (Flutter Local Notifications on all platforms).
+    await cancelMealAlarm(alarmId);
+    await _restoreMealAlarmSchedule(alarmId);
+  }
+
+  static Future<void> snoozeAlarm({int? alarmId}) async {
+    // Backwards compatible: "single alarm" flow.
+    if (alarmId == null ||
+        alarmId == _dailyAlarmId ||
+        alarmId == _snoozeAlarmId) {
+      if (Platform.isAndroid) {
+        await _alarmChannel.invokeMethod<void>('snoozeAlarm');
+        return;
+      }
+
+      const snoozeDuration = Duration(seconds: 30);
+
+      await _ensureTimezoneInitialized();
+      final alarmData = await getSavedAlarmData();
+
+      await _cancelActiveAlarmNotifications();
+      await _restoreDailyAlarmSchedule();
+      await _scheduleOneTimeAlarm(
+        id: _snoozeAlarmId,
+        scheduledDate: tz.TZDateTime.now(tz.local).add(snoozeDuration),
+        alarmData:
+            alarmData ??
+            const AlarmLaunchData(
+              title: defaultTitle,
+              instruction: defaultInstruction,
+              hour: 0,
+              minute: 0,
+            ),
+        notificationBody: 'Snoozed meal alarm is ringing',
+      );
+      await _showSnoozeMessage(snoozeDuration);
       return;
     }
 
     const snoozeDuration = Duration(seconds: 30);
-
     await _ensureTimezoneInitialized();
-    final alarmData = await getSavedAlarmData();
 
-    await _cancelActiveAlarmNotifications();
-    await _restoreDailyAlarmSchedule();
+    final config = await getSavedMealAlarmConfig(alarmId);
+    if (config == null) {
+      await cancelMealAlarm(alarmId);
+      return;
+    }
+
+    await cancelMealAlarm(alarmId);
+    await _restoreMealAlarmSchedule(alarmId);
+
     await _scheduleOneTimeAlarm(
-      id: _snoozeAlarmId,
+      id: _multiSnoozeIdOffset + alarmId,
       scheduledDate: tz.TZDateTime.now(tz.local).add(snoozeDuration),
-      alarmData:
-          alarmData ??
-          const AlarmLaunchData(
-            title: defaultTitle,
-            instruction: defaultInstruction,
-            hour: 0,
-            minute: 0,
-          ),
+      alarmData: AlarmLaunchData(
+        title: config.title,
+        instruction: config.instruction,
+        hour: config.hour,
+        minute: config.minute,
+        alarmId: config.id,
+        mealKey: config.mealKey,
+      ),
       notificationBody: 'Snoozed meal alarm is ringing',
     );
-    await _showSnoozeMessage(snoozeDuration);
+
+    await _showSnoozeMessage(
+      snoozeDuration,
+      id: _multiStatusIdOffset + alarmId,
+    );
   }
 
   static Future<void> _restoreDailyAlarmSchedule() async {
@@ -446,10 +787,13 @@ class NotificationService {
     await _plugin.cancel(id: _snoozeAlarmId);
   }
 
-  static Future<void> _showSnoozeMessage(Duration duration) async {
+  static Future<void> _showSnoozeMessage(
+    Duration duration, {
+    int id = _statusNotificationId,
+  }) async {
     final seconds = duration.inSeconds;
     await _plugin.show(
-      id: _statusNotificationId,
+      id: id,
       title: 'Alarm Snoozed',
       body: 'Alarm will ring again after $seconds seconds.',
       notificationDetails: const NotificationDetails(
