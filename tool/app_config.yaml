@@ -1,0 +1,18 @@
+# Single source of truth for app branding.
+#
+# After editing this file, run:
+#   dart run tool/apply_branding.dart --apply --generate-icons
+#
+# (You can also run without --generate-icons if you only changed the name/bundle id.)
+
+app_name: CalorIQ
+
+# Use one bundle/package id across Android + iOS.
+bundle_id: com.devsouq.caloriq.app
+
+# 1024x1024 PNG recommended.
+icon_path: assets/icons/calorIQ_appIcon.png
+
+# iOS App Store doesn't allow alpha in app icons.
+remove_alpha_ios: true
+

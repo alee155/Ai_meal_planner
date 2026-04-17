@@ -94,6 +94,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     );
                   }),
+                  // Obx(() {
+                  //   final disabled = _inboxController.items.isEmpty;
+                  //   return TextButton(
+                  //     onPressed: disabled ? null : _clearAll,
+                  //     child: Text(
+                  //       'Clear',
+                  //       style: AppTextStyles.button(
+                  //         context,
+                  //         fontSize: 13,
+                  //         color: disabled ? textSecondary : AppColors.warning,
+                  //       ),
+                  //     ),
+                  //   );
+                  // }),
                 ],
               ),
               SizedBox(height: 18.h),
@@ -189,84 +203,123 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     itemBuilder: (context, index) {
                       final item = items[index];
                       final accent = _accentFor(item);
-                      return Container(
-                        padding: EdgeInsets.all(16.w),
-                        decoration: BoxDecoration(
-                          color: surfaceColor,
-                          borderRadius: BorderRadius.circular(22.r),
-                          border: Border.all(
-                            color: item.isRead
-                                ? borderColor
-                                : accent.withValues(alpha: 0.35),
+                      final card = InkWell(
+                        borderRadius: BorderRadius.circular(22.r),
+                        onTap: item.isRead ? null : () => _markRead(item),
+                        child: Container(
+                          padding: EdgeInsets.all(16.w),
+                          decoration: BoxDecoration(
+                            color: surfaceColor,
+                            borderRadius: BorderRadius.circular(22.r),
+                            border: Border.all(
+                              color: item.isRead
+                                  ? borderColor
+                                  : accent.withValues(alpha: 0.35),
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 46.w,
+                                height: 46.w,
+                                decoration: BoxDecoration(
+                                  color: accent.withValues(alpha: 0.14),
+                                  borderRadius: BorderRadius.circular(16.r),
+                                ),
+                                child: Icon(
+                                  _iconFor(item),
+                                  color: accent,
+                                  size: 22.sp,
+                                ),
+                              ),
+                              SizedBox(width: 14.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item.title,
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (!item.isRead)
+                                          Container(
+                                            width: 10.w,
+                                            height: 10.w,
+                                            decoration: BoxDecoration(
+                                              color: accent,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 6.h),
+                                    Text(
+                                      item.message,
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        height: 1.5,
+                                        color: textSecondary,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.h),
+                                    Text(
+                                      _formatTimeLabel(context, item),
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: accent,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 46.w,
-                              height: 46.w,
-                              decoration: BoxDecoration(
-                                color: accent.withValues(alpha: 0.14),
-                                borderRadius: BorderRadius.circular(16.r),
-                              ),
-                              child: Icon(
-                                _iconFor(item),
-                                color: accent,
-                                size: 22.sp,
-                              ),
-                            ),
-                            SizedBox(width: 14.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          item.title,
-                                          style: TextStyle(
-                                            fontSize: 15.sp,
-                                            fontWeight: FontWeight.w700,
-                                            color: textPrimary,
-                                          ),
-                                        ),
-                                      ),
-                                      if (!item.isRead)
-                                        Container(
-                                          width: 10.w,
-                                          height: 10.w,
-                                          decoration: BoxDecoration(
-                                            color: accent,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 6.h),
-                                  Text(
-                                    item.message,
-                                    style: TextStyle(
-                                      fontSize: 13.sp,
-                                      height: 1.5,
-                                      color: textSecondary,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    _formatTimeLabel(context, item),
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: accent,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      );
+
+                      return Dismissible(
+                        key: ValueKey(item.id),
+                        direction: DismissDirection.horizontal,
+                        background: Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.symmetric(horizontal: 18.w),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(22.r),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline,
+                            color: AppColors.warning,
+                            size: 22.sp,
+                          ),
                         ),
+                        secondaryBackground: Container(
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.symmetric(horizontal: 18.w),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(22.r),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline,
+                            color: AppColors.warning,
+                            size: 22.sp,
+                          ),
+                        ),
+                        onDismissed: (_) => _deleteItem(item),
+                        child: card,
                       );
                     },
                   );
@@ -286,6 +339,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
       'Notifications updated',
       'All notifications have been marked as read.',
     );
+  }
+
+  void _clearAll() {
+    _inboxController.clearAll();
+
+    AppSnackbar.success('Cleared', 'All notifications have been removed.');
+  }
+
+  void _deleteItem(InAppInboxItem item) {
+    _inboxController.deleteItem(item.id);
+  }
+
+  void _markRead(InAppInboxItem item) {
+    _inboxController.markRead(item.id, isRead: true);
   }
 
   static IconData _iconFor(InAppInboxItem item) {

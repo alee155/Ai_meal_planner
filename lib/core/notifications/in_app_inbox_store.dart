@@ -155,4 +155,30 @@ class InAppInboxStore {
     final items = await load();
     await save(items.map((e) => e.copyWith(isRead: true)).toList());
   }
+
+  static Future<void> deleteById(int id) async {
+    final items = await load();
+    final next = items.where((e) => e.id != id).toList(growable: false);
+    if (next.length == items.length) return;
+    await save(next);
+  }
+
+  static Future<void> clearAll() async {
+    await save(const <InAppInboxItem>[]);
+  }
+
+  static Future<void> markRead(int id, {required bool isRead}) async {
+    final items = await load();
+    var changed = false;
+    final next = items
+        .map((e) {
+          if (e.id != id) return e;
+          if (e.isRead == isRead) return e;
+          changed = true;
+          return e.copyWith(isRead: isRead);
+        })
+        .toList(growable: false);
+    if (!changed) return;
+    await save(next);
+  }
 }
