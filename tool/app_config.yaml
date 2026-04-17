@@ -16,3 +16,36 @@ icon_path: assets/icons/calorIQ_appIcon.png
 # iOS App Store doesn't allow alpha in app icons.
 remove_alpha_ios: true
 
+# dart run tool/apply_branding.dart --apply
+
+# dart run tool/apply_branding.dart --dry-run
+
+
+# To actually change the app icon, run:
+# dart run tool/apply_branding.dart --apply --generate-icons
+
+
+
+# bundle_id is the app’s unique ID (like the app’s permanent “package name”).
+
+# When you change bundle_id in tool/app_config.yaml and run:
+
+# dart run tool/apply_branding.dart --apply
+
+# it updates:
+
+# Android
+
+# android/app/build.gradle.kts (applicationId + namespace)
+# android/app/src/main/AndroidManifest.xml (package="...")
+# Android native code identifiers (Kotlin package + any strings that include the old id)
+# iOS
+
+# ios/Runner.xcodeproj/project.pbxproj (PRODUCT_BUNDLE_IDENTIFIER)
+# Flutter ↔ Native bridge
+
+# updates the alarm method-channel string to ${bundle_id}/alarm so your native alarm/notification code still talks to Flutter.
+# Important notes:
+
+# After changing bundle_id, the phone treats it as a different app → you usually need to uninstall the old app and install again.
+# If you use Firebase / Google Sign-In / deep links, you must also update their config files for the new bundle_id.
