@@ -5,7 +5,7 @@ import flutter_local_notifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
-  private let alarmChannelName = "com.example.ai_meal_planner/alarm"
+  private let alarmChannelName = "com.devsouq.caloriq.app/alarm"
 
   override func application(
     _ application: UIApplication,

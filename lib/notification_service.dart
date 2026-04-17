@@ -165,7 +165,7 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
   static const MethodChannel _alarmChannel = MethodChannel(
-    'com.example.ai_meal_planner/alarm',
+    'com.devsouq.caloriq.app/alarm',
   );
   static const String defaultTitle = 'Meal Reminder';
   static const String defaultInstruction =

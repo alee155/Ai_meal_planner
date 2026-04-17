@@ -1,4 +1,4 @@
-package com.example.ai_meal_planner
+package com.devsouq.caloriq.app
 
 import android.media.RingtoneManager
 import java.util.TimeZone
@@ -7,7 +7,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val alarmChannelName = "com.example.ai_meal_planner/alarm"
+    private val alarmChannelName = "com.devsouq.caloriq.app/alarm"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

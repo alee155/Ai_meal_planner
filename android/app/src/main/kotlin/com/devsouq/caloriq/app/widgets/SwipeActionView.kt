@@ -1,4 +1,4 @@
-package com.example.ai_meal_planner.widgets
+package com.devsouq.caloriq.app.widgets
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable

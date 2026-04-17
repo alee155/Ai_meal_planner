@@ -1,4 +1,4 @@
-package com.example.ai_meal_planner
+package com.devsouq.caloriq.app
 
 import android.content.Context
 import android.media.AudioAttributes

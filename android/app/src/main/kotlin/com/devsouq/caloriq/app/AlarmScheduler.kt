@@ -1,4 +1,4 @@
-package com.example.ai_meal_planner
+package com.devsouq.caloriq.app
 
 import android.Manifest
 import android.app.AlarmManager
@@ -35,10 +35,10 @@ object AlarmScheduler {
     private const val channelName = "Native Meal Alarms"
     private const val channelDescription = "Native lock-screen meal alarms"
 
-    const val actionTriggerDaily = "com.example.ai_meal_planner.ALARM_TRIGGER_DAILY"
-    const val actionTriggerSnooze = "com.example.ai_meal_planner.ALARM_TRIGGER_SNOOZE"
-    const val actionStop = "com.example.ai_meal_planner.ALARM_STOP"
-    const val actionSnooze = "com.example.ai_meal_planner.ALARM_SNOOZE"
+    const val actionTriggerDaily = "com.devsouq.caloriq.app.ALARM_TRIGGER_DAILY"
+    const val actionTriggerSnooze = "com.devsouq.caloriq.app.ALARM_TRIGGER_SNOOZE"
+    const val actionStop = "com.devsouq.caloriq.app.ALARM_STOP"
+    const val actionSnooze = "com.devsouq.caloriq.app.ALARM_SNOOZE"
 
     const val extraAlarmId = "extra_alarm_id"
     const val extraMealKey = "extra_alarm_meal_key"

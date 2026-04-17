@@ -1,4 +1,4 @@
-package com.example.ai_meal_planner
+package com.devsouq.caloriq.app
 
 import android.content.BroadcastReceiver
 import android.content.Context

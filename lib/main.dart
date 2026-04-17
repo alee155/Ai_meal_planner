@@ -46,14 +46,11 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, this.initialAlarmData});
-
   final AlarmLaunchData? initialAlarmData;
-
   @override
   Widget build(BuildContext context) {
     final localeController = Get.find<LocaleController>();
     final themeController = Get.find<ThemeController>();
-
     return ScreenUtilInit(
       designSize: const Size(393, 874),
       minTextAdapt: true,
