@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DeleteAccountHeader extends StatelessWidget {
-  const DeleteAccountHeader({
-    super.key,
-    required this.onBackTap,
-  });
+  const DeleteAccountHeader({super.key, required this.onBackTap});
 
   final VoidCallback onBackTap;
 
@@ -21,10 +18,7 @@ class DeleteAccountHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Delete Account',
-                style: AppTextStyles.headline(context),
-              ),
+              Text('Delete Account', style: AppTextStyles.headline(context)),
               Text(
                 'Review the warnings before continuing',
                 style: AppTextStyles.label(context),

@@ -60,11 +60,7 @@ class AppTextFormField extends StatelessWidget {
         fillColor: fillColor ?? AppColors.inputBackgroundOf(context),
         prefixIcon: prefixIcon == null
             ? null
-            : Icon(
-                prefixIcon,
-                color: AppColors.primaryGreenDark,
-                size: 22.sp,
-              ),
+            : Icon(prefixIcon, color: AppColors.primaryGreenDark, size: 22.sp),
         suffixIcon: suffixIcon,
         contentPadding: EdgeInsets.symmetric(
           horizontal: horizontalPadding.w,

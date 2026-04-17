@@ -31,19 +31,12 @@ class DeleteAccountPasswordCard extends StatelessWidget {
         children: [
           Text(
             'Confirm with password',
-            style: AppTextStyles.title(
-              context,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTextStyles.title(context, fontWeight: FontWeight.w700),
           ),
           SizedBox(height: 8.h),
           Text(
             'Enter your current password to confirm account deletion.',
-            style: AppTextStyles.body(
-              context,
-              fontSize: 13,
-              height: 1.5,
-            ),
+            style: AppTextStyles.body(context, fontSize: 13, height: 1.5),
           ),
           SizedBox(height: 14.h),
           AppTextFormField(

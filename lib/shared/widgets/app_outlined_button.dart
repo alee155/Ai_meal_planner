@@ -39,13 +39,11 @@ class AppOutlinedButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius.r),
           ),
         ),
-        child: child ??
+        child:
+            child ??
             Text(
               label!,
-              style: TextStyle(
-                fontSize: fontSize.sp,
-                fontWeight: fontWeight,
-              ),
+              style: TextStyle(fontSize: fontSize.sp, fontWeight: fontWeight),
             ),
       ),
     );

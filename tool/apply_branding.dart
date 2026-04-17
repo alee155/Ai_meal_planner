@@ -24,7 +24,9 @@ void main(List<String> args) async {
     stdout.writeln('Options:');
     stdout.writeln('  --apply            Write changes to files');
     stdout.writeln('  --dry-run          Show what would change (default)');
-    stdout.writeln('  --generate-icons   Run flutter_launcher_icons after updating pubspec.yaml');
+    stdout.writeln(
+      '  --generate-icons   Run flutter_launcher_icons after updating pubspec.yaml',
+    );
     exitCode = 0;
     return;
   }
@@ -60,7 +62,11 @@ void main(List<String> args) async {
   changes.addAll(_updatePubspecLauncherIcons(config, dryRun: dryRun));
 
   if (changes.isEmpty) {
-    stdout.writeln(dryRun ? 'No changes needed.' : 'No changes applied (already up to date).');
+    stdout.writeln(
+      dryRun
+          ? 'No changes needed.'
+          : 'No changes applied (already up to date).',
+    );
   } else {
     if (dryRun) {
       stdout.writeln('Dry-run: would update:');
@@ -77,10 +83,7 @@ void main(List<String> args) async {
   }
 
   if (!dryRun && generateIcons) {
-    await _run(
-      'flutter',
-      const ['pub', 'run', 'flutter_launcher_icons'],
-    );
+    await _run('flutter', const ['pub', 'run', 'flutter_launcher_icons']);
   }
 }
 
@@ -106,7 +109,10 @@ BrandingConfig _parseConfig(String contents) {
   final bundleId = map['bundle_id'] ?? '';
   final iconPath = map['icon_path'] ?? '';
   final removeAlphaRaw = (map['remove_alpha_ios'] ?? 'true').toLowerCase();
-  final removeAlphaIos = removeAlphaRaw == 'true' || removeAlphaRaw == 'yes' || removeAlphaRaw == '1';
+  final removeAlphaIos =
+      removeAlphaRaw == 'true' ||
+      removeAlphaRaw == 'yes' ||
+      removeAlphaRaw == '1';
 
   return BrandingConfig(
     appName: appName,
@@ -132,11 +138,15 @@ void _validateConfig(BrandingConfig config) {
   }
 }
 
-List<String> _updateAndroidAppName(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateAndroidAppName(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('android/app/src/main/res/values/strings.xml');
   if (!file.existsSync()) {
     // Create minimal strings.xml if missing.
-    final content = '''
+    final content =
+        '''
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">${_xmlEscape(config.appName)}</string>
@@ -160,7 +170,10 @@ List<String> _updateAndroidAppName(BrandingConfig config, {required bool dryRun}
   return ['android/app/src/main/res/values/strings.xml'];
 }
 
-List<String> _updateAndroidGradleIds(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateAndroidGradleIds(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('android/app/build.gradle.kts');
   if (!file.existsSync()) return const [];
   final before = file.readAsStringSync();
@@ -180,7 +193,10 @@ List<String> _updateAndroidGradleIds(BrandingConfig config, {required bool dryRu
   return ['android/app/build.gradle.kts'];
 }
 
-List<String> _updateAndroidManifest(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateAndroidManifest(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('android/app/src/main/AndroidManifest.xml');
   if (!file.existsSync()) return const [];
   final before = file.readAsStringSync();
@@ -188,17 +204,17 @@ List<String> _updateAndroidManifest(BrandingConfig config, {required bool dryRun
   var updated = before;
 
   // Ensure manifest has package="..."
-  updated = updated.replaceFirstMapped(
-    RegExp(r'<manifest\b[^>]*>'),
-    (m) {
-      final tag = m.group(0)!;
-      if (RegExp(r'\bpackage="[^"]*"').hasMatch(tag)) {
-        return tag.replaceAll(RegExp(r'\bpackage="[^"]*"'), 'package="${config.bundleId}"');
-      }
-      // Insert attribute before closing >
-      return tag.substring(0, tag.length - 1) + '\n    package="${config.bundleId}">';
-    },
-  );
+  updated = updated.replaceFirstMapped(RegExp(r'<manifest\b[^>]*>'), (m) {
+    final tag = m.group(0)!;
+    if (RegExp(r'\bpackage="[^"]*"').hasMatch(tag)) {
+      return tag.replaceAll(
+        RegExp(r'\bpackage="[^"]*"'),
+        'package="${config.bundleId}"',
+      );
+    }
+    // Insert attribute before closing >
+    return '${tag.substring(0, tag.length - 1)}\n    package="${config.bundleId}">';
+  });
 
   // Ensure label uses @string/app_name
   updated = updated.replaceAll(
@@ -211,7 +227,10 @@ List<String> _updateAndroidManifest(BrandingConfig config, {required bool dryRun
   return ['android/app/src/main/AndroidManifest.xml'];
 }
 
-List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateAndroidKotlin(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final kotlinRoot = Directory('android/app/src/main/kotlin');
   if (!kotlinRoot.existsSync()) return const [];
 
@@ -227,7 +246,10 @@ List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun})
 
   if (mainActivityFile != null) {
     final content = mainActivityFile.readAsStringSync();
-    final pkg = RegExp(r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$', multiLine: true).firstMatch(content);
+    final pkg = RegExp(
+      r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$',
+      multiLine: true,
+    ).firstMatch(content);
     oldBasePackage = pkg?.group(1);
   }
 
@@ -242,8 +264,10 @@ List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun})
     }
     if (anyKtFile == null) return const [];
     final anyContent = anyKtFile.readAsStringSync();
-    final anyPkg =
-        RegExp(r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$', multiLine: true).firstMatch(anyContent);
+    final anyPkg = RegExp(
+      r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$',
+      multiLine: true,
+    ).firstMatch(anyContent);
     oldBasePackage = anyPkg?.group(1);
   }
 
@@ -258,8 +282,10 @@ List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun})
     if (entity is! File || !entity.path.endsWith('.kt')) continue;
     final file = entity;
     final before = file.readAsStringSync();
-    final pkgMatch =
-        RegExp(r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$', multiLine: true).firstMatch(before);
+    final pkgMatch = RegExp(
+      r'^\s*package\s+([A-Za-z0-9_\.]+)\s*$',
+      multiLine: true,
+    ).firstMatch(before);
     if (pkgMatch == null) continue;
 
     final currentPkg = pkgMatch.group(1)!;
@@ -270,7 +296,9 @@ List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun})
     String updated = before;
 
     if (currentPkg.startsWith(prefix)) {
-      final suffix = currentPkg.substring(prefix.length); // includes leading ".widgets" etc (or empty)
+      final suffix = currentPkg.substring(
+        prefix.length,
+      ); // includes leading ".widgets" etc (or empty)
       final newPkg = '${config.bundleId}$suffix';
       updated = before.replaceFirst(
         RegExp(r'^\s*package\s+[A-Za-z0-9_\.]+\s*$', multiLine: true),
@@ -308,21 +336,35 @@ List<String> _updateAndroidKotlin(BrandingConfig config, {required bool dryRun})
   return changedFiles.toList()..sort();
 }
 
-List<String> _updateIosInfoPlist(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateIosInfoPlist(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('ios/Runner/Info.plist');
   if (!file.existsSync()) return const [];
   final before = file.readAsStringSync();
 
   String updated = before;
-  updated = _replacePlistStringValue(updated, key: 'CFBundleDisplayName', value: config.appName);
-  updated = _replacePlistStringValue(updated, key: 'CFBundleName', value: config.appName);
+  updated = _replacePlistStringValue(
+    updated,
+    key: 'CFBundleDisplayName',
+    value: config.appName,
+  );
+  updated = _replacePlistStringValue(
+    updated,
+    key: 'CFBundleName',
+    value: config.appName,
+  );
 
   if (before == updated) return const [];
   if (!dryRun) file.writeAsStringSync(updated);
   return ['ios/Runner/Info.plist'];
 }
 
-List<String> _updateIosProjectBundleId(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateIosProjectBundleId(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('ios/Runner.xcodeproj/project.pbxproj');
   if (!file.existsSync()) return const [];
   final before = file.readAsStringSync();
@@ -345,7 +387,10 @@ List<String> _updateIosProjectBundleId(BrandingConfig config, {required bool dry
   return ['ios/Runner.xcodeproj/project.pbxproj'];
 }
 
-List<String> _updateFlutterMethodChannel(BrandingConfig config, {required bool dryRun}) {
+List<String> _updateFlutterMethodChannel(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final channel = '${config.bundleId}/alarm';
   final touched = <String>[];
 
@@ -360,9 +405,15 @@ List<String> _updateFlutterMethodChannel(BrandingConfig config, {required bool d
   }
 
   // We keep backward compat simple: only replace known channel strings if present.
-  updateFile('lib/notification_service.dart', 'com.example.ai_meal_planner/alarm');
+  updateFile(
+    'lib/notification_service.dart',
+    'com.example.ai_meal_planner/alarm',
+  );
   updateFile('lib/notification_service.dart', 'com.devsouq.caloriq.app/alarm');
-  updateFile('ios/Runner/AppDelegate.swift', 'com.example.ai_meal_planner/alarm');
+  updateFile(
+    'ios/Runner/AppDelegate.swift',
+    'com.example.ai_meal_planner/alarm',
+  );
   updateFile('ios/Runner/AppDelegate.swift', 'com.devsouq.caloriq.app/alarm');
 
   // MainActivity might move; try both locations.
@@ -395,7 +446,10 @@ List<String> _updateFlutterMethodChannel(BrandingConfig config, {required bool d
   return touched;
 }
 
-List<String> _updatePubspecLauncherIcons(BrandingConfig config, {required bool dryRun}) {
+List<String> _updatePubspecLauncherIcons(
+  BrandingConfig config, {
+  required bool dryRun,
+}) {
   final file = File('pubspec.yaml');
   if (!file.existsSync()) return const [];
   final before = file.readAsStringSync();
@@ -403,7 +457,10 @@ List<String> _updatePubspecLauncherIcons(BrandingConfig config, {required bool d
   // Update image paths in flutter_launcher_icons block if present.
   var updated = before;
   updated = updated.replaceAllMapped(
-    RegExp('^[ \\t]*image_path:[ \\t]*[\\\'"][^\\\'"]*[\\\'"][ \\t]*\$', multiLine: true),
+    RegExp(
+      '^[ \\t]*image_path:[ \\t]*[\\\'"][^\\\'"]*[\\\'"][ \\t]*\$',
+      multiLine: true,
+    ),
     (m) => '  image_path: "${config.iconPath}"',
   );
   updated = updated.replaceAllMapped(
@@ -414,18 +471,27 @@ List<String> _updatePubspecLauncherIcons(BrandingConfig config, {required bool d
     (m) => '  adaptive_icon_foreground: "${config.iconPath}"',
   );
 
-  if (RegExp(r'^\s*flutter_launcher_icons:\s*$', multiLine: true).hasMatch(updated)) {
-    final hasRemoveAlpha =
-        RegExp(r'^[ \t]*remove_alpha_ios:[ \t]*(true|false)[ \t]*$', multiLine: true).hasMatch(updated);
+  if (RegExp(
+    r'^\s*flutter_launcher_icons:\s*$',
+    multiLine: true,
+  ).hasMatch(updated)) {
+    final hasRemoveAlpha = RegExp(
+      r'^[ \t]*remove_alpha_ios:[ \t]*(true|false)[ \t]*$',
+      multiLine: true,
+    ).hasMatch(updated);
     if (hasRemoveAlpha) {
       updated = updated.replaceAllMapped(
-        RegExp(r'^[ \t]*remove_alpha_ios:[ \t]*(true|false)[ \t]*$', multiLine: true),
+        RegExp(
+          r'^[ \t]*remove_alpha_ios:[ \t]*(true|false)[ \t]*$',
+          multiLine: true,
+        ),
         (m) => '  remove_alpha_ios: ${config.removeAlphaIos}',
       );
     } else {
       // Insert remove_alpha_ios near the end of the flutter_launcher_icons block.
       // Simple heuristic: append at end of file if we can't find a clean insertion point.
-      updated = '${updated.trimRight()}\n  remove_alpha_ios: ${config.removeAlphaIos}\n';
+      updated =
+          '${updated.trimRight()}\n  remove_alpha_ios: ${config.removeAlphaIos}\n';
     }
   }
 
@@ -438,7 +504,11 @@ List<String> _updatePubspecLauncherIcons(BrandingConfig config, {required bool d
   return ['pubspec.yaml'];
 }
 
-String _replacePlistStringValue(String plist, {required String key, required String value}) {
+String _replacePlistStringValue(
+  String plist, {
+  required String key,
+  required String value,
+}) {
   // Replace:
   // <key>KEY</key>\n <string>...</string>
   final re = RegExp(
@@ -460,14 +530,15 @@ String _xmlEscape(String input) {
 
 Future<void> _run(String executable, List<String> arguments) async {
   stdout.writeln('\nRunning: $executable ${arguments.join(' ')}');
-  final result = await Process.run(
-    executable,
-    arguments,
-    runInShell: true,
-  );
+  final result = await Process.run(executable, arguments, runInShell: true);
   stdout.write(result.stdout);
   stderr.write(result.stderr);
   if (result.exitCode != 0) {
-    throw ProcessException(executable, arguments, 'Command failed', result.exitCode);
+    throw ProcessException(
+      executable,
+      arguments,
+      'Command failed',
+      result.exitCode,
+    );
   }
 }

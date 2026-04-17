@@ -94,20 +94,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     );
                   }),
-                  // Obx(() {
-                  //   final disabled = _inboxController.items.isEmpty;
-                  //   return TextButton(
-                  //     onPressed: disabled ? null : _clearAll,
-                  //     child: Text(
-                  //       'Clear',
-                  //       style: AppTextStyles.button(
-                  //         context,
-                  //         fontSize: 13,
-                  //         color: disabled ? textSecondary : AppColors.warning,
-                  //       ),
-                  //     ),
-                  //   );
-                  // }),
                 ],
               ),
               SizedBox(height: 18.h),
@@ -339,12 +325,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
       'Notifications updated',
       'All notifications have been marked as read.',
     );
-  }
-
-  void _clearAll() {
-    _inboxController.clearAll();
-
-    AppSnackbar.success('Cleared', 'All notifications have been removed.');
   }
 
   void _deleteItem(InAppInboxItem item) {
