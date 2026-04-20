@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/network/api_exception.dart';
+import 'package:ai_meal_planner/features/DietPlanScreen/controller/diet_plan_controller.dart';
 import 'package:ai_meal_planner/features/user_profile/models/user_stats_response_model.dart';
 import 'package:ai_meal_planner/features/user_profile/services/user_stats_service.dart';
 import 'package:get/get.dart';
@@ -405,7 +407,11 @@ class UserProfileController extends GetxController {
       _buildRequestBody(sanitized),
     );
 
-    return _commitStatsResponse(response, fallback: sanitized);
+    final result = await _commitStatsResponse(response, fallback: sanitized);
+    unawaited(
+      DietPlanController.ensureRegistered().fetchLatest(showLoader: false),
+    );
+    return result;
   }
 
   Future<UserProfileData> updateProfile(UserProfileData data) async {
@@ -415,7 +421,11 @@ class UserProfileController extends GetxController {
       _buildRequestBody(sanitized),
     );
 
-    return _commitStatsResponse(response, fallback: sanitized);
+    final result = await _commitStatsResponse(response, fallback: sanitized);
+    unawaited(
+      DietPlanController.ensureRegistered().fetchLatest(showLoader: false),
+    );
+    return result;
   }
 
   Map<String, dynamic> _buildRequestBody(UserProfileData data) {

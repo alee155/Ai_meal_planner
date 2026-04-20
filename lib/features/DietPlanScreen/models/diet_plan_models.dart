@@ -49,6 +49,10 @@ class DietPlanMeal {
     required this.timeWindow,
     required this.items,
     required this.summary,
+    this.proteinGrams = 0,
+    this.carbsGrams = 0,
+    this.fatsGrams = 0,
+    this.alternatives = const [],
     this.status = DietMealStatus.pending,
     this.completedAt,
   });
@@ -59,11 +63,16 @@ class DietPlanMeal {
   final String timeWindow;
   final List<String> items;
   final String summary;
+  final int proteinGrams;
+  final int carbsGrams;
+  final int fatsGrams;
+  final List<String> alternatives;
   final DietMealStatus status;
   final DateTime? completedAt;
 
   bool get isCompleted => status == DietMealStatus.completed;
   bool get isSkipped => status == DietMealStatus.skipped;
+  bool get hasAlternatives => alternatives.isNotEmpty;
 
   DietPlanMeal copyWith({
     DietMealType? type,
@@ -72,6 +81,10 @@ class DietPlanMeal {
     String? timeWindow,
     List<String>? items,
     String? summary,
+    int? proteinGrams,
+    int? carbsGrams,
+    int? fatsGrams,
+    List<String>? alternatives,
     DietMealStatus? status,
     DateTime? completedAt,
     bool clearCompletedAt = false,
@@ -83,6 +96,10 @@ class DietPlanMeal {
       timeWindow: timeWindow ?? this.timeWindow,
       items: items ?? this.items,
       summary: summary ?? this.summary,
+      proteinGrams: proteinGrams ?? this.proteinGrams,
+      carbsGrams: carbsGrams ?? this.carbsGrams,
+      fatsGrams: fatsGrams ?? this.fatsGrams,
+      alternatives: alternatives ?? this.alternatives,
       status: status ?? this.status,
       completedAt: clearCompletedAt ? null : completedAt ?? this.completedAt,
     );

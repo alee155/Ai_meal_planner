@@ -4,6 +4,7 @@ class ApiEndpoints {
   static const String baseUrl = 'https://aidietplanner.dgexpense.com';
   static const AuthApiEndpoints auth = AuthApiEndpoints._();
   static const UserApiEndpoints users = UserApiEndpoints._();
+  static const MealsApiEndpoints meals = MealsApiEndpoints._();
 
   static String url(String endpoint) => '$baseUrl$endpoint';
 }
@@ -39,4 +40,10 @@ class UserAccountApiEndpoints {
 
   final String delete = '/api/users/account';
   final String deactivate = '/api/users/data';
+}
+
+class MealsApiEndpoints {
+  const MealsApiEndpoints._();
+
+  final String latest = '/api/meals/latest';
 }

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/features/DietPlanScreen/controller/diet_plan_controller.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calorie_chart_panel.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_calories_card.dart';
 import 'package:ai_meal_planner/features/HomeScreen/widgets/home_header.dart';
@@ -33,15 +36,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   HomeCalorieChartType _selectedChartType = HomeCalorieChartType.spline;
+  late final DietPlanController _dietPlanController;
+
+  @override
+  void initState() {
+    super.initState();
+    _dietPlanController = DietPlanController.ensureRegistered();
+    unawaited(_dietPlanController.ensureFresh());
+  }
 
   @override
   Widget build(BuildContext context) {
     final subscriptionController = SubscriptionController.ensureRegistered();
     final authSessionController = AuthSessionController.ensureRegistered();
     final inboxController = NotificationsInboxController.ensureRegistered();
-    const calorieGoal = 1700;
-    const consumedCalories = 1360;
-    const remainingCalories = calorieGoal - consumedCalories;
     final days = [
       context.l10n.mondayShort,
       context.l10n.tuesdayShort,
@@ -81,17 +89,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animateDashboardHeader(enabled: widget.playEntranceAnimation),
               SizedBox(height: 18.h),
-              Obx(
-                () => HomeCaloriesCard(
-                  consumedCalories: consumedCalories,
-                  calorieGoal: calorieGoal,
-                  remainingCalories: remainingCalories,
+              Obx(() {
+                final goal =
+                    (_dietPlanController
+                                .latest
+                                .value
+                                ?.plan
+                                .nutrition
+                                .targetCalories ??
+                            1700)
+                        .round();
+                const consumed = 1360;
+                final remaining = (goal - consumed).clamp(0, goal).toInt();
+
+                return HomeCaloriesCard(
+                  consumedCalories: consumed,
+                  calorieGoal: goal,
+                  remainingCalories: remaining,
                   planLabel: subscriptionController.hasPremium
                       ? context.l10n.premium
                       : context.l10n.freePlan,
                   isPremium: subscriptionController.hasPremium,
-                ),
-              ).animateDashboardCard(
+                );
+              }).animateDashboardCard(
                 enabled: widget.playEntranceAnimation,
                 delay: AppMotion.stagger(1, initialMs: 140),
               ),
