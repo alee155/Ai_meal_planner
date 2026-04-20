@@ -420,8 +420,8 @@ class _MealFace extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 7.h),
       decoration: BoxDecoration(
-        color: AppColors.chipBackgroundOf(context),
-        borderRadius: BorderRadius.circular(999.r),
+        color: AppColors.info.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Text(

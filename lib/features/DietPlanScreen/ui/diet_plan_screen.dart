@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
@@ -35,7 +33,6 @@ class _DietPlanScreenState extends State<DietPlanScreen> {
   void initState() {
     super.initState();
     _controller = DietPlanController.ensureRegistered();
-    unawaited(_controller.ensureFresh());
   }
 
   @override
@@ -117,7 +114,6 @@ class _DietPlanScreenState extends State<DietPlanScreen> {
                 padding: EdgeInsets.only(bottom: 14.h),
                 child:
                     DietPlanMealCard(
-                      key: ValueKey('${latest.id}-${meal.type.name}'),
                       meal: meal,
                       onCompleteTap: () => _markMealCompleted(meal),
                       onSkipTap: () => _skipMeal(meal),
@@ -421,5 +417,3 @@ class _InlineWarning extends StatelessWidget {
     );
   }
 }
-
-// Meal details bottom sheet removed (replaced by flip-to-alternatives UX).
