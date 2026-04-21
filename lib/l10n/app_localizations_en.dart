@@ -1051,4 +1051,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumBenefitsMessage =>
       'Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included.';
+
+  @override
+  String get guestModeTitle => 'Sign In to Continue';
+
+  @override
+  String get guestModeDescription =>
+      'Create an account or sign in to unlock personalized meal plans, detailed nutrition insights, and progress tracking.';
+
+  @override
+  String get guestModeButtonSignIn => 'Sign In or Create Account';
+
+  @override
+  String get guestModeSecondaryButton => 'Continue Exploring';
+
+  @override
+  String get dietPlanGuestTitle => 'Sign in to view meal plans';
+
+  @override
+  String get dietPlanGuestDescription =>
+      'Create an account or sign in to access your personalized meal plan and keep your progress synced.';
+
+  @override
+  String get dataPreviewTitle => 'Data Preview';
+
+  @override
+  String get dataPreviewDescription =>
+      'Sign in to see your nutrition data and detailed analytics';
+
+  @override
+  String get upgradeForAnalytics =>
+      'Sign in to unlock detailed nutrition analytics';
 }

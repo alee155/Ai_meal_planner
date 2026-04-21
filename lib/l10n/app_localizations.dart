@@ -1993,6 +1993,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included.'**
   String get premiumBenefitsMessage;
+
+  /// No description provided for @guestModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In to Continue'**
+  String get guestModeTitle;
+
+  /// No description provided for @guestModeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account or sign in to unlock personalized meal plans, detailed nutrition insights, and progress tracking.'**
+  String get guestModeDescription;
+
+  /// No description provided for @guestModeButtonSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In or Create Account'**
+  String get guestModeButtonSignIn;
+
+  /// No description provided for @guestModeSecondaryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Exploring'**
+  String get guestModeSecondaryButton;
+
+  /// No description provided for @dietPlanGuestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view meal plans'**
+  String get dietPlanGuestTitle;
+
+  /// No description provided for @dietPlanGuestDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account or sign in to access your personalized meal plan and keep your progress synced.'**
+  String get dietPlanGuestDescription;
+
+  /// No description provided for @dataPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Preview'**
+  String get dataPreviewTitle;
+
+  /// No description provided for @dataPreviewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see your nutrition data and detailed analytics'**
+  String get dataPreviewDescription;
+
+  /// No description provided for @upgradeForAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to unlock detailed nutrition analytics'**
+  String get upgradeForAnalytics;
 }
 
 class _AppLocalizationsDelegate

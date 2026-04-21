@@ -42,7 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _dietPlanController = DietPlanController.ensureRegistered();
-    unawaited(_dietPlanController.ensureFresh());
+    if (AuthSessionController.ensureRegistered().isLoggedIn) {
+      unawaited(_dietPlanController.ensureFresh());
+    }
   }
 
   @override
@@ -101,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .round();
                 const consumed = 1360;
                 final remaining = (goal - consumed).clamp(0, goal).toInt();
+                final authController = authSessionController;
 
                 return HomeCaloriesCard(
                   consumedCalories: consumed,
@@ -110,6 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? context.l10n.premium
                       : context.l10n.freePlan,
                   isPremium: subscriptionController.hasPremium,
+                  isGuest: authController.isGuest,
                 );
               }).animateDashboardCard(
                 enabled: widget.playEntranceAnimation,
@@ -124,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onChartTypeChanged: (chartType) {
                     setState(() => _selectedChartType = chartType);
                   },
+                  isGuest: authSessionController.isGuest,
                 ),
               ).animateDashboardPanel(
                 enabled: widget.playEntranceAnimation,

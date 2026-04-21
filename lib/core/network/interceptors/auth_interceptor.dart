@@ -40,7 +40,10 @@ class AuthInterceptor extends Interceptor {
     final statusCode = err.response?.statusCode ?? 0;
     final requestPath = err.requestOptions.path;
 
-    if (statusCode == 401 && !_isPublicEndpoint(requestPath)) {
+    final storedToken = await _storageService.readToken();
+    final hadSession = storedToken != null && storedToken.trim().isNotEmpty;
+
+    if (statusCode == 401 && hadSession && !_isPublicEndpoint(requestPath)) {
       print('******** AUTH INTERCEPTOR UNAUTHORIZED ********');
       print('path: $requestPath');
 

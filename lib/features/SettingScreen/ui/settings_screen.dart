@@ -50,6 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final localeController = LocaleController.ensureRegistered();
     final subscriptionController = SubscriptionController.ensureRegistered();
     final mealRemindersController = MealRemindersController.ensureRegistered();
+    final isGuest = authSessionController.isGuest;
     final screenBackground = AppColors.backgroundSecondaryOf(context);
     final surfaceColor = AppColors.surfaceOf(context);
     final textPrimary = AppColors.textPrimaryOf(context);
@@ -108,6 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildProfileCard(
                     hasPremium: subscriptionController.hasPremium,
                     authSessionController: authSessionController,
+                    isGuest: isGuest,
                   ).animateSettingsCard(
                     enabled: widget.playEntranceAnimation,
                     delay: AppMotion.stagger(1, initialMs: 120),
@@ -125,13 +127,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.person_outline_rounded,
                       title: 'Personal details',
                       subtitle: 'Name, email, and profile preferences',
-                      onTap: () => Get.toNamed(AppRoutes.personalDetails),
+                      trailing: isGuest
+                          ? Icon(
+                              Icons.lock_outline_rounded,
+                              color: AppColors.textHintOf(context),
+                            )
+                          : null,
+                      onTap: () => isGuest
+                          ? Get.toNamed(AppRoutes.login)
+                          : Get.toNamed(AppRoutes.personalDetails),
                     ),
                     _SettingsTile(
                       icon: Icons.lock_outline_rounded,
                       title: 'Change password',
                       subtitle: 'Update your account password securely',
-                      onTap: _showChangePasswordSheet,
+                      trailing: isGuest
+                          ? Icon(
+                              Icons.lock_outline_rounded,
+                              color: AppColors.textHintOf(context),
+                            )
+                          : null,
+                      onTap: isGuest
+                          ? () => Get.toNamed(AppRoutes.login)
+                          : _showChangePasswordSheet,
                     ),
                     // _SettingsTile(
                     //   icon: Icons.devices_outlined,
@@ -350,11 +368,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             SizedBox(height: 22.h),
             _buildSecondaryAction(
-              icon: Icons.logout_rounded,
-              label: 'Log out',
+              icon: isGuest ? Icons.login_rounded : Icons.logout_rounded,
+              label: isGuest ? context.l10n.guestModeButtonSignIn : 'Log out',
               color: textPrimary,
               backgroundColor: surfaceColor,
-              onTap: _logout,
+              onTap: isGuest ? () => Get.toNamed(AppRoutes.login) : _logout,
             ).animateSettingsAction(
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(8, initialMs: 140),
@@ -367,7 +385,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               backgroundColor: AppColors.isDark(context)
                   ? AppColors.error.withValues(alpha: 0.12)
                   : const Color(0xFFFFF1F1),
-              onTap: _openDeleteAccountScreen,
+              onTap: isGuest
+                  ? () => Get.toNamed(AppRoutes.login)
+                  : _openDeleteAccountScreen,
             ).animateSettingsAction(
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(9, initialMs: 140),
@@ -381,6 +401,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildProfileCard({
     required bool hasPremium,
     required AuthSessionController authSessionController,
+    required bool isGuest,
   }) {
     final user = authSessionController.currentUser.value;
     final resolvedName = (user?.name.trim().isNotEmpty ?? false)
@@ -476,7 +497,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     InkWell(
-                      onTap: _showEditProfileSheet,
+                      onTap: isGuest
+                          ? () => Get.toNamed(AppRoutes.login)
+                          : _showEditProfileSheet,
                       borderRadius: BorderRadius.circular(999),
                       child: Container(
                         padding: EdgeInsets.all(6.w),
@@ -485,7 +508,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.edit,
+                          isGuest ? Icons.lock_outline_rounded : Icons.edit,
                           size: 16.sp,
                           color: Colors.white,
                         ),

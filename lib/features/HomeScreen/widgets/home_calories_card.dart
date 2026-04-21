@@ -11,6 +11,7 @@ class HomeCaloriesCard extends StatelessWidget {
     required this.remainingCalories,
     required this.planLabel,
     required this.isPremium,
+    this.isGuest = false,
   });
 
   final int consumedCalories;
@@ -18,6 +19,7 @@ class HomeCaloriesCard extends StatelessWidget {
   final int remainingCalories;
   final String planLabel;
   final bool isPremium;
+  final bool isGuest;
 
   @override
   Widget build(BuildContext context) {
@@ -80,37 +82,70 @@ class HomeCaloriesCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 16.h),
-                  Text(
-                    '$consumedCalories kcal',
-                    style: TextStyle(
-                      fontSize: 34.sp,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                  if (isGuest)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 40.h,
+                          width: 140.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        Container(
+                          height: 16.h,
+                          width: 120.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$consumedCalories kcal',
+                          style: TextStyle(
+                            fontSize: 34.sp,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 6.h),
+                        Text(
+                          l10n.consumedToday,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    l10n.consumedToday,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                  ),
                   SizedBox(height: 18.h),
                   Row(
                     children: [
                       Expanded(
-                        child: _CalorieStat(
-                          label: l10n.goal,
-                          value: '$calorieGoal kcal',
-                        ),
+                        child: isGuest
+                            ? _SkeletonCalorieStat()
+                            : _CalorieStat(
+                                label: l10n.goal,
+                                value: '$calorieGoal kcal',
+                              ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
-                        child: _CalorieStat(
-                          label: l10n.remaining,
-                          value: '$remainingCalories kcal',
-                        ),
+                        child: isGuest
+                            ? _SkeletonCalorieStat()
+                            : _CalorieStat(
+                                label: l10n.remaining,
+                                value: '$remainingCalories kcal',
+                              ),
                       ),
                     ],
                   ),
@@ -273,6 +308,44 @@ class _CalorieStat extends StatelessWidget {
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SkeletonCalorieStat extends StatelessWidget {
+  const _SkeletonCalorieStat();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 12.h,
+            width: 50.w,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Container(
+            height: 16.h,
+            width: 70.w,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.20),
+              borderRadius: BorderRadius.circular(6),
             ),
           ),
         ],

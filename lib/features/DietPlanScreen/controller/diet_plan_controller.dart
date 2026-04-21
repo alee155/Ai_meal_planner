@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:ai_meal_planner/core/network/api_exception.dart';
+import 'package:ai_meal_planner/core/auth/services/auth_session_storage_service.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/models/latest_meal_plan_response_model.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/services/meal_plan_service.dart';
 import 'package:get/get.dart';
@@ -21,10 +22,15 @@ class DietPlanMealDetails {
 }
 
 class DietPlanController extends GetxController {
-  DietPlanController({MealPlanService? mealPlanService})
-    : _mealPlanService = mealPlanService ?? MealPlanService.ensureRegistered();
+  DietPlanController({
+    MealPlanService? mealPlanService,
+    AuthSessionStorageService? authStorageService,
+  }) : _mealPlanService = mealPlanService ?? MealPlanService.ensureRegistered(),
+       _authStorageService =
+           authStorageService ?? AuthSessionStorageService.ensureRegistered();
 
   final MealPlanService _mealPlanService;
+  final AuthSessionStorageService _authStorageService;
 
   final RxBool isLoading = true.obs;
   final RxString errorMessage = ''.obs;
@@ -71,6 +77,14 @@ class DietPlanController extends GetxController {
     errorMessage.value = '';
 
     try {
+      final token = await _authStorageService.readToken();
+      final hasToken = token != null && token.trim().isNotEmpty;
+      if (!hasToken) {
+        latest.value = null;
+        lastFetchedAt.value = null;
+        return;
+      }
+
       final response = await _mealPlanService.fetchLatestMealPlan();
       latest.value = response.data;
       lastFetchedAt.value = DateTime.now();

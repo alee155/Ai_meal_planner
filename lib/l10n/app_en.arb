@@ -453,5 +453,14 @@
   "privacyPolicyMessage": "This can later open a webview or markdown page with your policy.",
   "personalDetailsMessage": "Connect this tile to your profile edit flow when you are ready.",
   "connectedDevicesMessage": "Phone and tablet are currently signed in to this account.",
-  "premiumBenefitsMessage": "Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included."
+  "premiumBenefitsMessage": "Dietitian consultations, advanced AI optimization, long-term plans, unlimited chatbot access, priority support, and enhanced insights are included.",
+  "guestModeTitle": "Sign In to Continue",
+  "guestModeDescription": "Create an account or sign in to unlock personalized meal plans, detailed nutrition insights, and progress tracking.",
+  "guestModeButtonSignIn": "Sign In or Create Account",
+  "guestModeSecondaryButton": "Continue Exploring",
+  "dietPlanGuestTitle": "Sign in to view meal plans",
+  "dietPlanGuestDescription": "Create an account or sign in to access your personalized meal plan and keep your progress synced.",
+  "dataPreviewTitle": "Data Preview",
+  "dataPreviewDescription": "Sign in to see your nutrition data and detailed analytics",
+  "upgradeForAnalytics": "Sign in to unlock detailed nutrition analytics"
 }

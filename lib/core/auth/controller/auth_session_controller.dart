@@ -24,6 +24,7 @@ class AuthSessionController extends GetxController {
   final RxBool isLoaded = false.obs;
 
   bool get isLoggedIn => (token.value ?? '').trim().isNotEmpty;
+  bool get isGuest => !isLoggedIn;
 
   static AuthSessionController ensureRegistered() {
     if (Get.isRegistered<AuthSessionController>()) {

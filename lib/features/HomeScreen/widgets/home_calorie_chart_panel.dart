@@ -15,12 +15,14 @@ class HomeCalorieChartPanel extends StatelessWidget {
     required this.days,
     required this.selectedChartType,
     required this.onChartTypeChanged,
+    this.isGuest = false,
   });
 
   final List<double> values;
   final List<String> days;
   final HomeCalorieChartType selectedChartType;
   final ValueChanged<HomeCalorieChartType> onChartTypeChanged;
+  final bool isGuest;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +112,7 @@ class HomeCalorieChartPanel extends StatelessWidget {
                               ),
                         pointCenterColor: AppColors.surfaceOf(context),
                         valueLabelColor: AppColors.textPrimaryOf(context),
+                        showValueLabels: !isGuest,
                       )
                     : _ColumnBarChartPainter(
                         values: values,
@@ -122,6 +125,7 @@ class HomeCalorieChartPanel extends StatelessWidget {
                           alpha: 0.12,
                         ),
                         valueLabelColor: AppColors.textPrimaryOf(context),
+                        showValueLabels: !isGuest,
                       ),
                 child: const SizedBox.expand(),
               ),
@@ -137,20 +141,22 @@ class HomeCalorieChartPanel extends StatelessWidget {
           SizedBox(height: 10.h),
           Row(
             children: [
-              Text(
-                l10n.lowestKcal(lowestValue),
-                style: AppTextStyles.caption(context, fontSize: 12),
-              ),
-              const Spacer(),
-              Text(
-                l10n.peakKcal(peakValue),
-                style: AppTextStyles.caption(
-                  context,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primaryGreenDark,
+              if (!isGuest)
+                Text(
+                  l10n.lowestKcal(lowestValue),
+                  style: AppTextStyles.caption(context, fontSize: 12),
                 ),
-              ),
+              if (!isGuest) const Spacer(),
+              if (!isGuest)
+                Text(
+                  l10n.peakKcal(peakValue),
+                  style: AppTextStyles.caption(
+                    context,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryGreenDark,
+                  ),
+                ),
             ],
           ),
         ],
@@ -247,6 +253,7 @@ class _SplineChartPainter extends CustomPainter {
     required this.fillBottomColor,
     required this.pointCenterColor,
     required this.valueLabelColor,
+    this.showValueLabels = true,
   });
 
   final List<double> values;
@@ -256,6 +263,7 @@ class _SplineChartPainter extends CustomPainter {
   final Color fillBottomColor;
   final Color pointCenterColor;
   final Color valueLabelColor;
+  final bool showValueLabels;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -316,15 +324,17 @@ class _SplineChartPainter extends CustomPainter {
     canvas.drawPath(areaPath, areaPaint);
     canvas.drawPath(linePath, linePaint);
 
-    for (var i = 0; i < points.length; i++) {
-      _drawValueLabel(
-        canvas: canvas,
-        size: size,
-        center: points[i],
-        value: values[i].round().toString(),
-        textColor: valueLabelColor,
-        backgroundColor: lineColor.withValues(alpha: 0.14),
-      );
+    if (showValueLabels) {
+      for (var i = 0; i < points.length; i++) {
+        _drawValueLabel(
+          canvas: canvas,
+          size: size,
+          center: points[i],
+          value: values[i].round().toString(),
+          textColor: valueLabelColor,
+          backgroundColor: lineColor.withValues(alpha: 0.14),
+        );
+      }
     }
 
     final highlightPoint = points[5];
@@ -384,7 +394,8 @@ class _SplineChartPainter extends CustomPainter {
         oldDelegate.fillTopColor != fillTopColor ||
         oldDelegate.fillBottomColor != fillBottomColor ||
         oldDelegate.pointCenterColor != pointCenterColor ||
-        oldDelegate.valueLabelColor != valueLabelColor;
+        oldDelegate.valueLabelColor != valueLabelColor ||
+        oldDelegate.showValueLabels != showValueLabels;
   }
 }
 
@@ -396,6 +407,7 @@ class _ColumnBarChartPainter extends CustomPainter {
     required this.highlightedBarColor,
     required this.barShadowColor,
     required this.valueLabelColor,
+    this.showValueLabels = true,
   });
 
   final List<double> values;
@@ -404,6 +416,7 @@ class _ColumnBarChartPainter extends CustomPainter {
   final Color highlightedBarColor;
   final Color barShadowColor;
   final Color valueLabelColor;
+  final bool showValueLabels;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -463,14 +476,16 @@ class _ColumnBarChartPainter extends CustomPainter {
           ).createShader(rect.outerRect),
       );
       //
-      _drawValueLabel(
-        canvas: canvas,
-        size: size,
-        center: Offset(rect.outerRect.center.dx, rect.outerRect.top),
-        value: values[i].round().toString(),
-        textColor: valueLabelColor,
-        backgroundColor: currentBarColor.withValues(alpha: 0.14),
-      );
+      if (showValueLabels) {
+        _drawValueLabel(
+          canvas: canvas,
+          size: size,
+          center: Offset(rect.outerRect.center.dx, rect.outerRect.top),
+          value: values[i].round().toString(),
+          textColor: valueLabelColor,
+          backgroundColor: currentBarColor.withValues(alpha: 0.14),
+        );
+      }
     }
   }
 
@@ -481,7 +496,8 @@ class _ColumnBarChartPainter extends CustomPainter {
         oldDelegate.barColor != barColor ||
         oldDelegate.highlightedBarColor != highlightedBarColor ||
         oldDelegate.barShadowColor != barShadowColor ||
-        oldDelegate.valueLabelColor != valueLabelColor;
+        oldDelegate.valueLabelColor != valueLabelColor ||
+        oldDelegate.showValueLabels != showValueLabels;
   }
 }
 

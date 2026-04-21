@@ -1056,4 +1056,35 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get premiumBenefitsMessage =>
       'ڈائٹیشین مشاورت، جدید اے آئی آپٹیمائزیشن، طویل المدتی پلانز، لامحدود چیٹ بوٹ رسائی، ترجیحی سپورٹ، اور بہتر انسائٹس شامل ہیں۔';
+
+  @override
+  String get guestModeTitle => 'جاری رکھنے کے لیے سائن اِن کریں';
+
+  @override
+  String get guestModeDescription =>
+      'ذاتی میل پلانز، تفصیلی غذائی انسائٹس، اور پیش رفت کی ٹریکنگ کو کھولنے کے لیے اکاؤنٹ بنائیں یا سائن اِن کریں۔';
+
+  @override
+  String get guestModeButtonSignIn => 'سائن اِن یا اکاؤنٹ بنائیں';
+
+  @override
+  String get guestModeSecondaryButton => 'دریافت جاری رکھیں';
+
+  @override
+  String get dietPlanGuestTitle => 'میل پلان دیکھنے کے لیے سائن اِن کریں';
+
+  @override
+  String get dietPlanGuestDescription =>
+      'اپنا ذاتی میل پلان حاصل کرنے اور اپنی پیش رفت محفوظ رکھنے کے لیے اکاؤنٹ بنائیں یا سائن اِن کریں۔';
+
+  @override
+  String get dataPreviewTitle => 'ڈیٹا کا پیش منظر';
+
+  @override
+  String get dataPreviewDescription =>
+      'اپنی غذائی معلومات اور تفصیلی تجزیات دیکھنے کے لیے سائن اِن کریں';
+
+  @override
+  String get upgradeForAnalytics =>
+      'تفصیلی غذائی تجزیات کو کھولنے کے لیے سائن اِن کریں';
 }
