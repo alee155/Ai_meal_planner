@@ -59,95 +59,80 @@ class LatestMealPlanDataModel {
 
 class MealPlanModel {
   const MealPlanModel({
-    required this.nutrition,
-    this.mealTargets,
-    this.breakfast,
-    this.lunch,
-    this.dinner,
-    this.snacks = const [],
-    this.alternatives,
+    required this.dailyNutritionTargets,
+    required this.actualDailyTotals,
+    required this.meals,
+    required this.swapSuggestions,
+    required this.flags,
   });
 
-  final MealPlanNutritionModel nutrition;
-  final MealPlanTargetsModel? mealTargets;
-  final MealPlanMealModel? breakfast;
-  final MealPlanMealModel? lunch;
-  final MealPlanMealModel? dinner;
-  final List<MealPlanMealModel> snacks;
-  final MealPlanAlternativesModel? alternatives;
+  final MealPlanDailyNutritionTargetsModel dailyNutritionTargets;
+  final MealPlanActualDailyTotalsModel actualDailyTotals;
+  final List<MealPlanMealModel> meals;
+  final List<MealPlanSwapSuggestionModel> swapSuggestions;
+  final MealPlanFlagsModel flags;
 
   factory MealPlanModel.fromJson(Map<String, dynamic> json) {
     return MealPlanModel(
-      nutrition: MealPlanNutritionModel.fromJson(
-        json['nutrition'] is Map<String, dynamic>
-            ? Map<String, dynamic>.from(json['nutrition'] as Map)
+      dailyNutritionTargets: MealPlanDailyNutritionTargetsModel.fromJson(
+        json['dailyNutritionTargets'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['dailyNutritionTargets'] as Map)
             : const <String, dynamic>{},
       ),
-      mealTargets: json['mealTargets'] is Map<String, dynamic>
-          ? MealPlanTargetsModel.fromJson(
-              Map<String, dynamic>.from(json['mealTargets'] as Map),
-            )
-          : null,
-      breakfast: json['breakfast'] is Map<String, dynamic>
-          ? MealPlanMealModel.fromJson(
-              Map<String, dynamic>.from(json['breakfast'] as Map),
-            )
-          : null,
-      lunch: json['lunch'] is Map<String, dynamic>
-          ? MealPlanMealModel.fromJson(
-              Map<String, dynamic>.from(json['lunch'] as Map),
-            )
-          : null,
-      dinner: json['dinner'] is Map<String, dynamic>
-          ? MealPlanMealModel.fromJson(
-              Map<String, dynamic>.from(json['dinner'] as Map),
-            )
-          : null,
-      snacks: (json['snacks'] as List<dynamic>? ?? const [])
+      actualDailyTotals: MealPlanActualDailyTotalsModel.fromJson(
+        json['actualDailyTotals'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['actualDailyTotals'] as Map)
+            : const <String, dynamic>{},
+      ),
+      meals: (json['meals'] as List<dynamic>? ?? const [])
           .whereType<Map>()
           .map(
             (item) =>
                 MealPlanMealModel.fromJson(Map<String, dynamic>.from(item)),
           )
           .toList(),
-      alternatives: json['alternatives'] is Map<String, dynamic>
-          ? MealPlanAlternativesModel.fromJson(
-              Map<String, dynamic>.from(json['alternatives'] as Map),
-            )
-          : null,
+      swapSuggestions: (json['swapSuggestions'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map(
+            (item) => MealPlanSwapSuggestionModel.fromJson(
+              Map<String, dynamic>.from(item),
+            ),
+          )
+          .toList(),
+      flags: MealPlanFlagsModel.fromJson(
+        json['flags'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['flags'] as Map)
+            : const <String, dynamic>{},
+      ),
     );
   }
 }
 
-class MealPlanNutritionModel {
-  const MealPlanNutritionModel({
-    required this.source,
-    required this.targetCalories,
+class MealPlanDailyNutritionTargetsModel {
+  const MealPlanDailyNutritionTargetsModel({
+    required this.calories,
     required this.macros,
-    required this.mealsCount,
   });
 
-  final String source;
-  final double targetCalories;
-  final MealPlanMacroModel macros;
-  final int mealsCount;
+  final int calories;
+  final MealPlanMacroTargetsModel macros;
 
-  factory MealPlanNutritionModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanNutritionModel(
-      source: json['source']?.toString() ?? '',
-      targetCalories: _asDouble(json['targetCalories']),
-      macros: MealPlanMacroModel.fromJson(
+  factory MealPlanDailyNutritionTargetsModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return MealPlanDailyNutritionTargetsModel(
+      calories: _asInt(json['calories']),
+      macros: MealPlanMacroTargetsModel.fromJson(
         json['macros'] is Map<String, dynamic>
             ? Map<String, dynamic>.from(json['macros'] as Map)
             : const <String, dynamic>{},
       ),
-      mealsCount: _asInt(json['mealsCount']),
     );
   }
 }
 
-class MealPlanMacroModel {
-  const MealPlanMacroModel({
+class MealPlanMacroTargetsModel {
+  const MealPlanMacroTargetsModel({
     required this.protein,
     required this.carbs,
     required this.fats,
@@ -157,8 +142,8 @@ class MealPlanMacroModel {
   final int carbs;
   final int fats;
 
-  factory MealPlanMacroModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanMacroModel(
+  factory MealPlanMacroTargetsModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanMacroTargetsModel(
       protein: _asInt(json['protein']),
       carbs: _asInt(json['carbs']),
       fats: _asInt(json['fats']),
@@ -166,96 +151,276 @@ class MealPlanMacroModel {
   }
 }
 
-class MealPlanTargetsModel {
-  const MealPlanTargetsModel({
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
+class MealPlanActualDailyTotalsModel {
+  const MealPlanActualDailyTotalsModel({
+    required this.calories,
+    required this.macros,
+    required this.macroPercentages,
   });
 
-  final double breakfast;
-  final double lunch;
-  final double dinner;
+  final int calories;
+  final MealPlanMacroActualModel macros;
+  final MealPlanMacroPercentagesModel macroPercentages;
 
-  factory MealPlanTargetsModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanTargetsModel(
-      breakfast: _asDouble(json['breakfast']),
-      lunch: _asDouble(json['lunch']),
-      dinner: _asDouble(json['dinner']),
-    );
-  }
-}
-
-class MealPlanMealModel {
-  const MealPlanMealModel({required this.items, required this.totals});
-
-  final List<dynamic> items;
-  final MealPlanTotalsModel totals;
-
-  factory MealPlanMealModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanMealModel(
-      items: json['items'] is List
-          ? List<dynamic>.from(json['items'] as List)
-          : const [],
-      totals: MealPlanTotalsModel.fromJson(
-        json['totals'] is Map<String, dynamic>
-            ? Map<String, dynamic>.from(json['totals'] as Map)
+  factory MealPlanActualDailyTotalsModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanActualDailyTotalsModel(
+      calories: _asInt(json['calories']),
+      macros: MealPlanMacroActualModel.fromJson(
+        json['macros'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['macros'] as Map)
+            : const <String, dynamic>{},
+      ),
+      macroPercentages: MealPlanMacroPercentagesModel.fromJson(
+        json['macroPercentages'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['macroPercentages'] as Map)
             : const <String, dynamic>{},
       ),
     );
   }
 }
 
-class MealPlanTotalsModel {
-  const MealPlanTotalsModel({
+class MealPlanMacroActualModel {
+  const MealPlanMacroActualModel({
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+  });
+
+  final double protein;
+  final double carbs;
+  final double fats;
+
+  factory MealPlanMacroActualModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanMacroActualModel(
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
+    );
+  }
+}
+
+class MealPlanMacroPercentagesModel {
+  const MealPlanMacroPercentagesModel({
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+  });
+
+  final double protein;
+  final double carbs;
+  final double fats;
+
+  factory MealPlanMacroPercentagesModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanMacroPercentagesModel(
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
+    );
+  }
+}
+
+class MealPlanMealModel {
+  const MealPlanMealModel({
+    required this.mealName,
+    required this.targetCalories,
+    required this.actualCalories,
+    required this.calorieGapPercent,
+    required this.items,
+    required this.subtotal,
+  });
+
+  final String mealName;
+  final int targetCalories;
+  final int actualCalories;
+  final double calorieGapPercent;
+  final List<MealPlanFoodItemModel> items;
+  final MealPlanSubtotalModel subtotal;
+
+  factory MealPlanMealModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanMealModel(
+      mealName: json['mealName']?.toString().trim() ?? '',
+      targetCalories: _asInt(json['targetCalories']),
+      actualCalories: _asInt(json['actualCalories']),
+      calorieGapPercent: _asDouble(json['calorieGapPercent']),
+      items: (json['items'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map(
+            (item) =>
+                MealPlanFoodItemModel.fromJson(Map<String, dynamic>.from(item)),
+          )
+          .toList(),
+      subtotal: MealPlanSubtotalModel.fromJson(
+        json['subtotal'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['subtotal'] as Map)
+            : const <String, dynamic>{},
+      ),
+    );
+  }
+}
+
+class MealPlanFoodItemModel {
+  const MealPlanFoodItemModel({
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+    required this.weightGrams,
+  });
+
+  final String name;
+  final int calories;
+  final double protein;
+  final double carbs;
+  final double fats;
+  final int weightGrams;
+
+  factory MealPlanFoodItemModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanFoodItemModel(
+      name: json['name']?.toString().trim() ?? '',
+      calories: _asInt(json['calories']),
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
+      weightGrams: _asInt(json['weightGrams']),
+    );
+  }
+}
+
+class MealPlanSubtotalModel {
+  const MealPlanSubtotalModel({
     required this.calories,
     required this.protein,
     required this.carbs,
     required this.fats,
   });
 
-  final int calories;
-  final int protein;
-  final int carbs;
-  final int fats;
+  final double calories;
+  final double protein;
+  final double carbs;
+  final double fats;
 
-  factory MealPlanTotalsModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanTotalsModel(
-      calories: _asInt(json['calories']),
-      protein: _asInt(json['protein']),
-      carbs: _asInt(json['carbs']),
-      fats: _asInt(json['fats']),
+  factory MealPlanSubtotalModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanSubtotalModel(
+      calories: _asDouble(json['calories']),
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
     );
   }
 }
 
-class MealPlanAlternativesModel {
-  const MealPlanAlternativesModel({
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-    required this.snacks,
+class MealPlanSwapSuggestionModel {
+  const MealPlanSwapSuggestionModel({
+    required this.meal,
+    required this.currentItem,
+    required this.alternatives,
   });
 
-  final List<dynamic> breakfast;
-  final List<dynamic> lunch;
-  final List<dynamic> dinner;
-  final List<dynamic> snacks;
+  final String meal;
+  final MealPlanSwapItemModel currentItem;
+  final List<MealPlanSwapAlternativeModel> alternatives;
 
-  factory MealPlanAlternativesModel.fromJson(Map<String, dynamic> json) {
-    return MealPlanAlternativesModel(
-      breakfast: json['breakfast'] is List
-          ? List<dynamic>.from(json['breakfast'] as List)
-          : const [],
-      lunch: json['lunch'] is List
-          ? List<dynamic>.from(json['lunch'] as List)
-          : const [],
-      dinner: json['dinner'] is List
-          ? List<dynamic>.from(json['dinner'] as List)
-          : const [],
-      snacks: json['snacks'] is List
-          ? List<dynamic>.from(json['snacks'] as List)
-          : const [],
+  factory MealPlanSwapSuggestionModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanSwapSuggestionModel(
+      meal: json['meal']?.toString().trim() ?? '',
+      currentItem: MealPlanSwapItemModel.fromJson(
+        json['currentItem'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(json['currentItem'] as Map)
+            : const <String, dynamic>{},
+      ),
+      alternatives: (json['alternatives'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map(
+            (item) => MealPlanSwapAlternativeModel.fromJson(
+              Map<String, dynamic>.from(item),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class MealPlanSwapItemModel {
+  const MealPlanSwapItemModel({
+    required this.id,
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+  });
+
+  final int id;
+  final String name;
+  final int calories;
+  final double protein;
+  final double carbs;
+  final double fats;
+
+  factory MealPlanSwapItemModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanSwapItemModel(
+      id: _asInt(json['id']),
+      name: json['name']?.toString().trim() ?? '',
+      calories: _asInt(json['calories']),
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
+    );
+  }
+}
+
+class MealPlanSwapAlternativeModel {
+  const MealPlanSwapAlternativeModel({
+    required this.id,
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+    required this.matchScore,
+    required this.isSafeSwap,
+  });
+
+  final int id;
+  final String name;
+  final int calories;
+  final double protein;
+  final double carbs;
+  final double fats;
+  final double matchScore;
+  final bool isSafeSwap;
+
+  factory MealPlanSwapAlternativeModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanSwapAlternativeModel(
+      id: _asInt(json['id']),
+      name: json['name']?.toString().trim() ?? '',
+      calories: _asInt(json['calories']),
+      protein: _asDouble(json['protein']),
+      carbs: _asDouble(json['carbs']),
+      fats: _asDouble(json['fats']),
+      matchScore: _asDouble(json['matchScore']),
+      isSafeSwap: json['isSafeSwap'] == true,
+    );
+  }
+}
+
+class MealPlanFlagsModel {
+  const MealPlanFlagsModel({
+    required this.calorieGap,
+    required this.allergiesRespected,
+    required this.dislikesAvoided,
+  });
+
+  final String? calorieGap;
+  final String? allergiesRespected;
+  final String? dislikesAvoided;
+
+  factory MealPlanFlagsModel.fromJson(Map<String, dynamic> json) {
+    return MealPlanFlagsModel(
+      calorieGap: json['calorieGap']?.toString(),
+      allergiesRespected: json['allergiesRespected']?.toString(),
+      dislikesAvoided: json['dislikesAvoided']?.toString(),
     );
   }
 }

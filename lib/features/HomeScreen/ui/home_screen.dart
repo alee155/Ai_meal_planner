@@ -93,14 +93,13 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 18.h),
               Obx(() {
                 final goal =
-                    (_dietPlanController
-                                .latest
-                                .value
-                                ?.plan
-                                .nutrition
-                                .targetCalories ??
-                            1700)
-                        .round();
+                    _dietPlanController
+                        .latest
+                        .value
+                        ?.plan
+                        .dailyNutritionTargets
+                        .calories ??
+                    1700;
                 const consumed = 1360;
                 final remaining = (goal - consumed).clamp(0, goal).toInt();
                 final authController = authSessionController;
