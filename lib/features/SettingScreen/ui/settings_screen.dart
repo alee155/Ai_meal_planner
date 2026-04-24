@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/auth/controller/auth_session_controller.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/constants/app_links.dart';
 import 'package:ai_meal_planner/core/localization/locale_controller.dart';
 import 'package:ai_meal_planner/core/theme/app_text_styles.dart';
 import 'package:ai_meal_planner/core/theme/theme_controller.dart';
@@ -310,22 +311,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.privacy_tip_outlined,
                       title: 'Privacy policy',
                       subtitle: 'How your nutrition data is used and protected',
-                      onTap: () => _showInfoSheet(
-                        title: 'Privacy policy',
-                        message:
-                            'This can later open a webview or markdown page with your policy.',
-                      ),
+                      onTap: () => AppLinks.open(AppLinks.privacyPolicy),
                     ),
                     _SettingsTile(
                       icon: Icons.privacy_tip_outlined,
-                      title: 'Terms and Conditionsy',
+                      title: 'Terms and conditions',
                       subtitle:
                           'Read the terms and conditions for using this app',
-                      onTap: () => _showInfoSheet(
-                        title: 'Privacy policy',
-                        message:
-                            'This can later open a webview or markdown page with your policy.',
-                      ),
+                      onTap: () => AppLinks.open(AppLinks.termsAndConditions),
                     ),
                   ],
                 ),

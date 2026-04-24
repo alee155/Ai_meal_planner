@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/constants/app_links.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/Account/controller/account_controller.dart';
 import 'package:ai_meal_planner/features/DeleteAccountScreen/widget/delete_account_header.dart';
@@ -210,19 +211,21 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 isLoading: _isDeleting || _isDeactivating,
               ),
               SizedBox(height: 15.h),
-              GestureDetector(
-                onTap: () {
-                  // open url or screen
-                  // Get.to(() => AccountDeletionInfoScreen());
-                },
-                child: Center(
-                  child: Text(
-                    'Read more about account deletion',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: AppColors.info,
-                      // decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
+              Center(
+                child: InkWell(
+                  onTap: _isDeleting || _isDeactivating
+                      ? null
+                      : () => AppLinks.open(AppLinks.deleteAccount),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6.h),
+                    child: Text(
+                      'Read more about account deletion',
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: AppColors.info,
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

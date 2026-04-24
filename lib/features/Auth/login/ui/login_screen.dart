@@ -1,4 +1,5 @@
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
+import 'package:ai_meal_planner/core/constants/app_links.dart';
 import 'package:ai_meal_planner/core/utils/app_snackbar.dart';
 import 'package:ai_meal_planner/features/Auth/login/controller/login_controller.dart';
 import 'package:ai_meal_planner/features/Auth/login/widgets/login_auth_card.dart';
@@ -104,6 +105,55 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildLegalLinks({required bool isSubmitting}) {
+    final baseStyle = TextStyle(
+      fontSize: 12.sp,
+      height: 1.4,
+      color: AppColors.textSecondaryOf(context),
+    );
+
+    final linkStyle = baseStyle.copyWith(
+      color: AppColors.info,
+      fontWeight: FontWeight.w600,
+    );
+
+    ButtonStyle linkButtonStyle = TextButton.styleFrom(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 10.h),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 4.w,
+          runSpacing: 0,
+          children: [
+            Text('By continuing, you agree to', style: baseStyle),
+            TextButton(
+              onPressed: isSubmitting
+                  ? null
+                  : () => AppLinks.open(AppLinks.termsAndConditions),
+              style: linkButtonStyle,
+              child: Text('Terms & Conditions', style: linkStyle),
+            ),
+            Text('and', style: baseStyle),
+            TextButton(
+              onPressed: isSubmitting
+                  ? null
+                  : () => AppLinks.open(AppLinks.privacyPolicy),
+              style: linkButtonStyle,
+              child: Text('Privacy Policy', style: linkStyle),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -146,6 +196,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _continueAsGuest,
                           isSubmitting: isSubmitting,
                         ),
+                        10.h.verticalSpace,
+                        _buildLegalLinks(isSubmitting: isSubmitting),
                         const Spacer(),
                       ],
                     ),
