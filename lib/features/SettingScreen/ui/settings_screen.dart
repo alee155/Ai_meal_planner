@@ -316,6 +316,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             'This can later open a webview or markdown page with your policy.',
                       ),
                     ),
+                    _SettingsTile(
+                      icon: Icons.privacy_tip_outlined,
+                      title: 'Terms and Conditionsy',
+                      subtitle:
+                          'Read the terms and conditions for using this app',
+                      onTap: () => _showInfoSheet(
+                        title: 'Privacy policy',
+                        message:
+                            'This can later open a webview or markdown page with your policy.',
+                      ),
+                    ),
                   ],
                 ),
               ],

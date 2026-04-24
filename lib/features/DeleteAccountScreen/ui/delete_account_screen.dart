@@ -189,7 +189,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               DeleteAccountHeader(onBackTap: Get.back),
               SizedBox(height: 20.h),
               const DeleteAccountWarningCard(),
-              SizedBox(height: 24.h),
+              SizedBox(height: 54.h),
               AppOutlinedButton(
                 onPressed: _isDeleting || _isDeactivating
                     ? null
@@ -201,13 +201,31 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 paddingVertical: 16,
                 fontSize: 15,
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 15.h),
               AppFilledButton(
                 label: 'Delete account permanently',
                 onPressed: _handleDeleteAccount,
                 backgroundColor: AppColors.error,
                 foregroundColor: AppColors.textWhite,
                 isLoading: _isDeleting || _isDeactivating,
+              ),
+              SizedBox(height: 15.h),
+              GestureDetector(
+                onTap: () {
+                  // open url or screen
+                  // Get.to(() => AccountDeletionInfoScreen());
+                },
+                child: Center(
+                  child: Text(
+                    'Read more about account deletion',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      color: AppColors.info,
+                      // decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

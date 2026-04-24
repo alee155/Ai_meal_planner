@@ -6,9 +6,9 @@ An AI-powered Flutter application that helps users plan meals, manage diet, and 
 
 ## Screenshots
 
-![Light Mode Screenshot](screenshots/ss_light.png)
+![Light Mode Screenshot](screenshots/CalorIQ_1.png)
 
-![Dark Mode Screenshot](screenshots/ss_dark.png)
+![Dark Mode Screenshot](screenshots/CalorIQ_2.png)
 
 ---
 
