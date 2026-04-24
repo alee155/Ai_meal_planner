@@ -114,4 +114,3 @@ class GuestRestrictedView extends StatelessWidget {
     );
   }
 }
-
