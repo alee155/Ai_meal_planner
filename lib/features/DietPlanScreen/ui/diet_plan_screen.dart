@@ -2,8 +2,7 @@ import 'package:ai_meal_planner/core/animations/app_animations.dart';
 import 'package:ai_meal_planner/core/constants/app_colors.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/controller/diet_plan_controller.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/widgets/diet_plan_header.dart';
-import 'package:ai_meal_planner/features/DietPlanScreen/widgets/daily_nutrition_card.dart';
-import 'package:ai_meal_planner/features/DietPlanScreen/widgets/macro_ring_card.dart';
+import 'package:ai_meal_planner/features/DietPlanScreen/widgets/nutrition_summary_card.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/widgets/meal_expandable_card.dart';
 import 'package:ai_meal_planner/features/DietPlanScreen/widgets/plan_flags_card.dart';
 import 'package:ai_meal_planner/routes/app_routes.dart';
@@ -78,20 +77,12 @@ class _DietPlanScreenState extends State<DietPlanScreen> {
                 padding: EdgeInsets.only(bottom: 12.h),
                 child: _InlineWarning(message: error),
               ),
-            DailyNutritionCard(
+            NutritionSummaryCard(
               targets: latest.plan.dailyNutritionTargets,
               actualTotals: latest.plan.actualDailyTotals,
             ).animatePlanSummary(
               enabled: widget.playEntranceAnimation,
               delay: AppMotion.stagger(1, initialMs: 120),
-            ),
-            SizedBox(height: 14.h),
-            MacroRingCard(
-              percentages: latest.plan.actualDailyTotals.macroPercentages,
-            ).animatePlanMeal(
-              enabled: widget.playEntranceAnimation,
-              delay: AppMotion.stagger(2, initialMs: 140),
-              fromLeft: true,
             ),
             SizedBox(height: 14.h),
             ...latest.plan.meals.asMap().entries.map((entry) {
@@ -106,7 +97,7 @@ class _DietPlanScreenState extends State<DietPlanScreen> {
                       swapSuggestions: latest.plan.swapSuggestions,
                     ).animatePlanMeal(
                       enabled: widget.playEntranceAnimation,
-                      delay: AppMotion.stagger(index + 3, initialMs: 160),
+                      delay: AppMotion.stagger(index + 2, initialMs: 140),
                       fromLeft: index.isEven,
                     ),
               );

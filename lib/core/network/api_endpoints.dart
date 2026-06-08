@@ -46,4 +46,6 @@ class MealsApiEndpoints {
   const MealsApiEndpoints._();
 
   final String latest = '/api/meals/latest';
+  final String complete = '/api/meals/complete';
+  final String timeWindows = '/api/meals/time-windows';
 }

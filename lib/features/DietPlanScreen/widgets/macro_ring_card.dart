@@ -15,11 +15,10 @@ class MacroRingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final segments = <_MacroSegment>[
-      _MacroSegment('Protein', percentages.protein, AppColors.info),
-      _MacroSegment('Carbs', percentages.carbs, AppColors.warning),
-      _MacroSegment('Fats', percentages.fats, AppColors.primaryGreenLight),
+      _MacroSegment('Protein', percentages.protein, const Color(0xFF4D9FFF)),
+      _MacroSegment('Carbs', percentages.carbs, const Color(0xFFFFB84D)),
+      _MacroSegment('Fats', percentages.fats, const Color(0xFFFF6B6B)),
     ];
-
     return PlanCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,14 +136,14 @@ class _LegendRow extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
             decoration: BoxDecoration(
               color: AppColors.backgroundSecondaryOf(context),
-              borderRadius: BorderRadius.circular(999.r),
+              borderRadius: BorderRadius.circular(10.r),
               border: Border.all(color: AppColors.borderOf(context)),
             ),
             child: Text(
               '${_fmtPct(segment.percentage)}%',
               style: AppTextStyles.caption(
                 context,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w800,
               ),
             ),

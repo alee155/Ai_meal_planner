@@ -219,6 +219,7 @@ class MealPlanMacroPercentagesModel {
   }
 }
 
+/// Represents a single meal in the plan, including time scheduling fields.
 class MealPlanMealModel {
   const MealPlanMealModel({
     required this.mealName,
@@ -227,6 +228,10 @@ class MealPlanMealModel {
     required this.calorieGapPercent,
     required this.items,
     required this.subtotal,
+    this.startUtc,
+    this.endUtc,
+    this.timezone,
+    this.editable,
   });
 
   final String mealName;
@@ -236,7 +241,38 @@ class MealPlanMealModel {
   final List<MealPlanFoodItemModel> items;
   final MealPlanSubtotalModel subtotal;
 
+  /// UTC start time parsed from timeWindow.start "HH:mm", e.g. "07:00" → hour=7, minute=0
+  final ({int hour, int minute})? startUtc;
+
+  /// UTC end time parsed from timeWindow.end "HH:mm", e.g. "09:00" → hour=9, minute=0
+  final ({int hour, int minute})? endUtc;
+
+  /// Timezone string from the API, e.g. "UTC"
+  final String? timezone;
+
+  /// Whether the user may edit this meal slot
+  final bool? editable;
+
+  /// Start time converted to PKT (UTC+05:00).
+  ({int hour, int minute})? get startPkt {
+    if (startUtc == null) return null;
+    final h = (startUtc!.hour + 5) % 24;
+    return (hour: h, minute: startUtc!.minute);
+  }
+
+  /// End time converted to PKT (UTC+05:00).
+  ({int hour, int minute})? get endPkt {
+    if (endUtc == null) return null;
+    final h = (endUtc!.hour + 5) % 24;
+    return (hour: h, minute: endUtc!.minute);
+  }
+
   factory MealPlanMealModel.fromJson(Map<String, dynamic> json) {
+    // timeWindow is a nested object: { start: "07:00", end: "09:00", timezone, editable }
+    final tw = json['timeWindow'] is Map
+        ? Map<String, dynamic>.from(json['timeWindow'] as Map)
+        : null;
+
     return MealPlanMealModel(
       mealName: json['mealName']?.toString().trim() ?? '',
       targetCalories: _asInt(json['targetCalories']),
@@ -254,6 +290,12 @@ class MealPlanMealModel {
             ? Map<String, dynamic>.from(json['subtotal'] as Map)
             : const <String, dynamic>{},
       ),
+      startUtc: _asHHmm(tw?['start']),
+      endUtc: _asHHmm(tw?['end']),
+      timezone: tw?['timezone']?.toString() ?? json['timezone']?.toString(),
+      editable: tw?['editable'] is bool
+          ? tw!['editable'] as bool
+          : (json['editable'] is bool ? json['editable'] as bool : null),
     );
   }
 }
@@ -425,6 +467,24 @@ class MealPlanFlagsModel {
   }
 }
 
+// ─── Response model for POST /meals/complete ─────────────────────────────────
+
+class MealCompleteResponseModel {
+  const MealCompleteResponseModel({required this.success, this.message});
+
+  final bool success;
+  final String? message;
+
+  factory MealCompleteResponseModel.fromJson(Map<String, dynamic> json) {
+    return MealCompleteResponseModel(
+      success: json['success'] == true,
+      message: json['message']?.toString(),
+    );
+  }
+}
+
+// ─── Private helpers ──────────────────────────────────────────────────────────
+
 int _asInt(Object? value) {
   if (value is int) return value;
   if (value is double) return value.round();
@@ -445,4 +505,17 @@ DateTime? _asDateTime(Object? value) {
   final raw = value?.toString().trim() ?? '';
   if (raw.isEmpty) return null;
   return DateTime.tryParse(raw);
+}
+
+/// Parses an "HH:mm" string (e.g. "07:00") into an hour+minute record.
+/// Returns null if the string is missing or malformed.
+({int hour, int minute})? _asHHmm(Object? value) {
+  final raw = value?.toString().trim() ?? '';
+  if (raw.isEmpty) return null;
+  final parts = raw.split(':');
+  if (parts.length < 2) return null;
+  final h = int.tryParse(parts[0]);
+  final m = int.tryParse(parts[1]);
+  if (h == null || m == null) return null;
+  return (hour: h, minute: m);
 }
